@@ -1,0 +1,12 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "(self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and ((not self.deck.cards[1].states.drag.is) or self.CONTROLLER.HID.touch) and (not self.CONTROLLER.HID.controller)) or "
+position = "at"
+payload = "(self.deck and self.deck.cards[1] and ((self.CONTROLLER.HID.touch and (self.deck.cards[1].states.hover.is)) or (not self.CONTROLLER.HID.touch and (self.deck.cards[1].states.collide.is and ((not self.deck.cards[1].states.drag.is))))) and (not self.CONTROLLER.HID.controller)) or "
+match_indent = true

@@ -1,0 +1,52 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "function attention_text(args)"
+position = "before"
+payload = "  function drag_target(args)\n    args = args or {}\n    args.text = args.text or {'BUY'}\n    args.colour = copy_table(args.colour or G.C.UI.TRANSPARENT_DARK)\n    args.cover = args.cover or nil\n    args.emboss = args.emboss or nil\n    args.active_check = args.active_check or (function(other) return true end)\n    args.release_func = args.release_func or (function(other) G.DEBUG_VALUE = 'WORKIN' end)\n    args.text_colour = copy_table(G.C.WHITE)\n    args.uibox_config = {\n      align = args.align or 'tli',\n      offset = args.offset or {x=0,y=0}, \n      major = args.cover or args.major or nil,\n    }\n\n    local drag_area_width =(args.T and args.T.w or args.cover and args.cover.T.w or 0.001) + (args.cover_padding or 0)\n\n    local text_rows = {}\n    for k, v in ipairs(args.text) do\n      text_rows[#text_rows+1] = {n=G.UIT.R, config={align = \"cm\", padding = 0.05, maxw = drag_area_width-0.1}, nodes={{n=G.UIT.O, config={object = DynaText({scale = args.scale, string = v, maxw = args.maxw or (drag_area_width-0.1), colours = {args.text_colour},float = true, shadow = true, silent = not args.noisy, 0.7, pop_in = 0, pop_in_rate = 6, rotate = args.rotate or nil})}}}}\n    end\n\n    args.DT = UIBox{\n      T = {0,0,0,0},\n      definition = \n        {n=G.UIT.ROOT, config = {align = 'cm',  args = args, can_collide = true, hover = true, release_func = args.release_func, func = 'check_drag_target_active', minw = drag_area_width, minh = (args.cover and args.cover.T.h or 0.001) + (args.cover_padding or 0), padding = 0.03, r = 0.1, emboss = args.emboss, colour = G.C.CLEAR}, nodes=text_rows}, \n      config = args.uibox_config\n    }\n    args.DT.attention_text = true\n\n    if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.highlights then \n      G.OVERLAY_TUTORIAL.highlights[#G.OVERLAY_TUTORIAL.highlights+1] = args.DT\n    end\n\n    G.E_MANAGER:add_event(Event({\n      trigger = 'after',\n      delay = 0,\n      blockable = false,\n      blocking = false,\n      func = function()\n        if not G.CONTROLLER.dragging.target and args.DT then \n          if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.highlights then\n            for k, v in ipairs(G.OVERLAY_TUTORIAL.highlights) do\n              if args.DT == v then \n                table.remove(G.OVERLAY_TUTORIAL.highlights, k)\n                break\n              end\n            end\n          end\n          args.DT:remove()\n          return true\n        end\n      end\n      }))\n  end\n\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "_tag_sprite.states.collide.can = not not run_info"
+position = "at"
+payload = "  _tag_sprite.states.collide.can = false"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "local t = create_UIBox_generic_options({back_func = 'options',contents = {create_tabs("
+position = "before"
+payload = "  tabs[#tabs+1] = {\n    label = 'Dragging',\n    tab_definition_function = G.UIDEF.settings_tab,\n    tab_definition_function_args = 'Dragging'\n  }\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "elseif tab == 'Graphics' then "
+position = "before"
+payload = "  elseif tab == 'Dragging' then \n    return {n=G.UIT.ROOT, config={align = \"cm\", padding = 0.05, colour = G.C.CLEAR}, nodes={\n      create_toggle({label = 'Enable Actions Buttons', ref_table = G.SETTINGS, ref_value = 'enable_action_buttons'}),\n      create_toggle({label = 'Enable drag to select/deselect from hand area', ref_table = G.SETTINGS, ref_value = 'enable_drag_select'}),\n      create_slider({label = 'Drag Area Opacity (Default: 90%)', w = 5, h = 0.4, ref_table = G.SETTINGS, ref_value = 'drag_area_opacity', min = 0, max = 100}),\n      create_toggle({label = 'Move Joker Booster Pack Select Area To Joker Buy Area', ref_table = G.SETTINGS, ref_value = 'move_select_joker_drag_area'}),\n    }}"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "temp_blind.states.collide.can = true"
+position = "after"
+payload = "    temp_blind.touch_collide_tilt = true"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "card.states.click.can = false"
+position = "at"
+payload = "  --card.states.click.can = false"
+match_indent = false

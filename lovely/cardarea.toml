@@ -1,0 +1,46 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = "function CardArea:can_highlight(card)"
+position = "after"
+payload = "    -- Disable the action button if the setting is off\n    if not G.SETTINGS.enable_action_buttons and self.config.type ~= 'hand' then return false end"
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.regex]
+target = "cardarea.lua"
+pattern = "(?<before>function CardArea:remove_from_highlighted[\\s\\S]+)(?:    card:highlight\\(false\\))"
+position = "at"
+payload = "$before\n    if card then\n        card:highlight(false)\n    end\n"
+times = 1
+
+[[patches]]
+[patches.regex]
+target = "cardarea.lua"
+pattern = "(?<before>function CardArea:set_ranks[\\s\\S]+\\n)(?<toReplace> +card.states.drag.can = false)"
+position = "at"
+payload = "$before            -- This enable dragging on all platforms\n            if --[[ G.CONTROLLER.HID.touch and ]] ((self.config.type == 'shop') or (self.config.type == 'consumeable')) then\n                card.states.drag.can = true\n            else\n    $toReplace\n            end"
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = "if G.deck_preview or self.states.collide.is or (G.buttons and G.buttons.states.collide.is and G.CONTROLLER.HID.controller) then self.children.view_deck:draw() end"
+position = "at"
+payload = "if G.deck_preview or (not self.under_overlay and self.states.collide.is) or (G.buttons and (not G.buttons.under_overlay and G.buttons.states.collide.is) and G.CONTROLLER.HID.controller) then self.children.view_deck:draw() end"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.regex]
+target = "cardarea.lua"
+pattern = "card.T.r = 0.1"
+position = "at"
+payload = "card.T.r = (self.config.flat and 0 or 0.1)"
+times = 1

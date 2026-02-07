@@ -1,0 +1,36 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "function Game:set_globals()"
+position = "after"
+payload = "    self.F_TOUCH_MOUSE = nil\n    self.F_HIDE_LOADING_BAR = nil"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "    if love.system.getOS() == 'Windows' then"
+position = "after"
+payload = "        self.F_LINKTREE = true\n        self.F_RUMBLE = 1"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "self.SETTINGS = {"
+position = "after"
+payload = "        enable_action_buttons = true,\n        move_select_joker_drag_area = false,\n        drag_area_opacity = 90,\n        enable_drag_select = true,"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "globals.lua"
+pattern = "self.MIN_CLICK_DIST = 0.9"
+position = "at"
+payload = "    -- Changing this from 0.9 to 0.1 fix the issue with the buttons popping out\n    -- on cards when you drag them and release them close to where you started dragging\n    -- Putting 0 break every button in the game, main menu included.\n    self.MIN_CLICK_DIST = 0.1"
+match_indent = false

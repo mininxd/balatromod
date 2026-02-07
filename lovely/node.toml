@@ -1,0 +1,12 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/node.lua"
+pattern = "function Node:update(dt) end"
+position = "after"
+payload = "\n--Determine touch behaviour\nfunction Node:simple_touch()\n    return true\nend\n\nfunction Node:can_long_press() return nil end\nfunction Node:can_hover_on_drag() return true end\n\n"
+match_indent = false

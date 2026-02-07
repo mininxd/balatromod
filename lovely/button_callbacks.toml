@@ -1,0 +1,60 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.can_load_profile = function(e)"
+position = "before"
+payload = "G.FUNCS.check_drag_target_active = function(e)\n  if e.config.args.active_check(e.config.args.card) then\n    if (not e.config.pulse_border) or not e.config.args.init then\n      e.config.pulse_border = true\n      e.config.colour = e.config.args.colour\n      e.config.args.text_colour[4] = 1\n      e.config.release_func = e.config.args.release_func\n    end\n  else\n    if (e.config.pulse_border) or not e.config.args.init  then \n      e.config.pulse_border = nil\n      e.config.colour = adjust_alpha(G.C.L_BLACK, 0.9)\n      e.config.args.text_colour[4] = 0.5\n      e.config.release_func = nil\n    end\n  end\n  e.config.args.init = true\nend\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.can_load_profile = function(e)"
+position = "before"
+payload = "G.FUNCS.can_buy_check = function(_card)\n  if _card.cost > (G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0) then\n    return false\n  end\n  return true\nend\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.can_load_profile = function(e)"
+position = "before"
+payload = "G.FUNCS.can_buy_and_use_check = function(_card)\n  if (((_card.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0)) or (not _card:can_use_consumeable())) then\n    return false\n  end\n  return true\nend\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.OVERLAY_MENU:align_to_major()"
+position = "after"
+payload = "  G.CONTROLLER.touch_control.clear_touch = true"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.SETTINGS.paused = false"
+position = "after"
+payload = "  G.CONTROLLER.touch_control.clear_touch = true"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.can_select_card = function(e)"
+position = "before"
+payload = "  G.FUNCS.can_select_card_check = function(_card)\n    if _card.ability.set ~= 'Joker' or (_card.edition and _card.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then \n      return true\n    end\n    return false\n  end\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if G.pack_cards and (G.pack_cards.cards[1]) and"
+position = "at"
+payload = "    if G.pack_cards and G.pack_cards.cards and (G.pack_cards.cards[1]) and "
+match_indent = false

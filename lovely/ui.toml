@@ -1,0 +1,52 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.regex]
+target = "engine/ui.lua"
+pattern = "(?<before>function UIBox:drag\\(offset\\)[\\s\\S]+)(?:    Moveable\\.move\\(self\\.UIRoot, dt\\))"
+position = "at"
+payload = "$before    --Moveable.move(self.UIRoot, dt)"
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)"
+position = "at"
+payload = "            self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is and ((not G.CONTROLLER.HID.touch) or G.CONTROLLER.is_cursor_down)) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "--Draw the outline for highlighted buttons"
+position = "before"
+payload = "    if self.config.pulse_border then\n        self.border_pulse_timer = self.border_pulse_timer or G.TIMERS.REAL\n        local lw = 2*math.max(0, 0.5*math.cos(6*(G.TIMERS.REAL - self.border_pulse_timer)) + 0.5)\n        prep_draw(self, 1)\n        love.graphics.scale((1)/(G.TILESIZE))\n        love.graphics.setLineWidth(lw + 1)\n        love.graphics.setColor(adjust_alpha(G.C.BLACK, 0.2*lw, true))\n        self:draw_pixellated_rect('fill', parallax_dist)\n        love.graphics.setColor(self.config.colour[4] > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)\n        self:draw_pixellated_rect('line', parallax_dist)\n        love.graphics.pop()\n    end\n\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "function UIElement:update(dt)"
+position = "after"
+payload = "    if G.DISABLED_BUTTONS and self.config.button and not self.tutorial_disabled then\n        for k, v in ipairs(G.DISABLED_BUTTONS) do\n            if self.config.button == v then\n                self.tutorial_disabled = self.config.button\n                self.config.button = nil\n                self.disable_button = true\n            end\n        end\n    elseif not G.DISABLED_BUTTONS and self.tutorial_disabled then \n        self.disable_button = nil\n        self.config.button = self.tutorial_disabled\n        self.tutorial_disabled = nil\n    end\n\n"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "G.NO_MOD_CURSOR_STACK = nil"
+position = "before"
+payload = "        G.CONTROLLER.touch_control.only_hover = G.ROOM"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "function UIElement:release(other)"
+position = "after"
+payload = "    if self.config.release_func then \n        self.config.release_func(other)\n    end"
+match_indent = false

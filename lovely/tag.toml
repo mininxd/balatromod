@@ -1,0 +1,12 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "tag.lua"
+pattern = "tag_sprite.hover = function(_self)"
+position = "before"
+payload = "    tag_sprite.touch_collide_tilt = true\n"
+match_indent = false

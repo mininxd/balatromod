@@ -1,0 +1,66 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:can_use_consumeable(any_state, skip_check)"
+position = "after"
+payload = "    if not self.ability.consumeable then return false end"
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:simple_touch()\n    return false\nend\n"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:single_tap()\n    if self.area and self.area:can_highlight(self) then\n        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end\n        if self.highlighted ~= true then\n            self.area:add_to_highlighted(self)\n        else\n            self.area:remove_from_highlighted(self)\n            play_sound('cardSlide2', nil, 0.3)\n        end\n    end\n    if self.area and self.area == G.deck and self.area.cards[1] == self then\n        G.FUNCS.deck_info()\n    end\n    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 1)\nend\n"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:can_long_press()\n    if self.area and ((self.area == G.hand) or\n    ( self.area == G.deck and self.area.cards[1] == self)) then\n        return true\n    end\nend\n"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:can_hover_on_drag()\n    return false\nend\n"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:swipe_up()\n    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 2)\n    if self.area and self.area == G.hand and self.area:can_highlight(self) then\n        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end\n        if self.highlighted ~= true then\n            self.area:add_to_highlighted(self)\n        end\n    end\n    if not self.ability.consumeable and self.area and self.area == G.pack_cards and G.FUNCS.can_select_card(self) then\n        G.FUNCS.use_card({config={ref_table = self}})\n        return\n    end\n    if self.area and ((self.area == G.shop_jokers) or (self.area == G.shop_booster) or (self.area == G.shop_vouchers)) then\n        if self.ability.set == 'Booster' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then\n            G.FUNCS.use_card({config={ref_table = self}})\n            return\n        elseif self.ability.set == 'Voucher' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then\n            G.FUNCS.use_card({config={ref_table = self}})\n            return\n        elseif self.area == G.shop_jokers and G.FUNCS.can_buy_check(self) then\n            G.FUNCS.buy_from_shop({config = {\n                ref_table = self,\n                id = 'buy'\n            }})\n            return\n        end\n    end\n    if self.ability.consumeable and self.area and (self.area == G.consumeables or self.area == G.pack_cards) and self:can_use_consumeable() then\n        G.FUNCS.use_card({config={ref_table = self}})\n    end\nend\n"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "function Card:save()"
+position = "before"
+payload = "function Card:swipe_down()\n    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 3)\n    if self.area and self.area:can_highlight(self) then\n        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end\n        if self.highlighted == true then\n            self.area:remove_from_highlighted(self)\n            play_sound('cardSlide2', nil, 0.3)\n        end\n    end\n    if G.FUNCS.can_buy_and_use({config={ref_table = self}}) then\n        G.FUNCS.buy_from_shop({config = {\n            ref_table = self,\n            id = 'buy_and_use'\n        }})\n        return\n    end\n    if self.area and (self.area == G.jokers or self.area == G.consumeables) then\n        self:sell_card()\n    end\nend\n"
+match_indent = true
+times = 1
