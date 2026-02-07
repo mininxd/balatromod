@@ -1,0 +1,1 @@
+return {["disable_anims"]=true,["score_opt_id"]=2,["break_infinity"]="bignumber",}

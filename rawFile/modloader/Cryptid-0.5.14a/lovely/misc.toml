@@ -1,0 +1,649 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+# Detect if edition comes from copy_card
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''new_card:set_edition(other.edition or {}, nil, true)'''
+position = 'before'
+payload = '''
+new_card.from_copy = true
+'''
+match_indent = true
+
+# Update value of Monsters created via copy_card
+# Also make copied cards lose their hooks
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "if not strip_edition then"
+position = 'before'
+payload = '''
+if new_card.ability.name == "cry-longboi" then new_card:set_ability(new_card.config.center) end
+if new_card.ability.cry_hooked then new_card.ability.cry_hooked = nil end
+'''
+match_indent = true
+
+# Joker BigNum value support
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Campfire' and G.GAME.blind.boss and self.ability.x_mult > 1 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Campfire' and G.GAME.blind.boss and not (G.GAME.blind.config and G.GAME.blind.config.bonus) and to_big(self.ability.x_mult) > to_big(1) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Hit the Road' and self.ability.x_mult > 1 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Hit the Road' and to_big(self.ability.x_mult) > to_big(1) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.x_mult > 1 then"
+position = "at"
+payload = '''
+if to_big(self.ability.x_mult) > to_big(1) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.x_mult - self.ability.extra <= 1 then"
+position = "at"
+payload = '''
+if to_big(self.ability.x_mult) - to_big(self.ability.extra) <= to_big(1) then 
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name ~= 'Seeing Double' and self.ability.x_mult > 1 and (self.ability.type == '' or next(context.poker_hands[self.ability.type])) then"
+position = "at"
+payload = '''
+if self.ability.name ~= 'Seeing Double' and to_big(self.ability.x_mult) > to_big(1) and (self.ability.type == '' or (context.poker_hands[self.ability.type] and next(context.poker_hands[self.ability.type]))) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Caino' and self.ability.caino_xmult > 1 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Caino' and to_big(self.ability.caino_xmult) > to_big(1) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.t_mult > 0 and next(context.poker_hands[self.ability.type]) then"
+position = "at"
+payload = '''
+if to_big(self.ability.t_mult) > to_big(0) and (context.poker_hands[self.ability.type] and next(context.poker_hands[self.ability.type])) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.t_chips > 0 and next(context.poker_hands[self.ability.type]) then"
+position = "at"
+payload = '''
+if to_big(self.ability.t_chips) > to_big(0) and (context.poker_hands[self.ability.type] and next(context.poker_hands[self.ability.type])) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Ceremonial Dagger' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Ceremonial Dagger' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Castle' and (self.ability.extra.chips > 0) then"
+position = "at"
+payload = '''
+if self.ability.name == 'Castle' and (to_big(self.ability.extra.chips) > to_big(0)) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Swashbuckler' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Swashbuckler' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Spare Trousers' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Spare Trousers' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Ride the Bus' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Ride the Bus' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Flash Card' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Flash Card' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Popcorn' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Popcorn' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Green Joker' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Green Joker' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Red Card' and self.ability.mult > 0 then"
+position = "at"
+payload = '''
+if self.ability.name == 'Red Card' and to_big(self.ability.mult) > to_big(0) then
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "function localize(args, misc_cat)"
+position = "after"
+payload = '''
+if args and args.vars and type(args.vars) == "table" and Cryptid and Cryptid.is_big then
+    local reset = {}
+    for i, j in pairs(args.vars) do
+        if Cryptid.is_big(j) then
+            reset[i] = number_format(j)
+        end
+    end
+    for i, j in pairs(reset) do
+        args.vars[i] = j
+    end
+end
+'''
+match_indent = true
+
+# no "Again!" text if a card will shatter
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''if reps[j] ~= 1 then'''
+position = "at"
+payload = '''if reps[j] ~= 1 and (not scoring_hand or not scoring_hand[i] or not scoring_hand[i].will_shatter) then'''
+match_indent = true
+
+# m
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if self.ability.consumeable or self.ability.set == 'Joker' or (self.area and self.area == G.pack_cards) then'''
+position = "at"
+payload = '''if true then'''
+match_indent = true
+
+# Energia - detect blind skips from tag
+# kitty printer - add cat tag
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''add_tag(_tag.config.ref_table)'''
+position = "at"
+payload = '''
+local tag_key = Cryptid.get_next_tag()
+add_tag(tag_key and Tag(tag_key) or _tag.config.ref_table, true)
+'''
+match_indent = true
+
+# Beta Deck - merge slots
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''self.consumeables = CardArea('''
+position = "before"
+payload = '''if not G.GAME.modifiers.cry_beta then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''self.discard = CardArea('''
+position = "before"
+payload = '''else
+self.jokers = CardArea(
+    0, 0,
+    CAI.joker_W+CAI.consumeable_W,
+    CAI.joker_H,
+    {card_limit = self.GAME.starting_params.joker_slots+self.GAME.starting_params.consumable_slots-1, type = 'joker', highlight_limit = 1e100})
+self.consumeables = self.jokers
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''G.consumeables.T.y = 0'''
+position = "after"
+payload = '''G.jokers.T.x = G.hand.T.x - 0.1
+G.jokers.T.y = 0'''
+match_indent = true
+
+# Make Perkeo only copy consumables
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if G.consumeables.cards[1] then'''
+position = "at"
+payload = '''local eligibleJokers = {}
+for i = 1, #G.consumeables.cards do
+    if G.consumeables.cards[i].ability.consumeable then
+        eligibleJokers[#eligibleJokers + 1] = G.consumeables.cards[i]
+    end
+end
+if #eligibleJokers > 0 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''local card = copy_card(pseudorandom_element(G.consumeables.cards, pseudoseed('perkeo')), nil)'''
+position = "at"
+payload = '''local card = copy_card(pseudorandom_element(eligibleJokers, pseudoseed('perkeo')), nil)'''
+match_indent = true
+
+# More Beta Deck fixes
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''-- TARGET: add your own CardAreas for joker evaluation'''
+position = "after"
+payload = '''
+if G.GAME.modifiers.cry_beta then t = {G.jokers, G.vouchers} end'''
+match_indent = true
+
+# Fix Boredom crash (somehow)
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''if eff.retrigger_flag then SMODS.calculate_effect(eff, eff.card); j = j+1; _, eff = next(reps[j]) end'''
+position = "at"
+payload = '''if eff.retrigger_flag and reps[j+1] ~= nil then SMODS.calculate_effect(eff, eff.card); j = j+1; _, eff = next(reps[j]) end'''
+match_indent = true
+
+# Adds G.GAME.modifiers.cry_forced_draw_amount
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "if G.GAME.blind.name == 'The Serpent' and"
+position = "before"
+payload = '''
+if G.GAME.modifiers.cry_forced_draw_amount and (G.GAME.current_round.hands_played > 0 or G.GAME.current_round.discards_used > 0) then
+	hand_space = math.min(#G.deck.cards, G.GAME.modifiers.cry_forced_draw_amount)
+end
+'''
+match_indent = true
+
+# adds oldbp blueprint corruption
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = 'if _pool_size == 0 then'
+position = "before"
+payload = '''
+if G.GAME.oldbpfactor and G.GAME.oldbpfactor >= 2 then
+	if _type == 'Joker' and (_rarity == nil or type(_rarity) ~= "string") and not _legendary and not (G.GAME.used_jokers["j_blueprint"] and not next(find_joker("Showman"))) then
+		for i = 1, math.floor(G.GAME.oldbpfactor - 1) do
+			_pool[#_pool + 1] = "j_blueprint"
+		end
+	end
+end
+'''
+match_indent = true
+
+# end of shop decrement
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = 'G.SHOP_SIGN.alignment.offset.y = -15'
+position = "after"
+payload = '''
+if G.GAME.oldbpfactor then G.GAME.oldbpfactor = math.max(G.GAME.oldbpfactor - G.GAME.oldbpfactor/8, 1) end
+'''
+match_indent = true
+
+# Make Loopy reset here so it retriggers everything before resetting regardless of position
+# Calculate Destroyed cards from sus, It's done here and not in the sus joker code so that it doesn't trigger these multiple times
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''if G.GAME.round_resets.temp_reroll_cost then G.GAME.round_resets.temp_reroll_cost = nil; calculate_reroll_cost(true) end'''
+position = "after"
+payload = '''
+for _, v in pairs(find_joker("cry-loopy")) do
+	if v.ability.extra.retrigger ~= 0 then
+		v.ability.extra.retrigger = 0
+		card_eval_status_text(v, 'extra', nil, nil, nil, {message = localize("k_reset"), colour = G.C.GREEN})
+	end
+end
+for _, v in pairs(G.deck.cards) do
+	v.sus = nil
+end
+if G.GAME.sus_cards then
+	SMODS.calculate_context({ remove_playing_cards = true, removed = G.GAME.sus_cards })
+	G.GAME.sus_cards = nil
+end
+'''
+match_indent = true
+
+
+# fix crashing from the source
+# well, not from the real source, but close enough
+[[patches]]
+[patches.pattern]
+target = "tag.lua"
+pattern = '''update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {'''
+position = "before"
+payload = '''
+if (not self.ability.orbital_hand) or (not G.GAME.hands[self.ability.orbital_hand]) then
+	local _poker_hands = {}
+	for k, v in pairs(G.GAME.hands) do
+		if v.visible then _poker_hands[#_poker_hands+1] = k end
+	end
+	self.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
+end
+'''
+match_indent = true
+
+# kitty printer 2 (for some reason i can't figure out how to not create another object here)
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "local _tag = Tag(G.GAME.round_resets.blind_tags[blind_choice], nil, blind_choice)"
+position = "after"
+payload = '''
+local tag = Cryptid.get_next_tag()
+if tag then
+	_tag = Tag(tag, nil, blind_choice)
+end
+'''
+match_indent = true
+
+# Created cards match suits of suit deck
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "card.playing_card = G.playing_card"
+position = "after"
+payload = '''
+if G.GAME.modifiers.cry_force_suit then card:change_suit(G.GAME.modifiers.cry_force_suit) end
+if G.GAME.modifiers.cry_force_enhancement then card:set_ability(G.P_CENTERS[G.GAME.modifiers.cry_force_enhancement]) end
+if G.GAME.modifiers.cry_force_edition then card:set_edition({[G.GAME.modifiers.cry_force_edition]=true},true,true) end
+if G.GAME.modifiers.cry_force_seal then card:set_seal(G.GAME.modifiers.cry_force_seal) end
+'''
+match_indent = true
+
+# Remove G.cry_edeck_select on back
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.setup_run = function(e)"
+position = "after"
+payload = '''
+	G.cry_edeck_select = nil
+'''
+match_indent = true
+
+# Remove G.cry_edeck_select on escape key press
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''if key == "escape" then'''
+position = "after"
+payload = '''
+	G.cry_edeck_select = nil
+'''
+match_indent = true
+# Make vanilla edition tags Nope! if all jokers in shop have editions
+[[patches]]
+[patches.pattern]
+target = "tag.lua"
+pattern = "local _applied = nil"
+position = "after"
+payload = '''
+if Cryptid.forced_edition() then self:nope() end
+'''
+match_indent = true
+
+#Fix bignum select limit
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = "if #self.highlighted >= self.config.highlighted_limit then"
+position = "at"
+payload = "if to_big(#self.highlighted) >= to_big(self.config.highlighted_limit) then"
+match_indent = true
+
+#Fix bignum values sometimes crashing the game for some reason idfk
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = """
+text = (amt <-0.01 and '-' or '')..localize("$")..tostring(math.abs(amt))
+colour = amt <-0.01 and G.C.RED or G.C.MONEY
+"""
+position = "at"
+payload = """
+text = (to_big(amt) < to_big(-0.01) and '-' or '')..localize("$")..tostring(math.abs(amt))
+colour = to_big(amt) < to_big(-0.01) and G.C.RED or G.C.MONEY
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = """
+if amt > 0 or amt < 0 then
+"""
+position = "at"
+payload = """
+if to_big(amt) ~= to_big(0) then
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+return val and (val > 0 and '+'..val or ''..val) or '0'
+"""
+position = "at"
+payload = """
+return val and (to_big(val) > to_big(0) and '+'..number_format(val) or ''..number_format(val)) or '0'
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+return val and (val > 0 and '$'..val or '-$'..-val) or '0'
+"""
+position = "at"
+payload = """
+return val and (to_big(val) > to_big(0) and '$'..number_format(val) or '-$'..number_format(-val)) or '0'
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+if (key == 'chips' or key == 'h_chips' or key == 'chip_mod') and amount then
+"""
+position = "at"
+payload = """
+if (key == 'chips' or key == 'h_chips' or key == 'chip_mod') and amount and hand_chips then
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+if (key == 'mult' or key == 'h_mult' or key == 'mult_mod') and amount then
+"""
+position = "at"
+payload = """
+if (key == 'mult' or key == 'h_mult' or key == 'mult_mod') and amount and mult then
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+if (key == 'x_chips' or key == 'xchips' or key == 'Xchip_mod') and amount ~= 1 then
+"""
+position = "at"
+payload = """
+if (key == 'x_chips' or key == 'xchips' or key == 'Xchip_mod') and amount ~= 1 and hand_chips then
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+if (key == 'x_mult' or key == 'xmult' or key == 'Xmult' or key == 'x_mult_mod' or key == 'Xmult_mod') and amount ~= 1 then
+"""
+position = "at"
+payload = """
+if (key == 'x_mult' or key == 'xmult' or key == 'Xmult' or key == 'x_mult_mod' or key == 'Xmult_mod') and amount ~= 1 and mult then
+"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = """
+if key == 'balance' then
+"""
+position = "at"
+payload = """
+if key == 'balance' and hand_chips and mult then
+"""
+match_indent = true
+
+
+#Make joker-editioning consumables not crash when they have no valid target
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = """
+local edition = nil
+"""
+position = "before"
+payload = """
+if not eligible_card then return true end
+"""
+match_indent = true
+
+# Make Cube only show up in shop
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "elseif v.enhancement_gate then"
+position = "before"
+payload = '''
+elseif v.source_gate then
+    if v.source_gate ~= _append then
+        add = nil
+    else
+        add = true
+    end
+'''
+match_indent = true
+
+#Make negative playing cards not take up space even when debuffed
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = """if not card.debuff and card.edition and card.edition.card_limit and (self == G.hand) then"""
+position = "at"
+payload = """if card.edition and card.edition.card_limit and (self == G.hand) then"""
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = """limit = limit - 1 + (not card.debuff and card.edition and card.edition.card_limit or 0)"""
+position = "at"
+payload = """limit = limit - 1 + (card.edition and card.edition.card_limit or 0)"""
+match_indent = true
+
+
+#This fixes a double-sided green seal cards crashing the game while trying to open "View deck" while flipped inside the random deck selection in a booster pack
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "for k, v in pairs(other.ability.seal or {}) do"
+position = "at"
+payload = '''
+local safe_seal = type(other.ability.seal) == "table" and other.ability.seal or {}
+for k, v in pairs(safe_seal) do
+'''
+match_indent = true

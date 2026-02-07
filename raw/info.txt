@@ -1,0 +1,7 @@
+name: Singular-v12.5.6-1d1dfa45.master
+env: release
+git_commit: 1d1dfa45
+git_branch: master
+version_name: 12.5.6
+version_code:1
+build_date: Sun, 30 Jun 2024 11:35:58 +0300
