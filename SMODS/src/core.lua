@@ -65,9 +65,9 @@ end
 SMODS.path = find_self(SMODS.MODS_DIR, 'core.lua', '--- STEAMODDED CORE')
 
 for _, path in ipairs {
+    "src/utils.lua",
     "src/ui.lua",
     "src/index.lua",
-    "src/utils.lua",
     "src/overrides.lua",
     "src/game_object.lua",
     "src/logging.lua",

@@ -430,15 +430,25 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             if not self.language and (self.obj_table[('%s_%s'):format(self.key, G.SETTINGS.language)] or self.obj_table[('%s_%s'):format(self.key, G.SETTINGS.real_language)]) then return end
             self.full_path = (self.mod and self.mod.path or SMODS.path) ..
                 'assets/' .. G.SETTINGS.GRAPHICS.texture_scaling .. 'x/' .. file_path
-            local file_data = assert(NFS.newFileData(self.full_path),
-                ('Failed to collect file data for Atlas %s'):format(self.key))
+            local file_data = nil
+            local status, data = pcall(love.filesystem.newFileData, self.full_path)
+            if status then
+                file_data = data
+            end
+            if not file_data and NFS and NFS.newFileData then
+                file_data = NFS.newFileData(self.full_path)
+            end
+            assert(file_data, ('Failed to collect file data for Atlas %s'):format(self.key))
             self.image_data = assert(love.image.newImageData(file_data),
                 ('Failed to initialize image data for Atlas %s'):format(self.key))
             self.image = love.graphics.newImage(self.image_data,
                 { mipmaps = true, dpiscale = G.SETTINGS.GRAPHICS.texture_scaling })
             G[self.atlas_table][self.key_noloc or self.key] = self
 
-            local mipmap_level = SMODS.config.graphics_mipmap_level_options[SMODS.config.graphics_mipmap_level]
+            local mipmap_level
+            if SMODS.config and SMODS.config.graphics_mipmap_level_options then
+                mipmap_level = SMODS.config.graphics_mipmap_level_options[SMODS.config.graphics_mipmap_level]
+            end
             if not self.disable_mipmap and mipmap_level and mipmap_level > 0 then
                 self.image:setMipmapFilter('linear', mipmap_level)
             end
@@ -509,8 +519,10 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             --self.decoder = love.sound.newDecoder(self.data)
             self.should_stream = string.find(self.key, 'music') or string.find(self.key, 'stream') or string.find(self.key, 'ambient')
             --self.sound = love.audio.newSource(self.decoder, self.should_stream and 'stream' or 'static')
-            if prev_path then G.SOUND_MANAGER.channel:push({ type = 'stop' }) end
-            G.SOUND_MANAGER.channel:push({ type = 'sound_source', sound_code = self.sound_code, data = self.data, should_stream = self.should_stream, per = self.pitch, vol = self.volume })
+            if G.SOUND_MANAGER then
+                if prev_path then G.SOUND_MANAGER.channel:push({ type = 'stop' }) end
+                G.SOUND_MANAGER.channel:push({ type = 'sound_source', sound_code = self.sound_code, data = self.data, should_stream = self.should_stream, per = self.pitch, vol = self.volume })
+            end
         end,
         register_global = function(self)
             local mod = SMODS.current_mod
@@ -3844,7 +3856,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     ----- API IMPORT GameObject.DrawStep
     -------------------------------------------------------------------------------------------------
 
-    assert(load(NFS.read(SMODS.path..'src/card_draw.lua'), ('=[SMODS _ "src/card_draw.lua"]')))()
+    assert(load(SMODS.robust_read(SMODS.path..'src/card_draw.lua'), ('=[SMODS _ "src/card_draw.lua"]')))()
 
     -------------------------------------------------------------------------------------------------
     ----- INTERNAL API CODE GameObject._Loc_Post

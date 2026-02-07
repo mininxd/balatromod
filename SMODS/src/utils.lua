@@ -1,5 +1,14 @@
 --- STEAMODDED CORE
 --- UTILITY FUNCTIONS
+
+function SMODS.robust_read(path)
+    local content = love.filesystem.read(path)
+    if not content and NFS and NFS.read then
+        content = NFS.read(path)
+    end
+    return content
+end
+
 function inspect(table)
     if type(table) ~= 'table' then
         return "Not a table"
@@ -186,9 +195,9 @@ end
 local function parse_loc_file(file_name, force, mod_id)
     local loc_table = nil
     if file_name:lower():match("%.json$") then
-        loc_table = assert(JSON.decode(NFS.read(file_name)))
+        loc_table = assert(JSON.decode(SMODS.robust_read(file_name)))
     else
-        loc_table = assert(loadstring(NFS.read(file_name), ('=[SMODS %s "%s"]'):format(mod_id, string.match(file_name, '[^/]+/[^/]+$'))))()
+        loc_table = assert(loadstring(SMODS.robust_read(file_name), ('=[SMODS %s "%s"]'):format(mod_id, string.match(file_name, '[^/]+/[^/]+$'))))()
     end
     local function recurse(target, ref_table)
         if type(target) ~= 'table' then return end --this shouldn't happen unless there's a bad return value

@@ -321,9 +321,9 @@ function Game:start_up()
 
     -- Load all SMODS modules in the correct order to ensure dependencies are met
     local smods_modules = {
+        "src/utils.lua",
         "src/ui.lua",
         "src/index.lua", 
-        "src/utils.lua",
         "src/overrides.lua",
         "src/logging.lua",
         "src/compat_0_9_8.lua",
@@ -352,9 +352,6 @@ function Game:start_up()
     end
 
     sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
-
-    -- Initialize SMODS after all modules are loaded
-    if initSteamodded then initSteamodded() end
 
     boot_timer('protos', 'shared sprites',0.9)
 
@@ -388,6 +385,10 @@ function Game:start_up()
     self.sticker_map = {
         'White','Red','Green','Black','Blue','Purple','Orange','Gold'
     }
+
+    -- Initialize SMODS after all modules are loaded
+    if initSteamodded then initSteamodded() end
+
     boot_timer('shared sprites', 'prep stage',0.95)
 
     --For the visible cursor

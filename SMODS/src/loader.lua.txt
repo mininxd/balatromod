@@ -208,7 +208,7 @@ function loadMods(modsDirectory)
                 isDirLovely = true
                 table.insert(lovely_directories, directory .. "/")
             elseif filename:lower():match('%.json') and depth > 1 then
-                local json_str = NFS.read(file_path)
+                local json_str = SMODS.robust_read(file_path)
                 local parsed, mod = pcall(JSON.decode, json_str)
                 local valid = true
                 local err
@@ -274,7 +274,7 @@ function loadMods(modsDirectory)
                 if depth == 1 then
                     sendWarnMessage(('Found lone Lua file %s in Mods directory :: Please place the files for each mod in its own subdirectory.'):format(filename), 'Loader')
                 end
-                local file_content = NFS.read(file_path)
+                local file_content = SMODS.robust_read(file_path)
 
                 -- Convert CRLF in LF
                 file_content = file_content:gsub("\r\n", "\n")
@@ -560,7 +560,7 @@ function loadMods(modsDirectory)
                 if mod.outdated then
                     SMODS.compat_0_9_8.with_compat(function()
                         mod.config = {}
-                        assert(load(NFS.read(mod.path..mod.main_file), ('=[SMODS %s "%s"]'):format(mod.id, mod.main_file)))()
+                        assert(load(SMODS.robust_read(mod.path..mod.main_file), ('=[SMODS %s "%s"]'):format(mod.id, mod.main_file)))()
                         for k, v in pairs(SMODS.compat_0_9_8.init_queue) do
                             v()
                             SMODS.compat_0_9_8.init_queue[k] = nil
@@ -568,7 +568,7 @@ function loadMods(modsDirectory)
                     end)
                 else
                     SMODS.load_mod_config(mod)
-                    assert(load(NFS.read(mod.path..mod.main_file), ('=[SMODS %s "%s"]'):format(mod.id, mod.main_file)))()
+                    assert(load(SMODS.robust_read(mod.path..mod.main_file), ('=[SMODS %s "%s"]'):format(mod.id, mod.main_file)))()
                 end
                 SMODS.current_mod = nil
             elseif not mod.lovely_only then
@@ -679,7 +679,7 @@ function boot_print_stage(stage)
     end
 end
 
-local catimg = NFS.getInfo((SMODS.path or "").."assets/cat.png") and love.graphics.newImage(love.filesystem.newFileData(NFS.read((SMODS.path or "").."assets/cat.png")))
+local catimg = NFS.getInfo(SMODS.path.."assets/cat.png") and love.graphics.newImage(love.filesystem.newFileData(NFS.read(SMODS.path.."assets/cat.png")))
 function boot_timer(_label, _next, progress)
     progress = progress or 0
     G.LOADING = G.LOADING or {

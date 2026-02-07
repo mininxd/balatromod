@@ -1142,10 +1142,10 @@ end
 
 function SMODS.load_mod_config(mod)
     local s1, config = pcall(function()
-        return load(NFS.read(('config/%s.jkr'):format(mod.id)), ('=[SMODS %s "config"]'):format(mod.id))()
+        return load(SMODS.robust_read(('config/%s.jkr'):format(mod.id)), ('=[SMODS %s "config"]'):format(mod.id))()
     end)
     local s2, default_config = pcall(function()
-        return load(NFS.read(mod.path..(mod.config_file or 'config.lua')), ('=[SMODS %s "default_config"]'):format(mod.id))()
+        return load(SMODS.robust_read(mod.path..(mod.config_file or 'config.lua')), ('=[SMODS %s "default_config"]'):format(mod.id))()
     end)
     if not s1 or type(config) ~= 'table' then config = {} end
     if not s2 or type(default_config) ~= 'table' then default_config = {} end
