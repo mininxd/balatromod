@@ -63,6 +63,15 @@ local function find_self(directory, target_filename, target_line, depth)
 end
 
 SMODS.path = find_self(SMODS.MODS_DIR, 'core.lua', '--- STEAMODDED CORE')
+if not SMODS.path then
+    -- Fallback for known structure
+    local path = SMODS.MODS_DIR .. "/steamodded/src/core.lua"
+    if NFS.getInfo(path) then
+        SMODS.path = SMODS.MODS_DIR .. "/steamodded/"
+    else
+        error("SMODS.path could not be determined. Checked: " .. path)
+    end
+end
 
 for _, path in ipairs {
     "src/ui.lua",
