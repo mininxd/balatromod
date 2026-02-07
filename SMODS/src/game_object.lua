@@ -1865,7 +1865,27 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         end,
     }
     for _,v in ipairs { 'Purple', 'Gold', 'Blue', 'Red' } do
-        SMODS.Seal:take_ownership(v, { badge_colour = G.C[v:upper()], pos = G.shared_seals[v].sprite_pos, generate_ui = SMODS.Seal.generate_ui })
+        local shared_seal = G.shared_seals[v]
+        local pos = shared_seal and shared_seal.sprite_pos or nil
+        if pos then
+            SMODS.Seal:take_ownership(v, { badge_colour = G.C[v:upper()], pos = pos, generate_ui = SMODS.Seal.generate_ui })
+        else
+            -- Fallback: try getting position from P_SEALS if available, or skip if not available
+            local vanilla_seal = G.P_SEALS[v]
+            if vanilla_seal and vanilla_seal.pos then
+                SMODS.Seal:take_ownership(v, { badge_colour = G.C[v:upper()], pos = vanilla_seal.pos, generate_ui = SMODS.Seal.generate_ui })
+            else
+                -- If no position is available, we'll have to skip this take_ownership call or use a default
+                -- Since we know the positions from the game.lua initialization, we can hardcode them as fallback
+                local fallback_positions = {
+                    Gold = {x = 2, y = 0},
+                    Purple = {x = 4, y = 4},
+                    Red = {x = 5, y = 4},
+                    Blue = {x = 6, y = 4}
+                }
+                SMODS.Seal:take_ownership(v, { badge_colour = G.C[v:upper()], pos = fallback_positions[v], generate_ui = SMODS.Seal.generate_ui })
+            end
+        end
     end
 
     -------------------------------------------------------------------------------------------------

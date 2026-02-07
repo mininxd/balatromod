@@ -118,50 +118,6 @@ function Game:start_up()
     -- Set SMODS path directly since we know it exists
     SMODS.path = "SMODS/"
 
-    -- Define placeholder for sendInfoMessage until logging module is loaded
-    if not sendInfoMessage then
-        sendInfoMessage = function(message, logger)
-            print("[INFO " .. (logger or "SMODS") .. "] " .. message)
-        end
-    end
-
-    -- Load all SMODS modules in the correct order to ensure dependencies are met
-    local smods_modules = {
-        "src/ui.lua",
-        "src/index.lua", 
-        "src/utils.lua",
-        "src/overrides.lua",
-        "src/logging.lua",
-        "src/compat_0_9_8.lua",
-        "src/game_object.lua",  -- Contains loadAPIs() function
-        "src/loader.lua"       -- Calls loadAPIs() function
-    }
-
-    -- Load SMODS modules
-    for _, module_path in ipairs(smods_modules) do
-        local full_path = SMODS.path .. module_path
-        
-        -- Try love.filesystem first (it's more reliable in most environments)
-        local content = love.filesystem.read(full_path)
-        if not content then
-            -- Fallback to nativefs if love.filesystem fails
-            if NFS and NFS.read then
-                content = NFS.read(full_path)
-            end
-        end
-        if not content then
-            print("Warning: Could not read SMODS file: " .. full_path)
-        else
-            local chunk = assert(load(content, ('=[SMODS _ "%s"]'):format(module_path)))
-            chunk()
-        end
-    end
-
-    sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
-
-    -- Initialize SMODS after all modules are loaded
-    if initSteamodded then initSteamodded() end
-
     boot_timer('start', 'settings', 0.1)
 
     if self.SETTINGS.GRAPHICS.texture_scaling then
@@ -283,6 +239,123 @@ function Game:start_up()
     self:set_language()
 
     self:init_item_prototypes()
+    
+    -- Initialize SMODS after basic game setup is complete
+    -- Load required modules
+    local nativefs_ok, nativefs = pcall(require, "nativefs")
+    if not nativefs_ok then
+        -- Try loading from Talisman mod
+        nativefs_ok, nativefs = pcall(require, "mods.Talisman-2.7.nativefs")
+        if not nativefs_ok then
+            -- Try loading from SMODS libs
+            nativefs_ok, nativefs = pcall(require, "SMODS.libs.nativefs.nativefs")
+            if not nativefs_ok then
+                print("Warning: Could not load nativefs module: " .. tostring(nativefs))
+                nativefs = nil
+            end
+        end
+    end
+
+    local json_ok, json_module = pcall(require, "json")
+    if not json_ok then
+        json_ok, json_module = pcall(require, "SMODS.libs.json.json")
+        if not json_ok then
+            print("Warning: Could not load json module: " .. tostring(json_module))
+            json_module = nil
+        end
+    end
+
+    -- Load lovely module
+    local lovely_ok, lovely = pcall(require, "lovely")
+    if not lovely_ok then
+        -- Create a minimal lovely implementation if the module doesn't exist
+        lovely = {
+            version = "0.7.1",
+            mod_dir = "mods/",
+            repo = "https://github.com/0xDrMerry/lovely"
+        }
+    end
+
+    -- Make lovely globally accessible for SMODS modules
+    _G.lovely = lovely
+
+    -- SMODS Core Implementation
+    SMODS = {}
+    MODDED_VERSION = require'SMODS.version'
+    RELEASE_VERSION = require'SMODS.release'
+    SMODS.id = 'Steamodded'
+    SMODS.version = MODDED_VERSION:gsub('%-STEAMODDED', '')
+    SMODS.can_load = true
+    SMODS.meta_mod = true
+    SMODS.config_file = 'config.lua'
+
+    -- Include lovely and nativefs modules (as per original core.lua)
+    local nativefs = nativefs
+    local lovely = lovely
+    local json = json_module
+
+    local lovely_mod_dir = lovely.mod_dir:gsub("/$", "")
+    NFS = nativefs
+    -- make sure NFS behaves the same as love.filesystem
+    -- NFS.setWorkingDirectory(love.filesystem.getSaveDirectory()) -- Skip this to avoid issues
+
+    JSON = json_module
+
+    -- Also make them globally accessible
+    _G.NFS = nativefs
+    _G.JSON = json_module
+    _G.lovely = lovely
+
+    -- Set up mod directory
+    SMODS.MODS_DIR = "mods/"
+
+    -- Set SMODS path directly since we know it exists
+    SMODS.path = "SMODS/"
+
+    -- Define placeholder for sendInfoMessage until logging module is loaded
+    if not sendInfoMessage then
+        sendInfoMessage = function(message, logger)
+            print("[INFO " .. (logger or "SMODS") .. "] " .. message)
+        end
+    end
+
+    -- Load all SMODS modules in the correct order to ensure dependencies are met
+    local smods_modules = {
+        "src/ui.lua",
+        "src/index.lua", 
+        "src/utils.lua",
+        "src/overrides.lua",
+        "src/logging.lua",
+        "src/compat_0_9_8.lua",
+        "src/game_object.lua",  -- Contains loadAPIs() function
+        "src/loader.lua"       -- Calls loadAPIs() function
+    }
+
+    -- Load SMODS modules
+    for _, module_path in ipairs(smods_modules) do
+        local full_path = SMODS.path .. module_path
+        
+        -- Try love.filesystem first (it's more reliable in most environments)
+        local content = love.filesystem.read(full_path)
+        if not content then
+            -- Fallback to nativefs if love.filesystem fails
+            if NFS and NFS.read then
+                content = NFS.read(full_path)
+            end
+        end
+        if not content then
+            print("Warning: Could not read SMODS file: " .. full_path)
+        else
+            local chunk = assert(load(content, ('=[SMODS _ "%s"]'):format(module_path)))
+            chunk()
+        end
+    end
+
+    sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
+
+    -- Initialize SMODS after all modules are loaded
+    if initSteamodded then initSteamodded() end
+
     boot_timer('protos', 'shared sprites',0.9)
 
     --For globally shared sprites
