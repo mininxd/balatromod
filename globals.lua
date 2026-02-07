@@ -1,6 +1,7 @@
 VERSION = '1.0.1o'
 VERSION = VERSION..'-FULL'
 VERSION = VERSION..' [M]'
+VERSION = VERSION..'\n\nhttps://github.com/mininxd/cryptid'
 --check_version
 
 --Globals
@@ -50,11 +51,8 @@ function Game:set_globals()
         self.F_SAVE_TIMER = 5
         self.F_ENGLISH_ONLY = false
         self.F_CRASH_REPORTS = false
-
         self.F_MOBILE = true
-
         self.F_LINKTREE = true
-
         self.F_RUMBLE = 1
     end
 
@@ -69,7 +67,7 @@ function Game:set_globals()
     if love.system.getOS() == 'iOS' or love.system.getOS() == 'Android' then
         self.F_SAVE_TIMER = 10
         self.F_DISCORD = nil
-        self.F_ENGLISH_ONLY = false
+        self.F_ENGLISH_ONLY = true
 
         if love.system.getPlatform and love.system.getPlatform() == "tvos" then
             self.F_RUMBLE = nil
@@ -81,10 +79,10 @@ function Game:set_globals()
         self.F_CRASH_REPORTS = false
         self.F_SOUND_THREAD = false
         self.F_QUIT_BUTTON = false
-        self.F_MOBILE = true
+        self.F_MOBILE = false
         self.F_LINKTREE = true
-        self.F_HIDE_LOADING_BAR = true
-        self.F_VIDEO_SETTINGS = false
+        self.F_HIDE_LOADING_BAR = false
+        self.F_VIDEO_SETTINGS = true
     end
 
     if love.system.getPlatform and love.system.getPlatform() == 'tvos' then 

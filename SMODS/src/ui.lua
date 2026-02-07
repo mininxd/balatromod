@@ -100,7 +100,8 @@ function Game:update(dt)
     if G.STATE ~= G.STATES.SPLASH and G.MAIN_MENU_UI then
         local node = G.MAIN_MENU_UI:get_UIE_by_ID("main_menu_play")
 
-        if node and not node.children.alert then
+        if node and not (node.children and node.children.alert) then
+            if not node.children then node.children = {} end
             node.children.alert = UIBox({
                 definition = create_UIBox_card_alert({
                     text = localize('b_modded_version'),
@@ -118,7 +119,9 @@ function Game:update(dt)
                     parent = node
                 }
             })
-            node.children.alert.states.collide.can = false
+            if node.children.alert and node.children.alert.states then
+                node.children.alert.states.collide.can = false
+            end
         end
     end
     gameUpdateRef(self, dt)
@@ -579,9 +582,9 @@ G.FUNCS.your_collection_consumables_page = function(args)
     if not args or not args.cycle_config then return end
   if G.OVERLAY_MENU then
     local uie = G.OVERLAY_MENU:get_UIE_by_ID('consumable_collection')
-    if uie then 
-      if uie.config.object then 
-        uie.config.object:remove() 
+    if uie and uie.config then
+      if uie.config.object then
+        uie.config.object:remove()
       end
       uie.config.object = UIBox{
         definition =  G.UIDEF.consumable_collection_page(args.cycle_config.current_option),
@@ -812,13 +815,21 @@ G.FUNCS.achievments_tab_page = function(args)
     if not args or not args.cycle_config then return end
     achievement_matrix = {{},{}}
 
-    local tab_contents = G.OVERLAY_MENU:get_UIE_by_ID('tab_contents')
-    tab_contents.config.object:remove()
-    tab_contents.config.object = UIBox{
-        definition = buildAchievementsTab(G.ACTIVE_MOD_UI, args.cycle_config.current_option),
-        config = {offset = {x=0,y=0}, parent = tab_contents, type = 'cm'}
-    }
-    tab_contents.UIBox:recalculate()
+    if G.OVERLAY_MENU then
+        local tab_contents = G.OVERLAY_MENU:get_UIE_by_ID('tab_contents')
+        if tab_contents and tab_contents.config and tab_contents.config.object then
+            tab_contents.config.object:remove()
+        end
+        if tab_contents then
+            tab_contents.config.object = UIBox{
+                definition = buildAchievementsTab(G.ACTIVE_MOD_UI, args.cycle_config.current_option),
+                config = {offset = {x=0,y=0}, parent = tab_contents, type = 'cm'}
+            }
+            if tab_contents.UIBox then
+                tab_contents.UIBox:recalculate()
+            end
+        end
+    end
 end
 
 -- TODO: Optimize this. 
@@ -1500,11 +1511,14 @@ function create_UIBox_main_menu_buttons()
     local menu = create_UIBox_main_menu_buttonsRef()
     table.insert(menu.nodes[1].nodes[1].nodes, modsButton)
     menu.nodes[1].nodes[1].config = {align = "cm", padding = 0.15, r = 0.1, emboss = 0.1, colour = G.C.L_BLACK, mid = true}
-    if SMODS.mod_button_alert then 
+    if SMODS.mod_button_alert then
         G.E_MANAGER:add_event(Event({
             func = function()
                 if G.MAIN_MENU_UI then -- Wait until the ui is rendered before spawning the alert
-                    UIBox{definition = create_UIBox_card_alert(), config = {align="tri", offset = {x = 0.05, y = -0.05}, major = G.MAIN_MENU_UI:get_UIE_by_ID('mods_button'), can_collide = false}}
+                    local mods_button = G.MAIN_MENU_UI:get_UIE_by_ID('mods_button')
+                    if mods_button then
+                        UIBox{definition = create_UIBox_card_alert(), config = {align="tri", offset = {x = 0.05, y = -0.05}, major = mods_button, can_collide = false}}
+                    end
                     return true
                 end
             end,
@@ -1670,14 +1684,16 @@ end
 
 -- Call this to trigger an update for a list of dynamic content areas
 function SMODS.GUI.DynamicUIManager.updateDynamicAreas(uiDefinitions)
-    for id, uiDefinition in pairs(uiDefinitions) do
-        local dynamicArea = G.OVERLAY_MENU:get_UIE_by_ID(id)
-        if dynamicArea and dynamicArea.config.object then
-            dynamicArea.config.object:remove()
-            dynamicArea.config.object = UIBox{
-                definition = uiDefinition,
-                config = {offset = {x=0, y=0.5}, align = 'cm', parent = dynamicArea}
-            }
+    if G.OVERLAY_MENU then
+        for id, uiDefinition in pairs(uiDefinitions) do
+            local dynamicArea = G.OVERLAY_MENU:get_UIE_by_ID(id)
+            if dynamicArea and dynamicArea.config and dynamicArea.config.object then
+                dynamicArea.config.object:remove()
+                dynamicArea.config.object = UIBox{
+                    definition = uiDefinition,
+                    config = {offset = {x=0, y=0.5}, align = 'cm', parent = dynamicArea}
+                }
+            end
         end
     end
 end
@@ -2175,7 +2191,7 @@ end
 function SMODS.GUI.score_container(args)
     local scale = args.scale or 0.4
     local type = args.type
-    local colour = args.colour or SMODS.Scoring_Parameters[type].colour
+    local colour = args.colour or (SMODS.Scoring_Parameters and SMODS.Scoring_Parameters[type] and SMODS.Scoring_Parameters[type].colour) or G.C.RED
     local align = args.align or 'cl'
     local func = args.func or 'hand_type_UI_set'
     local text = args.text or type..'_text'
@@ -2196,11 +2212,15 @@ end
 
 -- Internal function to automatically update UI boxes for new scoring parameters
 G.FUNCS.hand_type_UI_set = function(e)
-  local new_mult_text = number_format(G.GAME.current_round.current_hand[e.config.type] or SMODS.Scoring_Parameters[e.config.type].default_value)
-  if new_mult_text ~= G.GAME.current_round.current_hand[e.config.text] then 
+  if not e or not e.config then return end
+  local default_val = (SMODS.Scoring_Parameters and SMODS.Scoring_Parameters[e.config.type] and SMODS.Scoring_Parameters[e.config.type].default_value) or 0
+  local new_mult_text = number_format(G.GAME.current_round.current_hand[e.config.type] or default_val)
+  if new_mult_text ~= G.GAME.current_round.current_hand[e.config.text] then
     G.GAME.current_round.current_hand[e.config.text] = new_mult_text
-    e.config.object.scale = scale_number(G.GAME.current_round.current_hand[e.config.type], e.config.scale, 1000)
-    e.config.object:update_text()
+    if e.config.object then
+      e.config.object.scale = scale_number(G.GAME.current_round.current_hand[e.config.type], e.config.scale, 1000)
+      e.config.object:update_text()
+    end
     if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand[e.config.type]) == 'number' and math.abs(G.GAME.current_round.current_hand[e.config.type]) or 1)))) end
   end
 end

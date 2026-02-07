@@ -81,6 +81,9 @@ function SMODS._save_d_u(o)
     o._saved_d_u = true
 end
 
+function convert_save_to_meta()
+end
+
 function SMODS.SAVE_UNLOCKS()
     boot_print_stage("Saving Unlocks")
     G:save_progress()
@@ -1241,8 +1244,11 @@ end
 -- This function handles the calculation of each effect returned to evaluate play.
 -- Can easily be hooked to add more calculation effects ala Talisman
 SMODS.calculate_individual_effect = function(effect, scored_card, key, amount, from_edition)
-    if SMODS.Scoring_Parameter_Calculation[key] then
-        return SMODS.Scoring_Parameters[SMODS.Scoring_Parameter_Calculation[key]]:calc_effect(effect, scored_card, key, amount, from_edition)
+    if SMODS.Scoring_Parameter_Calculation and SMODS.Scoring_Parameter_Calculation[key] then
+        local param_key = SMODS.Scoring_Parameter_Calculation[key]
+        if SMODS.Scoring_Parameters and SMODS.Scoring_Parameters[param_key] then
+            return SMODS.Scoring_Parameters[param_key]:calc_effect(effect, scored_card, key, amount, from_edition)
+        end
     end
 
     if (key == 'p_dollars' or key == 'dollars' or key == 'h_dollars') and amount then
@@ -2851,7 +2857,9 @@ end
 
 function SMODS.get_scoring_parameter(key, flames)
     if flames then return G.GAME.current_round.current_hand[key] end
-    return SMODS.Scoring_Parameters[key].current or SMODS.Scoring_Parameters[key].default_value
+    local param = SMODS.Scoring_Parameters and SMODS.Scoring_Parameters[key]
+    if not param then return 0 end
+    return param.current or param.default_value
 end
 
 function SMODS.refresh_score_UI_list()
