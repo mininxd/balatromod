@@ -734,5 +734,32 @@ G.CHALLENGES = {
                 {id = 'bl_final_leaf', type = 'blind'}
             }
         }
+    }, 
+    {
+        name = "naneinf",
+        id = 'c_naneinf',
+        rules = {
+            custom = {
+                {id = 'no_shop_jokers'},
+            },
+            modifiers = {
+                {id = 'joker_slots', value = 1},
+            }
+        },
+        jokers = {
+                {id = 'j_super_joker', edition = 'foil', eternal = true}
+        },
+        consumeables = {
+        },
+        vouchers = {
+        },
+        deck = {
+            type = 'Challenge Deck'
+        },
+        restrictions = {
+            banned_cards = {},
+            banned_tags = {},
+            banned_other = {}
+        }
     },
 }

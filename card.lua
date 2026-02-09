@@ -40,6 +40,7 @@ function Card:init(X, Y, W, H, card, center, params)
     self.unique_val = 1-self.ID/1603301
     self.edition = nil
     self.zoom = true
+    self.locked = false
     self:set_ability(center, true)
     self:set_base(card, true)
 
@@ -77,7 +78,7 @@ function Card:init(X, Y, W, H, card, center, params)
 end
 
 function Card:update_alert()
-    if (self.ability.set == 'Joker' or self.ability.set == 'Voucher' or self.ability.consumeable or self.ability.set == 'Edition' or self.ability.set == 'Booster') then 
+    if (self.ability.set == 'Joker' or self.ability.set == 'Voucher' or self.ability.consumeable or self.ability.set == 'Edition' or self.ability.set == 'Booster' or self.ability.set == 'custom_joker') then 
         if self.area and self.area.config.collection and self.config.center then
             if self.config.center.alerted and self.children.alert  then
                 self.children.alert:remove()
@@ -171,16 +172,17 @@ function Card:set_sprites(_center, _front)
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Voucher"], G.v_locked.pos)
                 elseif self.config.center.consumeable and self.config.center.demo then 
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Tarot"], G.c_locked.pos)
-                elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster') and not _center.discovered then 
+                elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster' or _center.set == 'custom_joker') and not _center.discovered then 
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or _center.set], 
-                    (_center.set == 'Joker' and G.j_undiscovered.pos) or 
-                    (_center.set == 'Edition' and G.j_undiscovered.pos) or 
-                    (_center.set == 'Tarot' and G.t_undiscovered.pos) or 
-                    (_center.set == 'Planet' and G.p_undiscovered.pos) or 
-                    (_center.set == 'Spectral' and G.s_undiscovered.pos) or 
-                    (_center.set == 'Voucher' and G.v_undiscovered.pos) or 
-                    (_center.set == 'Booster' and G.booster_undiscovered.pos))
-                elseif _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' then
+                    (_center.set == 'Joker' and G.j_undiscovered.pos) or
+                    (_center.set == 'Edition' and G.j_undiscovered.pos) or
+                    (_center.set == 'Tarot' and G.t_undiscovered.pos) or
+                    (_center.set == 'Planet' and G.p_undiscovered.pos) or
+                    (_center.set == 'Spectral' and G.s_undiscovered.pos) or
+                    (_center.set == 'Voucher' and G.v_undiscovered.pos) or
+                    (_center.set == 'Booster' and G.booster_undiscovered.pos) or
+                    (_center.set == 'custom_joker' and G.j_undiscovered.pos))
+                elseif _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' or _center.set == 'custom_joker' then
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.set], self.config.center.pos)
                 else
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or 'centers'], _center.pos)
@@ -712,7 +714,7 @@ function Card:generate_UIBox_ability_table()
     local no_badge = nil
     
     if not self.bypass_lock and self.config.center.unlocked ~= false and
-    (self.ability.set == 'Joker' or self.ability.set == 'Edition' or self.ability.consumeable or self.ability.set == 'Voucher' or self.ability.set == 'Booster') and
+    (self.ability.set == 'Joker' or self.ability.set == 'Edition' or self.ability.consumeable or self.ability.set == 'Voucher' or self.ability.set == 'Booster' or self.ability.set == 'custom_joker') and
     not self.config.center.discovered and 
     ((self.area ~= G.jokers and self.area ~= G.consumeables and self.area) or not self.area) then
         card_type = 'Undiscovered'
@@ -925,7 +927,7 @@ function Card:generate_UIBox_ability_table()
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
         badges.card_type = card_type
     end
-    if self.ability.set == 'Joker' and self.bypass_discovery_ui and (not no_badge) then
+    if (self.ability.set == 'Joker' or self.ability.set == 'custom_joker') and self.bypass_discovery_ui and (not no_badge) then
         badges.force_rarity = true
     end
     if self.edition then
@@ -984,22 +986,22 @@ end
 
 function Card:get_chip_mult()
     if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if self.ability.effect == "Lucky Card" then 
+    if (self.ability.set == 'Joker' or self.ability.set == 'custom_joker') then return 0 end
+    if self.ability.effect == "Lucky Card" then
         if pseudorandom('lucky_mult') < G.GAME.probabilities.normal/5 then
             self.lucky_trigger = true
             return self.ability.mult
         else
             return 0
         end
-    else  
+    else
         return self.ability.mult
     end
 end
 
 function Card:get_chip_x_mult(context)
     if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
+    if (self.ability.set == 'Joker' or self.ability.set == 'custom_joker') then return 0 end
     if self.ability.x_mult <= 1 then return 0 end
     return self.ability.x_mult
 end
@@ -3980,7 +3982,7 @@ function Card:calculate_joker(context)
                                 mult_mod = self.ability.mult
                             }
                         end
-                        if self.ability.name == 'Joker' then
+                        if self.ability.name == 'Joker' or self.ability.name == 'Super Joker' then
                             return {
                                 message = localize{type='variable',key='a_mult',vars={self.ability.mult}},
                                 mult_mod = self.ability.mult

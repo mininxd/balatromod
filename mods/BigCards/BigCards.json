@@ -1,0 +1,17 @@
+{
+	"id": "oneforgetfulbugs_Big_Card_Designs",
+	"name": "Big Card Designs",
+	"display_name": "BC",
+	"author": ["oneforgetfulbug"],
+	"description": "Bigger card designs for accessibility and/or simplicity.",
+	"prefix": "oforb",
+	"main_file": "BigCards.lua",
+	"priority": 0,
+	"badge_colour": "666665",
+	"badge_text_colour": "FFFFFF",
+	"version": "1.0.0",
+	"dependencies": [
+		"Steamodded (>=1.*)",
+		"Lovely (>=0.6)",
+		],
+}

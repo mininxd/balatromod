@@ -13,7 +13,6 @@ function Game:start_up()
     --Create the event manager for the game
     self.E_MANAGER = EventManager()
     self.SPEEDFACTOR = 1
-    if initSteamodded then initSteamodded() end
 
     --call the load manager
     G.LOAD_MANAGER = {
@@ -396,7 +395,7 @@ function Game:init_item_prototypes()
         j_marble=           {order = 24,  unlocked = true,  demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Marble Joker", pos = {x=3,y=2}, set = "Joker", effect = "Stone card hands", cost_mult = 1.0, config = {extra = 1}},
         j_loyalty_card=     {order = 25,  unlocked = true,  demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Loyalty Card", pos = {x=4,y=2}, set = "Joker", effect = "1 in 10 mult", cost_mult = 1.0, config = {extra = {Xmult = 4, every = 5, remaining = "5 remaining"}}},
         j_8_ball=           {order = 26,  unlocked = true,  demo = false, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 5, name = "8 Ball", pos = {x=0,y=5}, set = "Joker", effect = "Spawn Tarot", cost_mult = 1.0, config = {extra=4}},
-        j_misprint=         {order = 27,  unlocked = true,  demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 4, name = "Misprint", pos = {x=6,y=2}, set = "Joker", effect = "Random Mult", cost_mult = 1.0, config = {extra = {max = 23, min = 0}}},
+        j_misprint=         {order = 27,  unlocked = true,  demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 4, name = "Misprint", pos = {x=6,y=2}, set = "Joker", effect = "Random Mult", cost_mult = 1.0, config = {extra = {max = 28, min = 4}}},
         j_dusk=             {order = 28,  unlocked = true,  demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Dusk", pos = {x=4,y=7}, set = "Joker", effect = "", config = {extra = 1}, unlock_condition = {type = '', extra = '', hidden = true}},
         j_raised_fist=      {order = 29,  unlocked = true,  demo = false, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 5, name = "Raised Fist", pos = {x=8,y=2}, set = "Joker", effect = "Socialized Mult", cost_mult = 1.0, config = {}},
         j_chaos=            {order = 30,  unlocked = true,  demo = true, discovered = false, blueprint_compat = false, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 4, name = "Chaos the Clown", pos = {x=1,y=0}, set = "Joker", effect = "Bonus Rerolls", cost_mult = 1.0, config = {extra = 1}},
@@ -528,6 +527,8 @@ function Game:init_item_prototypes()
         j_yorick=           {order = 148,  unlocked = false, start_locked = true, demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 20, name = "Yorick", pos = {x=5,y=8}, soul_pos = {x=5, y=9}, set = "Joker", effect = "", config = {extra = {xmult = 1, discards = 23}}, unlock_condition = {type = '', extra = '', hidden = true}},
         j_chicot=           {order = 149,  unlocked = false, start_locked = true, demo = true, discovered = false, blueprint_compat = false, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 20, name = "Chicot", pos = {x=6,y=8}, soul_pos = {x=6, y=9}, set = "Joker", effect = "", config = {}, unlock_condition = {type = '', extra = '', hidden = true}},
         j_perkeo=           {order = 150,  unlocked = false, start_locked = true, demo = true, discovered = false, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 20, name = "Perkeo", pos = {x=7,y=8}, soul_pos = {x=7, y=9}, set = "Joker", effect = "", config = {}, unlock_condition = {type = '', extra = '', hidden = true}},
+      -- mods joker
+            j_super_joker=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 50, name = "Super Joker", pos = {x=0,y=0}, set = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
 
         --All Consumeables
 
@@ -542,7 +543,7 @@ function Game:init_item_prototypes()
         c_chariot=          {order = 8,     discovered = false, cost = 3, consumeable = true, name = "The Chariot", pos = {x=7,y=0}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_steel', max_highlighted = 1}},
         c_justice=          {order = 9,     discovered = false, cost = 3, consumeable = true, name = "Justice", pos = {x=8,y=0}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_glass', max_highlighted = 1}},
         c_hermit=           {order = 10,    discovered = false, cost = 3, consumeable = true, name = "The Hermit", pos = {x=9,y=0}, set = "Tarot", effect = "Dollar Doubler", cost_mult = 1.0, config = {extra = 20}},
-        c_wheel_of_fortune= {order = 11,    discovered = false, cost = 3, consumeable = true, name = "The Wheel of Fortune", pos = {x=0,y=1}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {extra = 4}},
+        c_wheel_of_fortune= {order = 11,    discovered = false, cost = 3, consumeable = true, name = "The Wheel of Fortune", pos = {x=0,y=1}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {extra = 1}},
         c_strength=         {order = 12,    discovered = false, cost = 3, consumeable = true, name = "Strength", pos = {x=1,y=1}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {mod_conv = 'up_rank', max_highlighted = 2}},
         c_hanged_man=       {order = 13,    discovered = false, cost = 3, consumeable = true, name = "The Hanged Man", pos = {x=2,y=1}, set = "Tarot", effect = "Card Removal", cost_mult = 1.0, config = {remove_card = true, max_highlighted = 2}},
         c_death=            {order = 14,    discovered = false, cost = 3, consumeable = true, name = "Death", pos = {x=3,y=1}, set = "Tarot", effect = "Card Conversion", cost_mult = 1.0, config = {mod_conv = 'card', max_highlighted = 2, min_highlighted = 2}},
@@ -709,6 +710,7 @@ function Game:init_item_prototypes()
         Enhanced = {},
         Edition = {},
         Joker = {},
+        custom_joker = {},  -- Add custom_joker pool
         Tarot = {},
         Planet = {},
         Tarot_Planet = {},
@@ -834,8 +836,15 @@ function Game:init_item_prototypes()
         v.key = k
         if v.set == 'Joker' then table.insert(self.P_CENTER_POOLS['Joker'], v) end
         if v.set and v.demo and v.pos then table.insert(self.P_CENTER_POOLS['Demo'], v) end
-        if not v.wip then 
-            if v.set and v.set ~= 'Joker' and not v.skip_pool and not v.omit then table.insert(self.P_CENTER_POOLS[v.set], v) end
+        if not v.wip then
+            if v.set and v.set ~= 'Joker' and not v.skip_pool and not v.omit then 
+                if not self.P_CENTER_POOLS[v.set] then self.P_CENTER_POOLS[v.set] = {} end
+                table.insert(self.P_CENTER_POOLS[v.set], v) 
+            end
+            if v.set and v.set == 'custom_joker' and not v.skip_pool and not v.omit then 
+                if not self.P_CENTER_POOLS[v.set] then self.P_CENTER_POOLS[v.set] = {} end
+                table.insert(self.P_CENTER_POOLS[v.set], v) 
+            end
             if v.set == 'Tarot' or v.set == 'Planet' then table.insert(self.P_CENTER_POOLS['Tarot_Planet'], v) end
             if v.consumeable then table.insert(self.P_CENTER_POOLS['Consumeables'], v) end
             if v.rarity and v.set == 'Joker' and not v.demo then table.insert(self.P_JOKER_RARITY_POOLS[v.rarity], v) end
@@ -845,6 +854,7 @@ function Game:init_item_prototypes()
     self:save_progress()
 
     table.sort(self.P_CENTER_POOLS["Joker"], function (a, b) return a.order < b.order end)
+    table.sort(self.P_CENTER_POOLS["custom_joker"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Tarot"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Planet"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Tarot_Planet"], function (a, b) return a.order < b.order end)
@@ -981,9 +991,12 @@ function Game:set_render_settings()
     }
     self.asset_atli = {
         {name = "cards_1", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck.png",px=71,py=95},
-        {name = "cards_2", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck_opt2.png",px=71,py=95},
+        {name = "cards_2", path = "mods/BigCards/assets/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/BigCards.png",px=71,py=95},
         {name = "centers", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Enhancers.png",px=71,py=95},
         {name = "Joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Jokers.png",px=71,py=95},
+        -- jokers mod set
+        {name = "custom_joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/custom_jokers.png",px=71,py=95},
+        -- end
         {name = "Tarot", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Tarots.png",px=71,py=95},
         {name = "Voucher", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Vouchers.png",px=71,py=95},
         {name = "Booster", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/boosters.png",px=71,py=95},
