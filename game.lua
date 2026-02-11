@@ -530,8 +530,8 @@ function Game:init_item_prototypes()
         
        
        -- custom Joker 
-       j_aura_farm=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 10, name = "Aura Farming", pos = {x=0,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {held_mult = 2}},
-       j_super_joker=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 100, name = "Super Joker", pos = {x=1,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
+       j_aura_farm=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 10, name = "Aura Farming", pos = {x=0,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {extra = 1, mult = 0}},
+       j_super_joker=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 100, name = "Super Joker", pos = {x=0,y=1}, soul_pos = {x=0, y=2}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
        
         --All Consumeables
 
@@ -987,7 +987,7 @@ function Game:set_render_settings()
     }
     self.asset_atli = {
         {name = "cards_1", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck.png",px=71,py=95},
-        {name = "cards_2", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck_opt2.png",px=71,py=95},
+        {name = "cards_2", path = "mods/BigCards/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/BigCards.png",px=71,py=95},
         {name = "centers", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Enhancers.png",px=71,py=95},
         {name = "Joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Jokers.png",px=71,py=95},
         {name = "custom_joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/custom_jokers.png",px=71,py=95},

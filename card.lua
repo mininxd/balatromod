@@ -206,7 +206,7 @@ function Card:set_sprites(_center, _front)
         end
 
         if _center.soul_pos then 
-            self.children.floating_sprite = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS['Joker'], self.config.center.soul_pos)
+            self.children.floating_sprite = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or 'Joker'], self.config.center.soul_pos)
             self.children.floating_sprite.role.draw_major = self
             self.children.floating_sprite.states.hover.can = false
             self.children.floating_sprite.states.click.can = false
@@ -737,7 +737,7 @@ function Card:generate_UIBox_ability_table()
     elseif self.ability.set == 'Joker' or self.ability.set == 'custom_joker' then -- all remaining jokers
         if self.ability.name == 'Joker' then loc_vars = {self.ability.mult}
         elseif self.ability.name == 'Super Joker' then loc_vars = {self.ability.mult}
-        elseif self.ability.name == 'Aura Farming' then loc_vars = {self.ability.held_mult}
+        elseif self.ability.name == 'Aura Farming' then loc_vars = {self.ability.extra, self.ability.mult}
         elseif self.ability.name == 'Jolly Joker' or self.ability.name == 'Zany Joker' or
             self.ability.name == 'Mad Joker' or self.ability.name == 'Crazy Joker'  or 
             self.ability.name == 'Droll Joker' then 
@@ -2312,13 +2312,11 @@ function Card:calculate_joker(context)
                 mult_mod = self.ability.mult
             }
         end
-        if self.ability.name == 'Aura Farming' and context.individual and context.cardarea == G.hand then
-            if context.other_card.ability.effect ~= 'Stone Card' then
-                return {
-                    h_mult = self.ability.held_mult,
-                    card = self
-                }
-            end
+        if self.ability.name == 'Aura Farming' and context.joker_main then
+            return {
+                message = localize{type='variable',key='a_mult',vars={self.ability.mult}},
+                mult_mod = self.ability.mult
+            }
         end
         if self.ability.name == "Blueprint" then
             local other_joker = nil
@@ -3166,6 +3164,14 @@ function Card:calculate_joker(context)
                             card = self
                         }
                     end
+                if self.ability.name == 'Aura Farming' then
+                    self.ability.mult = self.ability.mult + self.ability.extra
+                    return {
+                        extra = {focus = self, message = "+1 Aura"},
+                        card = self,
+                        colour = G.C.MULT
+                    }
+                end
                 if self.ability.name == 'Golden Ticket' and
                     context.other_card.ability.name == 'Gold Card' then
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra

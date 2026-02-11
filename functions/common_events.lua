@@ -2605,10 +2605,13 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = specific_vars or {}}
     elseif _c.set == 'custom_joker' then
-        if _c.name == 'Super Joker' then loc_vars = {_c.config.mult}
-        elseif _c.name == 'Aura Farming' then loc_vars = {_c.config.held_mult}
+        local vars = (specific_vars and (specific_vars[1] or specific_vars.sticker)) and specific_vars or loc_vars
+        if not (vars and vars[1]) then
+            if _c.name == 'Super Joker' then vars = {_c.config.mult}
+            elseif _c.name == 'Aura Farming' then vars = {_c.config.extra, _c.config.mult}
+            end
         end
-        localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars or specific_vars or {}}
+        localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = vars or {}}
     elseif _c.set == 'Tag' then
         if _c.name == 'Negative Tag' then info_queue[#info_queue+1] = G.P_CENTERS.e_negative
         elseif _c.name == 'Foil Tag' then info_queue[#info_queue+1] = G.P_CENTERS.e_foil 

@@ -1879,8 +1879,9 @@ return {
             j_aura_farm={
                 name="Aura Farming",
                 text={
-                    "Each card held in hand",
-                    "gives {C:mult}+#1#{} Mult",
+                    "Each scored played card",
+                    "gains {C:mult}+#1#{} Mult",
+                    "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)",
                 },
             },
         },
