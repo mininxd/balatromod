@@ -144,7 +144,7 @@ end
 
 function create_UIBox_notify_alert(_achievement, _type, _from_left)
   local _c, _atlas = G.P_CENTERS[_achievement],
-    _type == 'Joker' and G.ASSET_ATLAS["Joker"] or
+    (_type == 'Joker' or _type == 'custom_joker') and G.ASSET_ATLAS["Joker"] or
     _type == 'Voucher' and G.ASSET_ATLAS["Voucher"] or
     _type == 'Back' and G.ASSET_ATLAS["centers"] or
     G.ASSET_ATLAS["icons"]
@@ -155,7 +155,7 @@ function create_UIBox_notify_alert(_achievement, _type, _from_left)
   t_s.states.collide.can = false
  
   local subtext = _type == 'achievement' and localize(G.F_TROPHIES and 'k_trophy' or 'k_achievement') or
-    _type == 'Joker' and localize('k_joker') or 
+    (_type == 'Joker' or _type == 'custom_joker') and localize('k_joker') or 
     _type == 'Voucher' and localize('k_voucher') or
     _type == 'Back' and localize('k_deck') or 'ERROR'
 

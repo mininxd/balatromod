@@ -392,7 +392,7 @@ function Tag:apply_to_run(_context)
             end
         elseif _context.type == 'store_joker_modify' then
             local _applied = nil
-            if not _context.card.edition and not _context.card.temp_edition and _context.card.ability.set == 'Joker' then
+            if not _context.card.edition and not _context.card.temp_edition and (_context.card.ability.set == 'Joker' or _context.card.ability.set == 'custom_joker') then
                 local lock = self.ID
                 G.CONTROLLER.locks[lock] = true
                 if self.name == 'Foil Tag' then

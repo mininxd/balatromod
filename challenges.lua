@@ -737,7 +737,7 @@ G.CHALLENGES = {
     }, 
     {
         name = "naneinf",
-        id = 'c_naneinf',
+        id = 'c_jokerless_1',
         rules = {
             custom = {
                 {id = 'no_shop_jokers'},
@@ -747,7 +747,7 @@ G.CHALLENGES = {
             }
         },
         jokers = {
-                {id = 'j_super_joker', edition = 'foil', eternal = true}
+                {id = 'j_mewing', edition = 'foil', eternal = true}
         },
         consumeables = {
         },

@@ -29,7 +29,6 @@ require "card_character"
 require "engine/particles"
 require "engine/text"
 require "challenges"
-require "mods/Always_Show_Seed"
 
 math.randomseed( G.SEED )
 

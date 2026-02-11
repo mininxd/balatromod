@@ -1681,14 +1681,14 @@ function localize(args, misc_cat)
   local ret_string = nil
   if args.type == 'other' then
     loc_target = G.localization.descriptions.Other[args.key]
-  elseif args.type == 'descriptions' or args.type == 'unlocks' then 
-    loc_target = G.localization.descriptions[args.set][args.key]
-  elseif args.type == 'tutorial' then 
+  elseif args.type == 'descriptions' or args.type == 'unlocks' then
+    loc_target = G.localization.descriptions[args.set] and G.localization.descriptions[args.set][args.key] or nil
+  elseif args.type == 'tutorial' then
     loc_target = G.localization.tutorial_parsed[args.key]
-  elseif args.type == 'quips' then 
+  elseif args.type == 'quips' then
     loc_target = G.localization.quips_parsed[args.key]
-  elseif args.type == 'raw_descriptions' then 
-    loc_target = G.localization.descriptions[args.set][args.key]
+  elseif args.type == 'raw_descriptions' then
+    loc_target = G.localization.descriptions[args.set] and G.localization.descriptions[args.set][args.key] or nil
     local multi_line = {}
     if loc_target then 
       for _, lines in ipairs(args.type == 'unlocks' and loc_target.unlock_parsed or args.type == 'name' and loc_target.name_parsed or args.type == 'text' and loc_target or loc_target.text_parsed) do
@@ -1730,7 +1730,13 @@ function localize(args, misc_cat)
     if pcall(function() ret_string = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key].name end) then
     else ret_string = "ERROR" end
   elseif args.type == 'name' then
-    loc_target = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key]
+    local set_key = (args.set or args.node.config.center.set)
+    local key_key = (args.key or args.node.config.center.key)
+    if G.localization.descriptions[set_key] and G.localization.descriptions[set_key][key_key] then
+      loc_target = G.localization.descriptions[set_key][key_key]
+    else
+      loc_target = nil
+    end
   end
 
   if ret_string then return ret_string end

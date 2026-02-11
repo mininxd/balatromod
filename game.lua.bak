@@ -531,6 +531,7 @@ function Game:init_item_prototypes()
        
        -- custom Joker 
        j_mewing=            {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 12, name = "Mewing", pos = {x=0,y=0}, set = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 100^2}},
+       j_cash_cash=              {order = 152,  unlocked = true,  demo = false, discovered = false, blueprint_compat = false, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 8, name = "", pos = {x=1, y=0}, set = 'custom_joker', config = {extra = 5}},
 
         --All Consumeables
 
