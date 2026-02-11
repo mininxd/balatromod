@@ -736,12 +736,10 @@ G.CHALLENGES = {
         }
     }, 
     {
-        name = "naneinf",
-        id = 'c_jokerless_1',
+        name = "Test",
+        id = 'c_test_challenge',
         rules = {
-            custom = {
-                {id = 'no_shop_jokers'},
-            },
+            custom = {},
             modifiers = {
                 {id = 'joker_slots', value = 2},
             }

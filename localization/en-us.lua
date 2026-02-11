@@ -3402,6 +3402,7 @@ return {
             c_golden_needle_1="Golden Needle",
             c_inflation_1="Inflation",
             c_jokerless_1="Jokerless",
+            c_test_challenge="custom joker test",
             c_knife_1="On a Knife's Edge",
             c_luxury_1="Luxury Tax",
             c_mad_world_1="Mad World",
