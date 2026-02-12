@@ -1,11 +1,11 @@
 # Installed Mods
 
 ## Custom Jokers
-| Name        | Description |
-|------------|-------------|
-| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. |
-| Super Joker | **+1e308 Mult** |
-| Rugpull (WIP) | **+8** at the end of round, sets money to **$0** when sold. |
+| Name        | Description | Rarity |
+|------------|-------------|--------|
+| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. | rare |
+| Super Joker | **+1e308 Mult** | legendary |
+| Rugpull (WIP) | **+8** at the end of round, sets money to **$0** when sold. | uncommon |
 
 ## Unique Mods
 | Name | Description | Source |
