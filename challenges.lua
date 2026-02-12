@@ -739,15 +739,14 @@ G.CHALLENGES = {
         name = "Aura Farming",
         id = 'c_test_challenge',
         rules = {
-            custom = {
-            {id = 'no_shop_jokers'},
-            },
+            custom = {},
             modifiers = {
                 {id = 'joker_slots', value = 5},
             }
         },
         jokers = {
-                {id = 'j_aura_farm'},
+        {id = 'j_rugpull'},
+        {id = 'j_zombie_joker'},
         },
         consumeables = {
         },

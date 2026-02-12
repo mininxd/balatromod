@@ -291,6 +291,9 @@ function Card:set_ability(center, initial, delay_sprites)
         x_mult = center.config.Xmult or 1,
         h_size = center.config.h_size or 0,
         d_size = center.config.d_size or 0,
+        dollars = center.config.dollars or 0,
+        hand = center.config.hand or 0,
+        card = center.config.card or 0,
         held_mult = center.config.held_mult or 0,
         extra = copy_table(center.config.extra) or nil,
         extra_value = 0,
@@ -334,6 +337,9 @@ function Card:set_ability(center, initial, delay_sprites)
     if self.ability.name == 'Loyalty Card' then 
         self.ability.burnt_hand = 0
         self.ability.loyalty_remaining = self.ability.extra.every
+    end
+    if self.ability.name == 'Zombie Joker' then 
+        self.ability.zombie_triggered = false
     end
 
     self.base_cost = center.cost or 1
@@ -926,6 +932,8 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Yorick' then loc_vars = {self.ability.extra.xmult, self.ability.extra.discards, self.ability.yorick_discards, self.ability.x_mult}
         elseif self.ability.name == 'Chicot' then
         elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
+        elseif self.ability.name == 'Rugpull' then loc_vars = {self.ability.dollars}
+        elseif self.ability.name == 'Zombie Joker' then loc_vars = {self.ability.hand, self.ability.card}
         end
     end
     local badges = {}
@@ -1744,6 +1752,9 @@ function Card:calculate_dollar_bonus()
         if self.ability.name == 'Delayed Gratification' and G.GAME.current_round.discards_used == 0 and G.GAME.current_round.discards_left > 0 then
             return G.GAME.current_round.discards_left*self.ability.extra
         end
+        if self.ability.name == 'Rugpull' then
+            return self.ability.dollars
+        end
     end
 end
 
@@ -2475,6 +2486,9 @@ function Card:calculate_joker(context)
                     card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_no_other_jokers')})
                 end
             end
+            if self.ability.name == 'Rugpull' and not context.blueprint then
+                ease_dollars(-to_big(G.GAME.dollars))
+            end
         elseif context.selling_card then
                 if self.ability.name == 'Campfire' and not context.blueprint then
                     self.ability.x_mult = self.ability.x_mult + self.ability.extra
@@ -3153,6 +3167,9 @@ function Card:calculate_joker(context)
                         colour = G.C.RED
                     }
                 end
+                if self.ability.name == 'Zombie Joker' then
+                    self.ability.zombie_triggered = false
+                end
             end
         elseif context.individual then
             if context.cardarea == G.play then
@@ -3668,6 +3685,23 @@ function Card:calculate_joker(context)
                         }
                     end
                 elseif context.after then
+                    if self.ability.name == 'Zombie Joker' and not self.ability.zombie_triggered and G.GAME.current_round.hands_left <= 0 and to_big(G.GAME.chips) < to_big(G.GAME.blind.chips) then
+                        self.ability.zombie_triggered = true
+                        G.hand_text_area.blind_chips:juice_up()
+                        G.hand_text_area.game_chips:juice_up()
+                        play_sound('tarot1')
+                        ease_hands_played(self.ability.hand, true)
+                        for i = 1, self.ability.card do
+                            create_playing_card({
+                                front = pseudorandom_element(G.P_CARDS, pseudoseed('zombie')), 
+                                center = G.P_CENTERS.c_base}, G.hand, nil, nil, {G.C.SECONDARY_SET.Enhanced})
+                        end
+                        G.hand:sort()
+                        return {
+                            message = localize('k_saved_ex'),
+                            colour = G.C.BLUE
+                        }
+                    end
                     if self.ability.name == 'Ice Cream' and not context.blueprint then
                         if self.ability.extra.chips - self.ability.extra.chip_mod <= 0 then 
                             G.E_MANAGER:add_event(Event({

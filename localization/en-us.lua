@@ -1882,7 +1882,16 @@ return {
             j_rugpull={
                 name="Rugpull",
                 text={
-                    "+#1# at the end of round, set money to {C:money}0{} when sold",
+                    "+#1# at the end of round,",
+                    "set money to {C:money}0{} when sold",
+                },
+            },
+            j_zombie_joker={
+                name="Zombie Joker",
+                text={
+                    "Instead of losing, give {C:blue}+#1#{}",
+                    "{C:blue}Hand{} & add {C:money}#2#{} random",
+                    "{C:money}Cards{} to {C:money}Hand{}"
                 },
             },
             j_super_joker={

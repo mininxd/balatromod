@@ -73,7 +73,7 @@ function ease_dollars(mod, instant)
         mod = mod or 0
         local text = '+'..localize('$')
         local col = G.C.MONEY
-        if mod < 0 then
+        if to_big(mod) < to_big(0) then
             text = '-'..localize('$')
             col = G.C.RED              
         else
@@ -86,8 +86,10 @@ function ease_dollars(mod, instant)
         dollar_UI.config.object:update()
         G.HUD:recalculate()
         --Popup text next to the chips in UI showing number of chips gained/lost
+        local abs_mod = to_big(mod)
+        if abs_mod < to_big(0) then abs_mod = abs_mod * to_big(-1) end
         attention_text({
-          text = text..tostring(math.abs(mod)),
+          text = text..tostring(abs_mod),
           scale = 0.8, 
           hold = 0.7,
           cover = dollar_UI.parent,

@@ -5,7 +5,8 @@
 |------------|-------------|--------|
 | Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. | rare |
 | Super Joker | **+1e308 Mult** | legendary |
-| Rugpull (WIP) | **+8** at the end of round, sets money to **$0** when sold. | uncommon |
+| Rugpull | **+8** at the end of round, sets money to **$0** when sold. | uncommon |
+| Zombie Joker | Instead of losing, gives **+1 Hand** and adds **5** random cards to hand. | uncommon |
 
 ## Unique Mods
 | Name | Description | Source |

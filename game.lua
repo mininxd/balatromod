@@ -533,9 +533,10 @@ function Game:init_item_prototypes()
            
                    
        -- custom Joker 
-       j_aura_farm= {order = 151,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 10, sell_cost = 5, name = "Aura Farming", pos = {x=0,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {extra = 1, mult = 0, x_mult = 1}},
-       j_rugpull= {order = 152,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 6, sell_cost = 0, name = "Rugpull", pos = {x=1,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {dollars = 8}},
-       j_super_joker= {order = 153,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 100, sell_cost = 10, name = "Super Joker", pos = {x=0,y=1}, soul_pos = {x=0, y=2}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
+       j_aura_farm= {order = 1,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 10, sell_cost = 5, name = "Aura Farming", pos = {x=0,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {extra = 1, mult = 0, x_mult = 1}},
+       j_rugpull= {order = 2,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 6, sell_cost = 0, name = "Rugpull", pos = {x=1,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Bonus dollars", cost_mult = 1.0, config = {dollars = 8}},
+              j_zombie_joker= {order = 3,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 6, sell_cost = 0, name = "Zombie Joker", pos = {x=2,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Prevent Death", cost_mult = 1.0, config = {hand = 1, card = 5}},
+       j_super_joker= {order = 4,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 100, sell_cost = 10, name = "Super Joker", pos = {x=0,y=1}, soul_pos = {x=0, y=2}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
        
        
        
@@ -858,6 +859,7 @@ function Game:init_item_prototypes()
     self:save_progress()
 
     table.sort(self.P_CENTER_POOLS["Joker"], function (a, b) return a.order < b.order end)
+    table.sort(self.P_CENTER_POOLS["custom_joker"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Tarot"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Planet"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Tarot_Planet"], function (a, b) return a.order < b.order end)
