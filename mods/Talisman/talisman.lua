@@ -170,6 +170,7 @@ if Talisman.config_file.break_infinity then
           v.level = to_big(v.level)
       end
       obj.starting_params.dollars = to_big(obj.starting_params.dollars)
+      obj.dollars = to_big(obj.dollars)
       return obj
   end
 
@@ -533,11 +534,21 @@ function to_big(x, y)
   end
 end
 function to_number(x)
-  if type(x) == 'table' and (getmetatable(x) == BigMeta or getmetatable(x) == OmegaMeta) then
-    return x:to_number()
-  else
-    return x
+  if type(x) == 'table' then
+    local meta = getmetatable(x)
+    if (BigMeta and meta == BigMeta) or (OmegaMeta and meta == OmegaMeta) then
+      return x:to_number()
+    end
+    if (x.m and x.e) or (x.array and x.sign) then
+      local b = to_big(x)
+      if type(b) == 'table' and b.to_number then
+        return b:to_number()
+      elseif type(b) == 'number' then
+        return b
+      end
+    end
   end
+  return x
 end
 
 function uncompress_big(str, sign)
@@ -549,7 +560,7 @@ function uncompress_big(str, sign)
             curr = curr + 1
         end
     end
-    return to_big(array, y)
+    return to_big(array, sign)
 end
 
 --patch to remove animations

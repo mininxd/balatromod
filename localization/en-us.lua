@@ -1890,9 +1890,8 @@ return {
                 name="Zombie Joker",
                 text={
                     "Instead of losing, give {C:blue}+#1#{}",
-                    "{C:blue}Hand{} & add {C:money}#2#{} random",
-                    "{C:money}Cards{} to {C:money}Hand{}",
-                    "Destroyed if ability used"
+                    "{C:blue}hand{} & add {C:money}#2#{} random",
+                    "{C:money}Cards{} to {C:money}Hand{}"
                 },
             },
             j_lithograph={
