@@ -55,7 +55,7 @@ function CardArea:emplace(card, location, stay_flipped)
     if self == G.jokers then
         local joker_tally = 0
         for i = 1, #G.jokers.cards do
-          if G.jokers.cards[i].ability.set == 'Joker' then joker_tally = joker_tally + 1 end
+          if G.jokers.cards[i].ability.set == 'Joker' or G.jokers.cards[i].ability.set == 'custom_joker' then joker_tally = joker_tally + 1 end
         end
         if joker_tally > G.GAME.max_jokers then G.GAME.max_jokers = joker_tally end
         check_for_unlock({type = 'modify_jokers'}) 

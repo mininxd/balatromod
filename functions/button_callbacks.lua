@@ -2531,7 +2531,7 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
-    not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
+    not ((card.ability.set == 'Joker' or card.ability.set == 'custom_joker') and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
     not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) then
       alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
     return false
@@ -2582,7 +2582,7 @@ G.FUNCS.buy_from_shop = function(e)
             elseif c1.config.center.set == 'Tarot' then
               inc_career_stat('c_tarots_bought', 1)
             end
-          elseif c1.ability.set == 'Joker' then
+          elseif c1.ability.set == 'Joker' or c1.ability.set == 'custom_joker' then
             G.GAME.current_round.jokers_purchased = G.GAME.current_round.jokers_purchased + 1
           end
 

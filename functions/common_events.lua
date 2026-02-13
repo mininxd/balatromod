@@ -2825,7 +2825,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         local _money = 0
         if G.jokers then
             for i = 1, #G.jokers.cards do
-                if G.jokers.cards[i].ability.set == 'Joker' then
+                if G.jokers.cards[i].ability.set == 'Joker' or G.jokers.cards[i].ability.set == 'custom_joker' then
                     _money = _money + G.jokers.cards[i].sell_cost
                 end
             end

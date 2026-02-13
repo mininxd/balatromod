@@ -4828,7 +4828,7 @@ end
 
 function Card:highlight(is_higlighted)
     self.highlighted = is_higlighted
-    if self.ability.consumeable or self.ability.set == 'Joker' or (self.area and self.area == G.pack_cards) then
+    if self.ability.consumeable or self.ability.set == 'Joker' or self.ability.set == 'custom_joker' or (self.area and self.area == G.pack_cards) then
         if self.highlighted and self.area and self.area.config.type ~= 'shop' then
             local x_off = (self.ability.consumeable and -0.1 or 0)
             self.children.use_button = UIBox{

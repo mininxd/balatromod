@@ -1046,7 +1046,7 @@ end
 
 function set_joker_usage()
   for k, v in pairs(G.jokers.cards) do
-    if v.config.center_key and v.ability.set == 'Joker' then
+    if v.config.center_key and (v.ability.set == 'Joker' or v.ability.set == 'custom_joker') then
       if G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key] then
         G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].count = G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].count + 1
       else
@@ -1059,7 +1059,7 @@ end
 
 function set_joker_win()
   for k, v in pairs(G.jokers.cards) do
-    if v.config.center_key and v.ability.set == 'Joker' then
+    if v.config.center_key and (v.ability.set == 'Joker' or v.ability.set == 'custom_joker') then
       G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key] = G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key] or {count = 1, order = v.config.center.order, wins = {}, losses = {}}
       if G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key] then
         G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].wins = G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].wins or {}
@@ -1086,7 +1086,7 @@ end
 
 function set_joker_loss()
   for k, v in pairs(G.jokers.cards) do
-    if v.config.center_key and v.ability.set == 'Joker' then
+    if v.config.center_key and (v.ability.set == 'Joker' or v.ability.set == 'custom_joker') then
       if G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key] then
         G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].losses = G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].losses or {}
         G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].losses[G.GAME.stake] = (G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].losses[G.GAME.stake] or 0) + 1
