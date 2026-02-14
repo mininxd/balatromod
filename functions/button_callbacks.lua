@@ -2159,9 +2159,13 @@ G.FUNCS.flame_handler = function(e)
       local exptime = math.exp(-0.4*G.real_dt)
       
       if to_big(G.ARGS.score_intensity.earned_score) >= to_big(G.ARGS.score_intensity.required_score) and to_big(G.ARGS.score_intensity.required_score) > to_big(0) then
-        _F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(to_number(G.ARGS.score_intensity.earned_score), 5)-2)
+        _F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(to_big(G.ARGS.score_intensity.earned_score), 5)-2)
       else
         _F.intensity = 0
+      end
+
+      if is_number(_F.intensity) then
+        _F.intensity = math.min(to_number(_F.intensity), 1000)
       end
 
       _F.timer = _F.timer + G.real_dt*(1 + _F.intensity*0.2)

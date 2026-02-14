@@ -115,7 +115,7 @@ match_indent = true
 target = "main.lua"
 pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 position = "at"
-payload = "G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+payload = "local earned_score = to_number(G.ARGS.score_intensity.earned_score); local required_score = to_number(G.ARGS.score_intensity.required_score); G.ARGS.score_intensity.organ = G.video_organ or required_score > 0 and math.max(math.min(0.4, 0.1*math.log(earned_score/(required_score+1), 5)),0.) or 0"
 match_indent = true
 
 [[patches]]
@@ -123,7 +123,7 @@ match_indent = true
 target = "functions/misc_functions.lua"
 pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 position = "at"
-payload = "G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+payload = "local earned_score = to_number(G.ARGS.score_intensity.earned_score); local required_score = to_number(G.ARGS.score_intensity.required_score); G.ARGS.score_intensity.organ = G.video_organ or required_score > 0 and math.max(math.min(0.4, 0.1*math.log(earned_score/(required_score+1), 5)),0.) or 0"
 match_indent = true
 
 [[patches]]

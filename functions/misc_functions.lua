@@ -739,15 +739,17 @@ function modulate_sound(dt)
   --For ambient sound control
   G.SETTINGS.ambient_control = G.SETTINGS.ambient_control or {}
   G.ARGS.score_intensity = G.ARGS.score_intensity or {}
-  if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then
-    G.ARGS.score_intensity.earned_score = 0
+  if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then
+    G.ARGS.score_intensity.earned_score = to_big(0)
   else
-    G.ARGS.score_intensity.earned_score = math.min(to_number(G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult), 1e300)
+    G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
   end
-  G.ARGS.score_intensity.required_score = to_number(G.GAME.blind and G.GAME.blind.chips or 0)
+  G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or to_big(0)
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
     (G.ARGS.chip_flames and (G.ARGS.chip_flames.real_intensity + G.ARGS.chip_flames.change) or 0))/10)
-  G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
+  local earned_score = to_number(G.ARGS.score_intensity.earned_score)
+  local required_score = to_number(G.ARGS.score_intensity.required_score)
+  G.ARGS.score_intensity.organ = G.video_organ or required_score > 0 and math.max(math.min(0.4, 0.1*math.log(earned_score/(required_score+1), 5)),0.) or 0
 
   local AC = G.SETTINGS.ambient_control
   G.ARGS.ambient_sounds = G.ARGS.ambient_sounds or {
