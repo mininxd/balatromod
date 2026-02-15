@@ -560,11 +560,11 @@ function update_hand_text(config, vals)
             end
         end
         if vals.chip_total then G.GAME.current_round.current_hand.chip_total = vals.chip_total;G.hand_text_area.chip_total.config.object:pulse(0.5) end
-        if vals.level and G.GAME.current_round.current_hand.hand_level ~= ' '..localize('k_lvl')..tostring(vals.level) then
+        if vals.level and G.GAME.current_round.current_hand.hand_level ~= ' '..localize('k_lvl')..number_format(vals.level) then
             if vals.level == '' then
                 G.GAME.current_round.current_hand.hand_level = vals.level
             else
-                G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
+                G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..number_format(vals.level)
                 if type(vals.level) == 'number' or is_number(vals.level) then 
                     G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.floor(to_number(math.min(vals.level, 7)))]
                 else
