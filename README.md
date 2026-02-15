@@ -27,6 +27,6 @@
 
 ## Secrets
 Certain seeds entered in **Sandbox Mode** trigger special effects:
-- **SOULLS**: Start with 2 "The Soul" spectral cards and a Blueprint joker.
-- **HOLEES**: Start with 2 "Black Hole" spectral cards.
+- **GIVESOUL**: Start with 2 "The Soul" spectral cards and a Blueprint joker.
+- **RICHIE**: Start with extra 9999 dollar.
 
