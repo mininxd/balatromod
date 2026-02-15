@@ -1216,8 +1216,9 @@ end
 
       local outer_padding = 0.05
       local card_type = localize('k_'..string.lower(AUT.card_type))
+      if AUT.card_type == 'Zodiac' then card_type = localize('b_zodiac_cards') end
 
-      if AUT.card_type == 'Joker' or AUT.card_type == 'custom_joker' or (AUT.badges and AUT.badges.force_rarity) then card_type = ({localize('k_common'), localize('k_uncommon'), localize('k_rare'), localize('k_legendary')})[card.config.center.rarity] end
+      if (AUT.card_type == 'Joker' or AUT.card_type == 'custom_joker' or (AUT.badges and AUT.badges.force_rarity)) and AUT.card_type ~= 'Zodiac' then card_type = ({localize('k_common'), localize('k_uncommon'), localize('k_rare'), localize('k_legendary')})[card.config.center.rarity] end
       if AUT.card_type == 'Enhanced' then card_type = localize{type = 'name_text', key = card.config.center.key, set = 'Enhanced'} end
       card_type = (debuffed and AUT.card_type ~= 'Enhanced') and localize('k_debuffed') or card_type
 
@@ -3659,13 +3660,14 @@ function create_UIBox_your_collection()
       }},
     }},
     {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
+      UIBox_button({button = 'your_collection_zodiacs', label = {localize('b_zodiac_cards')}, count = G.DISCOVER_TALLIES.zodiac,  minw = 5, minh = 1.0, scale = 0.6, id = 'your_collection_zodiacs'}),
       UIBox_button({button = 'your_collection_enhancements', label = {localize('b_enhanced_cards')}, minw = 5}),
       UIBox_button({button = 'your_collection_seals', label = {localize('b_seals')}, minw = 5, id = 'your_collection_seals'}),
       UIBox_button({button = 'your_collection_editions', label = {localize('b_editions')}, count = G.DISCOVER_TALLIES.editions, minw = 5, id = 'your_collection_editions'}),
       UIBox_button({button = 'your_collection_boosters', label = {localize('b_booster_packs')}, count = G.DISCOVER_TALLIES.boosters, minw = 5, id = 'your_collection_boosters'}),
       UIBox_button({button = 'your_collection_tags', label = {localize('b_tags')}, count = G.DISCOVER_TALLIES.tags, minw = 5, id = 'your_collection_tags'}),
       UIBox_button({button = 'your_collection_custom_tags', label = {localize('b_custom_tags')}, count = G.DISCOVER_TALLIES.custom_tag, minw = 5, id = 'your_collection_custom_tags'}),
-      UIBox_button({button = 'your_collection_blinds', label = {localize('b_blinds')}, count = G.DISCOVER_TALLIES.blinds, minw = 5, minh = 2.0, id = 'your_collection_blinds', focus_args = {snap_to = true}}),
+      UIBox_button({button = 'your_collection_blinds', label = {localize('b_blinds')}, count = G.DISCOVER_TALLIES.blinds, minw = 5, minh = 0.9, id = 'your_collection_blinds', focus_args = {snap_to = true}}),
     }},
     
   }})
@@ -3710,6 +3712,41 @@ function create_UIBox_your_collection_jokers()
         {n=G.UIT.R, config={align = "cm"}, nodes={
           create_option_cycle({options = joker_options, w = 4.5, cycle_shoulders = true, opt_callback = 'your_collection_joker_page', current_option = 1, colour = G.C.RED, no_pips = true, focus_args = {snap_to = true, nav = 'wide'}})
         }}
+    }})
+  return t
+end
+
+function create_UIBox_your_collection_zodiacs()
+  local deck_tables = {}
+
+  G.your_collection = {}
+  for j = 1, 2 do
+    G.your_collection[j] = CardArea(
+      G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h,
+      6*G.CARD_W,
+      0.95*G.CARD_H, 
+      {card_limit = 6, type = 'title', highlight_limit = 0, collection = true})
+    table.insert(deck_tables, 
+    {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true}, nodes={
+      {n=G.UIT.O, config={object = G.your_collection[j]}}
+    }}
+    )
+  end
+
+  for i = 1, 6 do
+    for j = 1, #G.your_collection do
+      local center = G.P_CENTER_POOLS["Zodiac"][i+(j-1)*6]
+      if center then 
+        local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w/2, G.your_collection[j].T.y, G.CARD_W, G.CARD_H, nil, center)
+        G.your_collection[j]:emplace(card)
+      end
+    end
+  end
+
+  INIT_COLLECTION_CARD_ALERTS()
+  
+  local t =  create_UIBox_generic_options({ back_func = 'your_collection', padding = 0, contents = {
+        {n=G.UIT.R, config={align = "cm", r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes=deck_tables}, 
     }})
   return t
 end

@@ -1563,6 +1563,14 @@ G.FUNCS.your_collection_jokers = function(e)
   }
 end
 
+G.FUNCS.your_collection_zodiacs = function(e)
+  G.SETTINGS.paused = true
+  G.FUNCS.overlay_menu{
+    definition = create_UIBox_your_collection_zodiacs(),
+    config = {offset = {x=0,y=10}}
+  }
+end
+
 G.FUNCS.your_collection_custom_jokers = function(e)
   G.SETTINGS.paused = true
   G.FUNCS.overlay_menu{

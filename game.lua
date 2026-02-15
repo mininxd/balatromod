@@ -539,12 +539,7 @@ function Game:init_item_prototypes()
            
                    
        -- custom Joker 
-       j_aura_farm= {order = 1,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 5, sell_cost = 2, name = "Aura Farming", pos = {x=0,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {extra = 1, mult = 0, x_mult = 1}},
-       j_rugpull= {order = 2,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 2, cost = 4, sell_cost = 0, name = "Rugpull", pos = {x=1,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Bonus dollars", cost_mult = 1.0, config = {dollars = 8}},
-              j_zombie_joker= {order = 3,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = false, rarity = 2, cost = 5, sell_cost = 2, name = "Zombie Joker", pos = {x=2,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "Prevent Death", cost_mult = 1.0, config = {hand = 1, card = 5}},
-              j_lithograph= {order = 4,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 1, cost = 3, sell_cost = 2, name = "Lithograph", pos = {x=3,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "mult", cost_mult = 1.0, config = {mult = 6}},
-              j_boilerplate= {order = 5,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 3, cost = 6, sell_cost = 3, name = "Boilerplate", pos = {x=4,y=0}, set = "custom_joker", atlas = "custom_joker", effect = "halving", cost_mult = 1.0, config = {extra = 0.5}},
-       j_super_joker= {order = 6,  unlocked = true,   start_alerted = true, discovered = true, start_discovered = true, blueprint_compat = true, perishable_compat = true, eternal_compat = true, rarity = 4, cost = 100, sell_cost = 10, name = "Super Joker", pos = {x=0,y=1}, soul_pos = {x=0, y=2}, set = "custom_joker", atlas = "custom_joker", effect = "Mult", cost_mult = 1.0, config = {mult = 1.7976931348623157e308}},
+       
        
        
        
@@ -748,13 +743,33 @@ function Game:init_item_prototypes()
     G.ZODIAC_CARDS = nil
     local zodiac_file = 'mods/zodiac.lua'
     if love.mod_filesystem.getInfo(zodiac_file) then
+        print('Loading zodiac cards from '..zodiac_file)
         local zodiac_cards = love.filesystem.load(zodiac_file)()
         for k, v in pairs(zodiac_cards) do
-            v.key = k
-            self.P_CENTERS[k] = v
-            table.insert(self.P_CENTER_POOLS.Zodiac, v)
+            if v.enabled ~= false then
+                v.key = k
+                self.P_CENTERS[k] = v
+                print('Loaded zodiac card: '..k..' with pos x='..v.pos.x..', y='..v.pos.y)
+            else
+                print('Skipped disabled zodiac card: '..k)
+            end
         end
         G.ZODIAC_CARDS = zodiac_cards
+    end
+
+    local custom_joker_file = 'mods/custom_joker.lua'
+    if love.mod_filesystem.getInfo(custom_joker_file) then
+        print('Loading custom jokers from '..custom_joker_file)
+        local custom_jokers = love.filesystem.load(custom_joker_file)()
+        for k, v in pairs(custom_jokers) do
+            if v.enabled ~= false then
+                v.key = k
+                self.P_CENTERS[k] = v
+                print('Loaded custom joker: '..k..' with pos x='..v.pos.x..', y='..v.pos.y)
+            else
+                print('Skipped disabled custom joker: '..k)
+            end
+        end
     end
 
     self.P_JOKER_RARITY_POOLS = {
@@ -788,11 +803,11 @@ function Game:init_item_prototypes()
         end
         if not v.wip and not v.demo then 
             if TESTHELPER_unlocks then v.unlocked = true; v.discovered = true;v.alerted = true end --REMOVE THIS
-            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_')) and meta.unlocked[k] then 
+            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_')) and meta.unlocked[k] then 
                 v.unlocked = true
             end
-            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_')) then self.P_LOCKED[#self.P_LOCKED+1] = v end
-            if not v.discovered and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^e_') or string.find(k, '^c_') or string.find(k, '^p_') or string.find(k, '^v_')) and meta.discovered[k] then 
+            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_')) then self.P_LOCKED[#self.P_LOCKED+1] = v end
+            if not v.discovered and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^e_') or string.find(k, '^c_') or string.find(k, '^p_') or string.find(k, '^v_') or string.find(k, '^z_')) and meta.discovered[k] then 
                 v.discovered = true
             end
             if v.discovered and meta.alerted[k] or v.set == 'Back' or v.start_alerted then 
@@ -868,14 +883,20 @@ function Game:init_item_prototypes()
 
     for k, v in pairs(self.P_CENTERS) do
         v.key = k
-        if v.set == 'Joker' then table.insert(self.P_CENTER_POOLS['Joker'], v) end
-        if v.set == 'custom_joker' then table.insert(self.P_CENTER_POOLS['custom_joker'], v) end
-        if v.set and v.demo and v.pos then table.insert(self.P_CENTER_POOLS['Demo'], v) end
+        local function add_to_pool(_pool, _card)
+            for _, pc in ipairs(_pool) do
+                if pc.key == _card.key then return end
+            end
+            table.insert(_pool, _card)
+        end
+        if v.set == 'Joker' then add_to_pool(self.P_CENTER_POOLS['Joker'], v) end
+        if v.set == 'custom_joker' then add_to_pool(self.P_CENTER_POOLS['custom_joker'], v) end
+        if v.set and v.demo and v.pos then add_to_pool(self.P_CENTER_POOLS['Demo'], v) end
         if not v.wip then 
-            if v.set and v.set ~= 'Joker' and v.set ~= 'custom_joker' and not v.skip_pool and not v.omit then table.insert(self.P_CENTER_POOLS[v.set], v) end
-            if v.set == 'Tarot' or v.set == 'Planet' then table.insert(self.P_CENTER_POOLS['Tarot_Planet'], v) end
-            if v.consumeable then table.insert(self.P_CENTER_POOLS['Consumeables'], v) end
-            if v.rarity and (v.set == 'Joker' or v.set == 'custom_joker') and not v.demo then table.insert(self.P_JOKER_RARITY_POOLS[v.rarity], v) end
+            if v.set and v.set ~= 'Joker' and v.set ~= 'custom_joker' and not v.skip_pool and not v.omit then add_to_pool(self.P_CENTER_POOLS[v.set], v) end
+            if v.set == 'Tarot' or v.set == 'Planet' then add_to_pool(self.P_CENTER_POOLS['Tarot_Planet'], v) end
+            if v.consumeable then add_to_pool(self.P_CENTER_POOLS['Consumeables'], v) end
+            if v.rarity and (v.set == 'Joker' or v.set == 'custom_joker') and not v.demo then add_to_pool(self.P_JOKER_RARITY_POOLS[v.rarity], v) end
         end
     end
 

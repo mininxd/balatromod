@@ -162,7 +162,12 @@ function Card:set_sprites(_center, _front)
     if _center then 
         if _center.set then
             if self.children.center then
-                self.children.center.atlas = G.ASSET_ATLAS[(_center.atlas or (_center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Zodiac') and (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))) or 'centers']
+                local atlas_name = _center.atlas or 'centers'
+                if _center.set == 'Zodiac' then atlas_name = 'Zodiac'
+                elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' then
+                    atlas_name = (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))
+                end
+                self.children.center.atlas = G.ASSET_ATLAS[atlas_name] or G.ASSET_ATLAS['centers']
                 self.children.center:set_sprite_pos(_center.pos)
             else
                 if _center.set == 'Joker' and not _center.unlocked and not self.params.bypass_discovery_center then 
@@ -174,7 +179,12 @@ function Card:set_sprites(_center, _front)
                 elseif self.config.center.consumeable and self.config.center.demo then 
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Tarot"], G.c_locked.pos)
                 elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster' or _center.set == 'Zodiac') and not _center.discovered then 
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))], 
+                    local atlas_name = _center.atlas or 'centers'
+                    if _center.set == 'Zodiac' then atlas_name = 'Zodiac'
+                    elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' then
+                        atlas_name = (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))
+                    end
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[atlas_name] or G.ASSET_ATLAS['centers'], 
                     (_center.set == 'Joker' and G.j_undiscovered.pos) or 
                     (_center.set == 'custom_joker' and G.j_undiscovered.pos) or 
                     (_center.set == 'Edition' and G.j_undiscovered.pos) or 
@@ -187,7 +197,12 @@ function Card:set_sprites(_center, _front)
                     (_center.is_custom and G.tag_undiscovered.pos) or 
                     (_center.set == 'Booster' and G.booster_undiscovered.pos))
                 elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Zodiac' then
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))], self.config.center.pos)
+                    local atlas_name = _center.atlas or 'centers'
+                    if _center.set == 'Zodiac' then atlas_name = 'Zodiac'
+                    elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' then
+                        atlas_name = (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))
+                    end
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[atlas_name] or G.ASSET_ATLAS['centers'], self.config.center.pos)
                 else
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or 'centers'], _center.pos)
                 end
@@ -305,6 +320,8 @@ function Card:set_ability(center, initial, delay_sprites)
         forced_selection = self.ability and self.ability.forced_selection or nil,
         perma_bonus = self.ability and self.ability.perma_bonus or 0,
     }
+
+    if self.ability.set == 'Zodiac' then self.ability.rarity = nil end
 
     self.ability.bonus = (self.ability.bonus or 0) + (center.config.bonus or 0)
 
@@ -958,7 +975,7 @@ function Card:generate_UIBox_ability_table()
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
         badges.card_type = card_type
     end
-    if (self.ability.set == 'Joker' or self.ability.set == 'custom_joker') and self.bypass_discovery_ui and (not no_badge) then
+    if (self.ability.set == 'Joker' or self.ability.set == 'custom_joker') and self.bypass_discovery_ui and (not no_badge) and (self.ability.set ~= 'Zodiac') then
         badges.force_rarity = true
     end
     if self.edition then
@@ -2402,8 +2419,8 @@ end
 function Card:calculate_joker(context)
     if self.debuff then return nil end
     if self.ability.set == "Zodiac" and not self.debuff then
-        if self.ability.name == 'Capricorn' then
-            if context.before and context.scoring_name == "Straight" then
+        if self.ability.name == 'Capricorn' or self.config.center.name == 'Capricorn' then
+            if context.before and (context.scoring_name == "Straight" or (context.poker_hands and next(context.poker_hands['Straight']))) then
                 local aces = 0
                 for k, v in ipairs(context.scoring_hand) do
                     if v:get_id() == 14 then 
@@ -2424,6 +2441,29 @@ function Card:calculate_joker(context)
                     message = localize{type='variable',key='a_xmult',vars={self.ability.extra.x_mult}},
                     Xmult_mod = self.ability.extra.x_mult
                 }
+            end
+        end
+        if self.ability.name == 'Sagitarius' or self.config.center.name == 'Sagitarius' then
+            if context.before and (context.scoring_name == "Flush" or (context.poker_hands and next(context.poker_hands['Flush']))) then
+                if G.deck and G.deck.cards and #G.deck.cards > 0 then
+                    local _suit = context.scoring_hand[1].base.suit
+                    local _card = pseudorandom_element(G.deck.cards, pseudoseed('sagitarius'))
+                    _card:change_suit(_suit)
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.1,
+                        func = function()
+                            G.deck:juice_up()
+                            play_sound('tarot2', 1.1, 0.6)
+                            return true
+                        end
+                    }))
+                    return {
+                        message = localize('k_suit'),
+                        colour = G.C.SECONDARY_SET.Tarot,
+                        card = self
+                    }
+                end
             end
         end
     end

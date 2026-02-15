@@ -522,7 +522,7 @@ function Game:set_globals()
             Tarot = HEX('a782d1'),--HEX('29adff'),
             Planet = HEX('13afce'),
             Spectral = HEX('4584fa'),
-            Zodiac = HEX('8b00ff'),
+            Zodiac = HEX('FE5F55'),
             Voucher = HEX("fd682b"),
             Edition = HEX("4ca893"),
             custom_joker = HEX('708b91'),

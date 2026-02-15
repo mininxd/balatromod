@@ -812,7 +812,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
     local volume = 1
     local card_aligned = 'bm'
     local y_off = 0.15*G.CARD_H
-    if card.area == G.jokers or card.area == G.consumeables then
+    if card.area == G.jokers or card.area == G.consumeables or card.area == G.zodiacs then
         y_off = 0.05*card.T.h
     elseif card.area == G.hand then
         y_off = -0.05*G.CARD_H
@@ -2816,6 +2816,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Zodiac' then
         if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or _c.config.extra.x_mult} end
+        if _c.name == 'Sagitarius' then loc_vars = {} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then
        if _c.name == "The Fool" then

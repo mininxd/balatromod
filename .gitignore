@@ -53,3 +53,5 @@ luac.out
 *.woff2
 *.eot
 dexopt
+localization/*
+!localization/en_us.lua

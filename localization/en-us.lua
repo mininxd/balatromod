@@ -2249,6 +2249,12 @@ return {
                     "end of round",
                 },
             },
+            zodiac_badge={
+                name="Zodiac",
+                text={
+                    "Zodiac",
+                },
+            },
             undiscovered_booster={
                 name="Not Discovered",
                 text={
@@ -2606,11 +2612,20 @@ return {
             z_capricorn={
                 name="Capricorn",
                 text={
-                    "Played {C:money}Aces{}",
+                    "Played {C:orange}Aces{}",
                     "Permanently gain {X:mult,C:white}X#1#{}",
-                    "if hand is {C:money}Straight{}",
+                    "if hand is {C:orange}Straight{}",
                     "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})",
                 },
+            },
+            z_sagitarius = {
+                name = "Sagitarius",
+                text = {
+                    "Convert one random",
+                    "{C:money}card{} in deck into {C:orange}suit{}",
+                    "of played hand if",
+                    "hand is {C:orange}Flush{}"
+                }
             },
         },
         Stake={
@@ -3586,6 +3601,7 @@ return {
             b_imagery="Imagery",
             b_jokers="Jokers",
             b_custom_jokers="Custom Jokers",
+            b_zodiac_cards="Zodiac Cards",
             b_custom_tags="Custom Tags",
             b_load_profile="Load Profile",
             b_main_menu="Main Menu",
@@ -3782,6 +3798,8 @@ return {
             k_val_up="Value Up!",
             k_view="View",
             k_voucher="Voucher",
+            k_zodiac="Zodiac",
+            k_zodiac_cap="ZODIAC",
             k_vouchers_cap="VOUCHERS",
             k_wins="Wins",
             k_x_base="X Base",
