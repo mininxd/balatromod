@@ -734,6 +734,7 @@ function Game:init_item_prototypes()
         Planet = {},
         Tarot_Planet = {},
         Spectral = {},
+        Zodiac = {},
         Consumeables = {},
         Voucher = {},
         Back = {},
@@ -743,6 +744,18 @@ function Game:init_item_prototypes()
         Stake = {},
         Demo = {}
     }
+
+    G.ZODIAC_CARDS = nil
+    local zodiac_file = 'mods/zodiac.lua'
+    if love.mod_filesystem.getInfo(zodiac_file) then
+        local zodiac_cards = love.filesystem.load(zodiac_file)()
+        for k, v in pairs(zodiac_cards) do
+            v.key = k
+            self.P_CENTERS[k] = v
+            table.insert(self.P_CENTER_POOLS.Zodiac, v)
+        end
+        G.ZODIAC_CARDS = zodiac_cards
+    end
 
     self.P_JOKER_RARITY_POOLS = {
         {},{},{},{}
@@ -1008,8 +1021,8 @@ function Game:set_render_settings()
     self.asset_atli = {
         {name = "cards_1", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck.png",px=71,py=95},
         {name = "cards_2", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck_opt2.png",px=71,py=95},
-        {name = "centers", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Enhancers.png",px=71,py=95},
-        {name = "Joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Jokers.png",px=71,py=95},
+                                {name = "centers", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Enhancers.png",px=71,py=95},
+                                {name = "Zodiac", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/zodiac.png",px=71,py=95},        {name = "Joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Jokers.png",px=71,py=95},
         {name = "custom_joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/custom_jokers.png",px=71,py=95},
         {name = "Tarot", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Tarots.png",px=71,py=95},
         {name = "Voucher", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Vouchers.png",px=71,py=95},
@@ -2345,6 +2358,15 @@ function Game:start_run(args)
                     }))
                 end
             end
+            if _ch.zodiac then
+                local zodiac_id = type(_ch.zodiac) == 'table' and _ch.zodiac.id or _ch.zodiac
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        add_zodiac(zodiac_id)
+                    return true
+                    end
+                }))
+            end
             if _ch.vouchers then
                 for k, v in ipairs(_ch.vouchers) do
                     G.GAME.used_vouchers[v.id] = true
@@ -2540,6 +2562,12 @@ function Game:start_run(args)
         CAI.consumeable_W,
         CAI.consumeable_H, 
         {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
+
+    self.zodiacs = CardArea(
+        0, 0,
+        G.CARD_W,
+        CAI.consumeable_H, 
+        {card_limit = 1, type = 'joker', highlight_limit = 1})
 
     self.jokers = CardArea(
         0, 0,

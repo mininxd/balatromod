@@ -11,8 +11,11 @@ function set_screen_positions()
         G.jokers.T.x = G.hand.T.x - 0.1
         G.jokers.T.y = 0
 
-        G.consumeables.T.x = G.jokers.T.x + G.jokers.T.w + 0.8
+        G.consumeables.T.x = G.jokers.T.x + G.jokers.T.w + 0.5
         G.consumeables.T.y = 0
+
+        G.zodiacs.T.x = G.consumeables.T.x + G.consumeables.T.w + 0.5
+        G.zodiacs.T.y = 0
 
         G.deck.T.x = G.TILE_W - G.deck.T.w - 0.5
         G.deck.T.y = G.TILE_H - G.deck.T.h
@@ -24,6 +27,7 @@ function set_screen_positions()
         G.play:hard_set_VT()
         G.jokers:hard_set_VT()
         G.consumeables:hard_set_VT()
+        G.zodiacs:hard_set_VT()
         G.deck:hard_set_VT()
         G.discard:hard_set_VT()
     end
@@ -377,6 +381,17 @@ function delay(time, queue)
     }), queue)
 end
 
+function add_zodiac(zodiac, silent)
+    local _area = G.zodiacs
+    local _T = _area and _area.T or {x = G.ROOM.T.w/2 - G.CARD_W/2, y = G.ROOM.T.h/2 - G.CARD_H/2}
+    local card = Card(_T.x, _T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[zodiac],{discover = true, bypass_discovery_center = true, bypass_discovery_ui = true, bypass_back = G.GAME.selected_back.pos })
+    card:start_materialize(nil, silent)
+    if _area then card:add_to_deck() end
+    if _area then _area:emplace(card) end
+    card.created_on_pause = nil
+    return card
+end
+
 function add_joker(joker, edition, silent, eternal)
     local _area = G.P_CENTERS[joker].consumeable and G.consumeables or G.jokers
     local _T = _area and _area.T or {x = G.ROOM.T.w/2 - G.CARD_W/2, y = G.ROOM.T.h/2 - G.CARD_H/2}
@@ -647,7 +662,7 @@ function eval_card(card, context)
         end
     end
 
-    if context.cardarea == G.jokers or context.card == G.consumeables then
+    if context.cardarea == G.jokers or context.card == G.consumeables or context.cardarea == G.zodiacs then
         local jokers = nil
         if context.edition then
             jokers = card:get_edition(context)
@@ -2798,6 +2813,9 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             G.GAME.hands[_c.config.hand_type].level,localize(_c.config.hand_type, 'poker_hands'), G.GAME.hands[_c.config.hand_type].l_mult, G.GAME.hands[_c.config.hand_type].l_chips,
             colours = {(to_big(G.GAME.hands[_c.config.hand_type].level)==to_big(1) and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[math.floor(to_number(math.min(7, G.GAME.hands[_c.config.hand_type].level)))])}
         }
+        localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
+    elseif _c.set == 'Zodiac' then
+        if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or _c.config.extra.x_mult} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then
        if _c.name == "The Fool" then

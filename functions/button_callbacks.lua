@@ -2,6 +2,22 @@
 --
 ---@param e {}
 --**e** Is the UIE that called this function
+G.FUNCS.close_zodiac_card = function(e)
+  if G.zodiac_card_area and G.zodiac_card_area.cards[1] then
+    local card = G.zodiac_card_area.cards[1]
+    card:withdraw()
+    G.zodiacs:emplace(card)
+  end
+  if G.zodiac_card_ui then 
+    G.zodiac_card_ui:remove()
+    G.zodiac_card_ui = nil
+  end
+  if G.zodiac_card_area then
+    G.zodiac_card_area:remove()
+    G.zodiac_card_area = nil
+  end
+end
+
 G.FUNCS.tut_next = function(e)
   if G.OVERLAY_TUTORIAL then
     G.OVERLAY_TUTORIAL.Jimbo:remove_button()

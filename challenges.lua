@@ -752,6 +752,7 @@ G.CHALLENGES = {
         },
         consumeables = {
         },
+        zodiac = "z_capricorn",
         vouchers = {
         },
         deck = {

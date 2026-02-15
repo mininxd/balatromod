@@ -2602,6 +2602,17 @@ return {
                 },
             },
         },
+        Zodiac={
+            z_capricorn={
+                name="Capricorn",
+                text={
+                    "Played {C:money}Aces{}",
+                    "Permanently gain {X:mult,C:white}X#1#{}",
+                    "if hand is {C:money}Straight{}",
+                    "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})",
+                },
+            },
+        },
         Stake={
             stake_black={
                 name="Black Stake",

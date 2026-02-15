@@ -2,6 +2,33 @@
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
 G.UIDEF = {}
 
+function create_UIBox_zodiac_card(card)
+  G.zodiac_card_area = CardArea(
+    0, 0,
+    G.CARD_W,
+    G.CARD_H, 
+    {card_limit = 1, type = 'consumeable', highlight_limit = 0})
+  
+  card.T.x = G.zodiac_card_area.T.x
+  card.T.y = G.zodiac_card_area.T.y
+  G.zodiac_card_area:emplace(card)
+
+  local t = {n=G.UIT.ROOT, config = {align = 'cm', r = 0.15, colour = G.C.BLACK, padding = 0.15, shadow = true}, nodes={
+    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
+      {n=G.UIT.T, config={text = "ZODIAC CARD", scale = 0.8, colour = G.C.WHITE, shadow = true}}
+    }},
+    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
+      {n=G.UIT.O, config={object = G.zodiac_card_area}}
+    }},
+    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
+      {n=G.UIT.C, config={align = "cm", padding = 0.1, r=0.1, colour = G.C.BLUE, hover = true, button = 'close_zodiac_card', shadow = true}, nodes={
+        {n=G.UIT.T, config={text = "AWESOME", scale = 0.5, colour = G.C.WHITE, shadow = true}}
+      }}
+    }}
+  }}
+  return t
+end
+
 function create_UIBox_debug_tools()
   G.debug_tool_config = G.debug_tool_config or {}
   G.FUNCS.DT_add_money = function() if G.STAGE == G.STAGES.RUN then ease_dollars(10) end end

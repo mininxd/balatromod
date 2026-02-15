@@ -162,7 +162,7 @@ function Card:set_sprites(_center, _front)
     if _center then 
         if _center.set then
             if self.children.center then
-                self.children.center.atlas = G.ASSET_ATLAS[(_center.atlas or (_center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher') and (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))) or 'centers']
+                self.children.center.atlas = G.ASSET_ATLAS[(_center.atlas or (_center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Zodiac') and (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))) or 'centers']
                 self.children.center:set_sprite_pos(_center.pos)
             else
                 if _center.set == 'Joker' and not _center.unlocked and not self.params.bypass_discovery_center then 
@@ -173,20 +173,21 @@ function Card:set_sprites(_center, _front)
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Voucher"], G.v_locked.pos)
                 elseif self.config.center.consumeable and self.config.center.demo then 
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Tarot"], G.c_locked.pos)
-                elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster') and not _center.discovered then 
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))], 
+                elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster' or _center.set == 'Zodiac') and not _center.discovered then 
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))], 
                     (_center.set == 'Joker' and G.j_undiscovered.pos) or 
                     (_center.set == 'custom_joker' and G.j_undiscovered.pos) or 
                     (_center.set == 'Edition' and G.j_undiscovered.pos) or 
                     (_center.set == 'Tarot' and G.t_undiscovered.pos) or 
                     (_center.set == 'Planet' and G.p_undiscovered.pos) or 
                     (_center.set == 'Spectral' and G.s_undiscovered.pos) or 
+                    (_center.set == 'Zodiac' and G.s_undiscovered.pos) or 
                     (_center.set == 'Voucher' and G.v_undiscovered.pos) or 
                     (_center.set == 'custom_tag' and G.tag_undiscovered.pos) or 
                     (_center.is_custom and G.tag_undiscovered.pos) or 
                     (_center.set == 'Booster' and G.booster_undiscovered.pos))
-                elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' then
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[(_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or _center.set)))], self.config.center.pos)
+                elseif _center.set == 'Joker' or _center.set == 'custom_joker' or _center.set == 'custom_tag' or _center.is_custom or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Zodiac' then
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or (_center.set == 'custom_joker' and 'custom_joker' or (_center.set == 'custom_tag' and 'custom_tags' or (_center.is_custom and 'custom_tags' or (_center.set == 'Zodiac' and 'Zodiac' or _center.set))))], self.config.center.pos)
                 else
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or 'centers'], _center.pos)
                 end
@@ -950,6 +951,8 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Zombie Joker' then loc_vars = {self.ability.hand, self.ability.card}
         elseif self.ability.name == 'Lithograph' then loc_vars = {self.ability.mult}
         end
+    elseif self.ability.set == 'Zodiac' then
+        if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, self.ability.extra.x_mult} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -1508,8 +1511,19 @@ function Card:use_consumeable(area, copier)
             play_sound('timpani')
             local card = create_card('Joker', G.jokers, self.ability.name == 'The Soul', nil, nil, nil, nil, self.ability.name == 'Judgement' and 'jud' or 'sou')
             card:add_to_deck()
-            G.jokers:emplace(card)
-            if self.ability.name == 'The Soul' then check_for_unlock{type = 'spawn_legendary'} end
+            card:start_materialize()
+            if self.ability.name == 'The Soul' then 
+                check_for_unlock{type = 'spawn_legendary'} 
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
+                    G.zodiac_card_ui = UIBox{
+                        definition = create_UIBox_zodiac_card(card),
+                        config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
+                    }
+                    return true
+                end}))
+            else
+                G.jokers:emplace(card)
+            end
             used_tarot:juice_up(0.3, 0.5)
             return true end }))
         delay(0.6)
@@ -2286,6 +2300,7 @@ function Card:start_materialize(dissolve_colours, silent, timefac)
     (self.ability.set == 'Planet'  and {G.C.SECONDARY_SET.Planet}) or
     (self.ability.set == 'Tarot' and {G.C.SECONDARY_SET.Tarot}) or
     (self.ability.set == 'Spectral' and {G.C.SECONDARY_SET.Spectral}) or
+    (self.ability.set == 'Zodiac' and {G.C.SECONDARY_SET.Zodiac}) or
     (self.ability.set == 'Booster' and {G.C.BOOSTER}) or
     (self.ability.set == 'Voucher' and {G.C.SECONDARY_SET.Voucher, G.C.CLEAR}) or 
     {G.C.GREEN}
@@ -2386,6 +2401,32 @@ end
 
 function Card:calculate_joker(context)
     if self.debuff then return nil end
+    if self.ability.set == "Zodiac" and not self.debuff then
+        if self.ability.name == 'Capricorn' then
+            if context.before and context.scoring_name == "Straight" then
+                local aces = 0
+                for k, v in ipairs(context.scoring_hand) do
+                    if v:get_id() == 14 then 
+                        aces = aces + 1
+                    end
+                end
+                if aces > 0 then
+                    self.ability.extra.x_mult = (self.ability.extra.x_mult or 1) + self.ability.extra.gain * aces
+                    return {
+                        message = localize('k_upgrade_ex'),
+                        colour = G.C.MULT,
+                        card = self
+                    }
+                end
+            end
+            if context.joker_main and self.ability.extra.x_mult and self.ability.extra.x_mult > 1 then
+                return {
+                    message = localize{type='variable',key='a_xmult',vars={self.ability.extra.x_mult}},
+                    Xmult_mod = self.ability.extra.x_mult
+                }
+            end
+        end
+    end
     if self.ability.set == "Planet" and not self.debuff then
         if context.joker_main then
             if G.GAME.used_vouchers.v_observatory and self.ability.consumeable.hand_type == context.scoring_name then

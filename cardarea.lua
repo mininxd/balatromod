@@ -286,7 +286,7 @@ function CardArea:draw()
         (self.config.type == 'shop' and self ~= G.shop_vouchers) then
     else
         if not self.children.area_uibox then 
-                local card_count = self ~= G.shop_vouchers and {n=G.UIT.R, config={align = self == G.jokers and 'cl' or self == G.hand and 'cm' or 'cr', padding = 0.03, no_fill = true}, nodes={
+                local card_count = (self ~= G.shop_vouchers and self ~= G.zodiacs) and {n=G.UIT.R, config={align = self == G.jokers and 'cl' or self == G.hand and 'cm' or 'cr', padding = 0.03, no_fill = true}, nodes={
                     {n=G.UIT.B, config={w = 0.1,h=0.1}},
                     {n=G.UIT.T, config={ref_table = self.config, ref_value = 'card_count', scale = 0.3, lang = G.LANGUAGES['en-us'], colour = G.C.WHITE}},
                     {n=G.UIT.T, config={text = '/', scale = 0.3, lang = G.LANGUAGES['en-us'], colour = G.C.WHITE}},

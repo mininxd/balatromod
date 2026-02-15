@@ -648,14 +648,15 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
         end
 
         local hand_text_set = false
-        for i=1, #G.jokers.cards do
+        for i=1, #G.jokers.cards + #G.zodiacs.cards do
+            local _card = G.jokers.cards[i] or G.zodiacs.cards[i - #G.jokers.cards]
             --calculate the joker effects
-            local effects = eval_card(G.jokers.cards[i], {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true})
+            local effects = eval_card(_card, {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true})
             if effects.jokers then
-                card_eval_status_text(G.jokers.cards[i], 'jokers', nil, percent, nil, effects.jokers)
+                card_eval_status_text(_card, 'jokers', nil, percent, nil, effects.jokers)
                 percent = percent + percent_delta
                 if effects.jokers.level_up then
-                    level_up_hand(G.jokers.cards[i], text)
+                    level_up_hand(_card, text)
                 end
             end
         end
@@ -921,9 +922,10 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                     --calculate the hand effects
                     local effects = {eval_card(G.hand.cards[i], {cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands})}
 
-                    for k=1, #G.jokers.cards do
+                    for k=1, #G.jokers.cards + #G.zodiacs.cards do
+                        local _card = G.jokers.cards[k] or G.zodiacs.cards[k - #G.jokers.cards]
                         --calculate the joker individual card effects
-                        local eval = G.jokers.cards[k]:calculate_joker({cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = G.hand.cards[i], individual = true})
+                        local eval = _card:calculate_joker({cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = G.hand.cards[i], individual = true})
                         if eval then 
                             mod_percent = true
                             table.insert(effects, eval)
@@ -942,9 +944,10 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                         end
 
                         --From Joker
-                        for j=1, #G.jokers.cards do
+                        for j=1, #G.jokers.cards + #G.zodiacs.cards do
+                            local _card = G.jokers.cards[j] or G.zodiacs.cards[j - #G.jokers.cards]
                             --calculate the joker effects
-                            local eval = eval_card(G.jokers.cards[j], {cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = G.hand.cards[i], repetition = true, card_effects = effects})
+                            local eval = eval_card(_card, {cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = G.hand.cards[i], repetition = true, card_effects = effects})
                             if eval.jokers and eval.jokers.repetitions then 
                                 for h  = 1, eval.jokers.repetitions do
                                     reps[#reps+1] = eval
@@ -998,8 +1001,8 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
         --Joker Effects
         --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
         percent = percent + percent_delta
-        for i=1, #G.jokers.cards + #G.consumeables.cards do
-            local _card = G.jokers.cards[i] or G.consumeables.cards[i - #G.jokers.cards]
+        for i=1, #G.jokers.cards + #G.consumeables.cards + #G.zodiacs.cards do
+            local _card = G.jokers.cards[i] or G.consumeables.cards[i - #G.jokers.cards] or G.zodiacs.cards[i - #G.jokers.cards - #G.consumeables.cards]
             --calculate the joker edition effects
             local edition_effects = eval_card(_card, {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, edition = true})
             if edition_effects.jokers then
@@ -1262,11 +1265,12 @@ function evaluate_play_final_scoring(text, disp_text, poker_hands, scoring_hand,
 end
 function evaluate_play_after(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
 
-    for i=1, #G.jokers.cards do
+    for i=1, #G.jokers.cards + #G.zodiacs.cards do
+        local _card = G.jokers.cards[i] or G.zodiacs.cards[i - #G.jokers.cards]
         --calculate the joker after hand played effects
-        local effects = eval_card(G.jokers.cards[i], {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
+        local effects = eval_card(_card, {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
         if effects.jokers then
-            card_eval_status_text(G.jokers.cards[i], 'jokers', nil, percent, nil, effects.jokers)
+            card_eval_status_text(_card, 'jokers', nil, percent, nil, effects.jokers)
             percent = percent + percent_delta
         end
     end
