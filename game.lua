@@ -2422,10 +2422,12 @@ function Game:start_run(args)
         if args.seed then self.GAME.seeded = true end
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
 
-        if args.sandbox then
+        if args.seed or args.sandbox then
             local seed = string.upper(self.GAME.pseudorandom.seed)
+            local cheat_activated = false
             for _, v in ipairs(G.cheat or {}) do
                 if string.upper(v.code) == seed then
+                    cheat_activated = true
                     G.E_MANAGER:add_event(Event({
                         trigger = 'after',
                         delay = 0.5,
@@ -2440,6 +2442,11 @@ function Game:start_run(args)
                                     add_joker(j.id)
                                 end
                             end
+                            if v.extra then
+                                if v.extra.dollar then
+                                    ease_dollars(v.extra.dollar, true)
+                                end
+                            end
                             attention_text({
                                 text = "Cheat Activated!",
                                 scale = 1.3, 
@@ -2452,6 +2459,10 @@ function Game:start_run(args)
                         end
                     }))
                 end
+            end
+            if cheat_activated then 
+                self.GAME.pseudorandom.seed = generate_starting_seed()
+                self.GAME.seeded = false
             end
         end
     end

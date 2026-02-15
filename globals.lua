@@ -371,7 +371,7 @@ function Game:set_globals()
     --||||||||||||||||||||||||||||||
     self.cheat = {
       {
-        code = "soulls",
+        code = "givesoul",
         consumable = {
           {id = "c_soul"},
           {id = "c_soul"},
@@ -381,10 +381,13 @@ function Game:set_globals()
         }
       },
       {
-        code = "holees",
-        consumable = {
-          {id = "c_black_hole"},
-          {id = "c_black_hole"},
+        code = "richie",
+        extra = {
+             dollar = 9999,
+           -- hand = 5,
+           -- discard = 5,
+           -- consumable_slot = 5,
+           -- joker_slot = 5,
         }
       },
     }
