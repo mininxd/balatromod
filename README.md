@@ -1,5 +1,8 @@
 # Installed Mods
 
+## Core Changes
+- **Sandbox Mode**: A new game mode accessible from the Play menu. It allows full customization of starting parameters including Dollars, Hands, Discards, Joker Slots, and Consumable Slots. Also includes custom Deck and Stake selection and a built-in Seed configuration.
+
 ## Custom Jokers
 | Name        | Description | Rarity |
 |------------|-------------|--------|
@@ -21,3 +24,9 @@
 | Talisman | Increases the score cap from **~10^308** to **~10^1000**, allowing endless runs to go past **NaN/Inf** and **Ante 39**, and adds an option to remove long score animations. | https://github.com/SpectralPack/Talisman/releases/tag/v2.7 |
 | Always Show Seed | Shows the seed and allows copying it at all times from the options menu. | https://www.nexusmods.com/balatro/mods/6 |
 | Big Cards | Big Card Details is a supersized card retexture very much inspired by Big and Bold with letters and numbers loosely based upon the Atkinson Hyperlegible font. | https://www.nexusmods.com/balatro/mods/731 |
+
+## Secrets
+Certain seeds entered in **Sandbox Mode** trigger special effects:
+- **SOULLS**: Start with 2 "The Soul" spectral cards and a Blueprint joker.
+- **HOLEES**: Start with 2 "Black Hole" spectral cards.
+

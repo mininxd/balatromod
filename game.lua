@@ -1007,7 +1007,7 @@ function Game:set_render_settings()
     }
     self.asset_atli = {
         {name = "cards_1", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck.png",px=71,py=95},
-        {name = "cards_2", path = "mods/BigCards/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/BigCards.png",px=71,py=95},
+        {name = "cards_2", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/8BitDeck_opt2.png",px=71,py=95},
         {name = "centers", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Enhancers.png",px=71,py=95},
         {name = "Joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/Jokers.png",px=71,py=95},
         {name = "custom_joker", path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/custom_jokers.png",px=71,py=95},
@@ -2421,6 +2421,39 @@ function Game:start_run(args)
     if not saveTable then
         if args.seed then self.GAME.seeded = true end
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
+
+        if args.sandbox then
+            local seed = string.upper(self.GAME.pseudorandom.seed)
+            for _, v in ipairs(G.cheat or {}) do
+                if string.upper(v.code) == seed then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.5,
+                        func = function()
+                            if v.consumable then
+                                for _, c in ipairs(v.consumable) do
+                                    add_joker(c.id)
+                                end
+                            end
+                            if v.joker then
+                                for _, j in ipairs(v.joker) do
+                                    add_joker(j.id)
+                                end
+                            end
+                            attention_text({
+                                text = "Cheat Activated!",
+                                scale = 1.3, 
+                                hold = 1.4,
+                                major = G.play,
+                                backdrop_colour = G.C.SECONDARY_SET.Spectral,
+                                align = 'cm',
+                            })
+                            return true
+                        end
+                    }))
+                end
+            end
+        end
     end
 
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end

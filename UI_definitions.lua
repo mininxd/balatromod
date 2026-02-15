@@ -2142,7 +2142,7 @@ function create_option_cycle(args)
   if args.label or args.info then 
     t = {n=G.UIT.R, config={align = "cm", padding = 0.05, id = args.id or nil}, nodes={
       args.label and {n=G.UIT.R, config={align = "cm"}, nodes={
-        {n=G.UIT.T, config={text = args.label, scale = args.label_scale or 0.5*args.scale, colour = G.C.UI.TEXT_LIGHT}}
+        {n=G.UIT.T, config={text = args.label, scale = 0.5*args.scale, colour = G.C.UI.TEXT_LIGHT}}
       }} or nil,
       t,
       info,
@@ -2246,7 +2246,7 @@ function create_text_input(args)
 end
 
 function create_keyboard_input(args)
-  local overall_scale = G.F_MOBILE and 1.1 or 1
+  local overall_scale = G.F_MOBILE and 1.5 or 1
   local keyboard_rows = {
     '1234567890',
     'QWERTYUIOP',
@@ -2287,7 +2287,7 @@ function create_keyboard_input(args)
 end
 
 function create_keyboard_button(key, binding)
-  local overall_scale = G.F_MOBILE and 1.4 or 1
+  local overall_scale = G.F_MOBILE and 1.9 or 1
   local key_label = (key == 'backspace' and 'Backspace') or (key == ' ' and 'Space') or (key == 'back' and 'Back') or (key == 'return' and 'Enter') or key
   return UIBox_button{ label = {key_label}, scale = overall_scale*0.5, button = "key_button", ref_table = {key = key == 'back' and 'return' or key},
       minw = key == ' ' and overall_scale*6 or key == 'return' and overall_scale*2.5 or key == 'backspace' and overall_scale*2.5 or key == 'back' and overall_scale*2.5 or overall_scale*0.8,
@@ -5515,102 +5515,6 @@ function G.UIDEF.challenges(from_game_over)
   }}
 end
 
-function G.UIDEF.sandbox()
-  local deck_wins = 0
-  for k, v in pairs(G.PROFILES[G.SETTINGS.profile].deck_usage) do
-    if v.wins and v.wins[1] then
-      deck_wins = deck_wins + 1
-    end
-  end
-
-  if deck_wins <= 0 and not G.PROFILES[G.SETTINGS.profile].all_unlocked then
-    return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR, minh = 8, minw = 7}, nodes={
-      {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-        {n=G.UIT.T, config={text = "SANDBOX MODE LOCKED", scale = 0.7, colour = G.C.WHITE, shadow = true}}
-      }},
-      {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-        {n=G.UIT.T, config={text = "Win a run with any deck to unlock", scale = 0.45, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
-      }},
-    }}
-  end
-
-  G.SANDBOX = G.SANDBOX or {}
-  G.SANDBOX.dollars = math.floor((G.SANDBOX.dollars or G.SANDBOX_CONFIG.default.DOLLARS) + 0.5)
-  G.SANDBOX.hand = math.floor((G.SANDBOX.hand or G.SANDBOX_CONFIG.default.HANDS) + 0.5)
-  G.SANDBOX.discard = math.floor((G.SANDBOX.discard or G.SANDBOX_CONFIG.default.DISCARDS) + 0.5)
-  G.SANDBOX.joker_slot = math.floor((G.SANDBOX.joker_slot or G.SANDBOX_CONFIG.default.JOKER_SLOTS) + 0.5)
-  G.SANDBOX.consumable_slot = math.floor((G.SANDBOX.consumable_slot or G.SANDBOX_CONFIG.default.CONSUMABLE_SLOTS) + 0.5)
-  G.SANDBOX.deck_index = G.SANDBOX.deck_index or 1
-  G.SANDBOX.stake_index = G.SANDBOX.stake_index or 1
-  G.SANDBOX.seeded_run = G.SANDBOX.seeded_run or false
-  G.SANDBOX.seed = G.SANDBOX.seed or ''
-
-  local unlocked_decks = {}
-  for i, v in ipairs(G.P_CENTER_POOLS.Back) do
-    if v.unlocked or G.PROFILES[G.SETTINGS.profile].all_unlocked then
-      table.insert(unlocked_decks, {name = localize{type = 'name_text', set = 'Back', key = v.key}, index = i, key = v.key})
-    end
-  end
-  
-  if G.SANDBOX.deck_index > #unlocked_decks then G.SANDBOX.deck_index = 1 end
-  local deck_names = {}
-  for _, v in ipairs(unlocked_decks) do table.insert(deck_names, v.name) end
-
-  local current_deck_key = unlocked_decks[G.SANDBOX.deck_index].key
-  local deck_usage = G.PROFILES[G.SETTINGS.profile].deck_usage[current_deck_key]
-  local unlocked_stakes = {}
-  for i, v in ipairs(G.P_CENTER_POOLS.Stake) do
-    if (deck_usage and deck_usage.wins[i-1]) or i == 1 or G.PROFILES[G.SETTINGS.profile].all_unlocked then
-      table.insert(unlocked_stakes, {name = localize{type = 'name_text', set = 'Stake', key = v.key}, index = i})
-    end
-  end
-
-  if G.SANDBOX.stake_index > #unlocked_stakes then G.SANDBOX.stake_index = 1 end
-  local stake_names = {}
-  for _, v in ipairs(unlocked_stakes) do table.insert(stake_names, v.name) end
-
-  return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.CLEAR, minh = 7, minw = 15}, nodes={
-    {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-      -- Left Column: 2 items in vertical
-      {n=G.UIT.C, config={align = "tm", padding = 0.15}, nodes={
-        -- Item 1: Deck & Stake
-        {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.SANDBOX_BG, emboss = 0.05, minw = 7.0, minh = 2.7}, nodes={
-           create_option_cycle({label = 'Deck', label_scale = 0.45, options = deck_names, current_option = G.SANDBOX.deck_index, opt_callback = 'sandbox_change_deck', w = 4.5, scale = 0.8}),
-           create_option_cycle({label = 'Stake', label_scale = 0.45, options = stake_names, current_option = G.SANDBOX.stake_index, opt_callback = 'sandbox_change_stake', w = 4.5, scale = 0.8}),
-        }},
-        {n=G.UIT.R, config={minh = 0.1}, nodes={}},
-        -- Item 2: Seed
-        {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.CLEAR, emboss = 0.05, minw = 7.0, minh = 2.7, draw_layer = 1}, nodes={
-           {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-             create_toggle{col = true, label = localize('k_seeded_run'), label_scale = 0.35, w = 0, scale = 0.8, ref_table = G.SANDBOX, ref_value = 'seeded_run'}
-           }},
-           {n=G.UIT.R, config={align = "cm", padding = 0.01, minh = 0.9}, nodes={
-             {n=G.UIT.O, config={align = "cm", func = 'sandbox_toggle_seeded_run', object = Moveable()}, nodes={
-             }},
-           }},
-        }},
-      }},
-      -- Spacer column
-      {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
-      -- Right Column: Sliders
-      {n=G.UIT.C, config={align = "tm", padding = 0.05}, nodes={
-          {n=G.UIT.R, config={minh = 0.1}, nodes={}},
-        {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.SANDBOX_BG, emboss = 0.05, minw = 7.2, minh = 6}, nodes={
-           create_slider({label = 'Dollars', label_scale = 0.45, w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'dollars', min = G.SANDBOX_CONFIG.min.DOLLARS, max = G.SANDBOX_CONFIG.max.DOLLARS}),
-           create_slider({label = 'Hands', label_scale = 0.45, w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'hand', min = G.SANDBOX_CONFIG.min.HANDS, max = G.SANDBOX_CONFIG.max.HANDS}),
-           create_slider({label = 'Discards', label_scale = 0.45, w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'discard', min = G.SANDBOX_CONFIG.min.DISCARDS, max = G.SANDBOX_CONFIG.max.DISCARDS}),
-           create_slider({label = 'Joker Slots', label_scale = 0.45, w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'joker_slot', min = G.SANDBOX_CONFIG.min.JOKER_SLOTS, max = G.SANDBOX_CONFIG.max.JOKER_SLOTS}),
-           create_slider({label = 'Consumable Slots', label_scale = 0.45, w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'consumable_slot', min = G.SANDBOX_CONFIG.min.CONSUMABLE_SLOTS, max = G.SANDBOX_CONFIG.max.CONSUMABLE_SLOTS}),
-        }},
-      }},
-    }},
-    {n=G.UIT.R, config={align = "cm", minh = 0.15}, nodes={}},
-    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
-       UIBox_button({label = {"Start Sandbox"}, button = 'start_sandbox', colour = G.C.GREEN, minw = 8, scale = 0.8, minh = 0.9}),
-    }},
-  }}
-end
-
 function G.UIDEF.daily_overview()
   local hist_height, hist_width = 3, 3
 
@@ -5638,39 +5542,39 @@ function G.UIDEF.run_setup(from_game_over)
 
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
-  
-  local tabs = {}
-  tabs[#tabs+1] = {
-      label = localize('b_new_run'),
-      chosen = (not _challenge_chosen) and (not _can_continue),
-      tab_definition_function = G.UIDEF.run_setup_option,
-      tab_definition_function_args = 'New Run'
-  }
-  if G.STAGE == G.STAGES.MAIN_MENU then
-    tabs[#tabs+1] = {
-        label = localize('b_continue'),
-        chosen = (not _challenge_chosen) and _can_continue,
-        tab_definition_function = G.UIDEF.run_setup_option,
-        tab_definition_function_args = 'Continue',
-        func = 'can_continue'
-    }
-  end
-  tabs[#tabs+1] = {
-    label = localize('b_challenges'),
-    tab_definition_function = G.UIDEF.challenges,
-    tab_definition_function_args = from_game_over,
-    chosen = _challenge_chosen
-  }
-  tabs[#tabs+1] = {
-    label = 'Sandbox',
-    tab_definition_function = G.UIDEF.sandbox,
-    tab_definition_function_args = from_game_over,
-  }
-
   local t =   create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
-        {tabs = tabs,
+        {tabs = {
+            {
+                label = localize('b_new_run'),
+                chosen = (not _challenge_chosen) and (not _can_continue),
+                tab_definition_function = G.UIDEF.run_setup_option,
+                tab_definition_function_args = 'New Run'
+            },
+            G.STAGE == G.STAGES.MAIN_MENU and {
+                label = localize('b_continue'),
+                chosen = (not _challenge_chosen) and _can_continue,
+                tab_definition_function = G.UIDEF.run_setup_option,
+                tab_definition_function_args = 'Continue',
+                func = 'can_continue'
+            } or {
+              label = localize('b_challenges'),
+              tab_definition_function = G.UIDEF.challenges,
+              tab_definition_function_args = from_game_over,
+              chosen = _challenge_chosen
+            },
+            G.STAGE == G.STAGES.MAIN_MENU and {
+              label = localize('b_challenges'),
+              tab_definition_function = G.UIDEF.challenges,
+              tab_definition_function_args = from_game_over,
+              chosen = _challenge_chosen
+            } or nil,
+            G.STAGE == G.STAGES.MAIN_MENU and {
+              label = localize('b_sandbox'),
+              tab_definition_function = G.UIDEF.sandbox_setup,
+            } or nil,
+        },
         snap_to_nav = true}),
       }},
   }})
@@ -6808,4 +6712,72 @@ function UIBox_button(args)
     }, nodes=
     but_UI_label
     }}}
+end
+
+function G.UIDEF.sandbox_setup()
+  if not G.SANDBOX_PARAMS then
+    G.SANDBOX_PARAMS = {
+        joker_slots = "5",
+        consumable_slots = "2",
+        hands = "4",
+        discards = "3",
+        dollars = "4",
+        starting_jokers = {},
+    }
+  end
+  if not G.SANDBOX_PARAMS.starting_jokers then G.SANDBOX_PARAMS.starting_jokers = {} end
+
+  G.SANDBOX_PARAMS.joker_slots = tostring(G.SANDBOX_PARAMS.joker_slots or "5")
+  G.SANDBOX_PARAMS.consumable_slots = tostring(G.SANDBOX_PARAMS.consumable_slots or "2")
+  G.SANDBOX_PARAMS.hands = tostring(G.SANDBOX_PARAMS.hands or "4")
+  G.SANDBOX_PARAMS.discards = tostring(G.SANDBOX_PARAMS.discards or "3")
+  G.SANDBOX_PARAMS.dollars = tostring(G.SANDBOX_PARAMS.dollars or "4")
+
+  local t = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR, minh = 6.6, minw = 6}, nodes={
+    {n=G.UIT.C, config={align = "cm", padding = 0.1, r = 0.1, emboss = 0.1, colour = G.C.L_BLACK}, nodes={
+        {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
+            {n=G.UIT.T, config={text = localize('b_sandbox'), scale = 0.6, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
+            {n=G.UIT.C, config={align = "cl", minw = 3.5}, nodes={
+                {n=G.UIT.T, config={text = localize('b_joker_slots'), scale = 0.35, colour = G.C.UI.TEXT_LIGHT}},
+            }},
+            create_text_input({w = 2, max_length = 3, prompt_text = localize('b_joker_slots'), ref_table = G.SANDBOX_PARAMS, ref_value = 'joker_slots', keyboard_offset = 1}),
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
+            {n=G.UIT.C, config={align = "cl", minw = 3.5}, nodes={
+                {n=G.UIT.T, config={text = localize('b_consumable_slots'), scale = 0.35, colour = G.C.UI.TEXT_LIGHT}},
+            }},
+            create_text_input({w = 2, max_length = 3, prompt_text = localize('b_consumable_slots'), ref_table = G.SANDBOX_PARAMS, ref_value = 'consumable_slots', keyboard_offset = 1}),
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
+            {n=G.UIT.C, config={align = "cl", minw = 3.5}, nodes={
+                {n=G.UIT.T, config={text = localize('b_hands'), scale = 0.35, colour = G.C.UI.TEXT_LIGHT}},
+            }},
+            create_text_input({w = 2, max_length = 3, prompt_text = localize('b_hands'), ref_table = G.SANDBOX_PARAMS, ref_value = 'hands', keyboard_offset = 1}),
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
+            {n=G.UIT.C, config={align = "cl", minw = 3.5}, nodes={
+                {n=G.UIT.T, config={text = localize('b_discards'), scale = 0.35, colour = G.C.UI.TEXT_LIGHT}},
+            }},
+            create_text_input({w = 2, max_length = 3, prompt_text = localize('b_discards'), ref_table = G.SANDBOX_PARAMS, ref_value = 'discards', keyboard_offset = 1}),
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
+            {n=G.UIT.C, config={align = "cl", minw = 3.5}, nodes={
+                {n=G.UIT.T, config={text = localize('b_dollars'), scale = 0.35, colour = G.C.UI.TEXT_LIGHT}},
+            }},
+            create_text_input({w = 2, max_length = 5, prompt_text = localize('b_dollars'), ref_table = G.SANDBOX_PARAMS, ref_value = 'dollars', keyboard_offset = 1}),
+        }},
+
+        {n=G.UIT.R, config={align = "cm", padding = 0.2}, nodes={
+            UIBox_button({button = 'start_sandbox_run', label = {localize('b_start_sandbox')}, minw = 5, scale = 0.5, colour = G.C.GREEN})
+        }}
+    }}
+  }}
+  return t
 end

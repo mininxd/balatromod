@@ -551,7 +551,8 @@ function G.FUNCS.slider(e)
   G.CONTROLLER.dragging.target == c) then
     local rt = c.config.ref_table
     rt.ref_table[rt.ref_value] = math.min(rt.max,math.max(rt.min, rt.min + (rt.max - rt.min)*(G.CURSOR.T.x - e.parent.T.x - G.ROOM.T.x)/e.T.w))
-    rt.text = string.format("%."..tostring(rt.decimal_places).."f", rt.ref_table[rt.ref_value])
+    if (rt.decimal_places or 0) == 0 then rt.ref_table[rt.ref_value] = math.floor(rt.ref_table[rt.ref_value] + 0.5) end
+    rt.text = string.format("%."..tostring(rt.decimal_places or 0).."f", rt.ref_table[rt.ref_value])
     c.T.w = (rt.ref_table[rt.ref_value] - rt.min)/(rt.max - rt.min)*rt.w
     c.config.w = c.T.w
     if rt.callback then G.FUNCS[rt.callback](rt) end
@@ -571,7 +572,8 @@ function G.FUNCS.slider_descreet(e, per)
   if per then
     local rt = c.config.ref_table
     rt.ref_table[rt.ref_value] = math.min(rt.max,math.max(rt.min, rt.ref_table[rt.ref_value] + per*(rt.max - rt.min)))
-    rt.text = string.format("%."..tostring(rt.decimal_places).."f", rt.ref_table[rt.ref_value])
+    if (rt.decimal_places or 0) == 0 then rt.ref_table[rt.ref_value] = math.floor(rt.ref_table[rt.ref_value] + 0.5) end
+    rt.text = string.format("%."..tostring(rt.decimal_places or 0).."f", rt.ref_table[rt.ref_value])
     c.T.w = (rt.ref_table[rt.ref_value] - rt.min)/(rt.max - rt.min)*rt.w
     c.config.w = c.T.w
   end
@@ -3108,10 +3110,20 @@ end
 
 G.FUNCS.sandbox_change_deck = function(args)
     G.SANDBOX.deck_index = args.to_key
+    -- Force refresh the sandbox tab to update stake options
+    local sandbox_tab = G.OVERLAY_MENU:get_UIE_by_ID('tab_contents')
+    if sandbox_tab then
+        sandbox_tab.config.object:remove()
+        sandbox_tab.config.object = UIBox{
+            definition = G.UIDEF.sandbox(),
+            config = {offset = {x=0,y=0}, parent = sandbox_tab, type = 'cm'}
+        }
+        sandbox_tab.UIBox:recalculate()
+    end
 end
 
 G.FUNCS.sandbox_change_stake = function(args)
-    G.SANDBOX.stake = args.to_key
+    G.SANDBOX.stake_index = args.to_key
 end
 
 G.FUNCS.sandbox_check_deck = function(e)
@@ -3215,8 +3227,24 @@ G.FUNCS.sandbox_toggle_seeded_run = function(e)
 end
 
 G.FUNCS.start_sandbox = function(e)
-  local deck = G.P_CENTER_POOLS.Back[G.SANDBOX.deck_index]
-  G.FUNCS.start_run(e, {sandbox = true, stake = G.SANDBOX.stake, deck = deck.name, seed = G.SANDBOX.seeded_run and G.SANDBOX.seed or nil})
+  local unlocked_decks = {}
+  for i, v in ipairs(G.P_CENTER_POOLS.Back) do
+    if v.unlocked or G.PROFILES[G.SETTINGS.profile].all_unlocked then
+      table.insert(unlocked_decks, {name = v.name, index = i, key = v.key})
+    end
+  end
+  local deck = G.P_CENTER_POOLS.Back[unlocked_decks[G.SANDBOX.deck_index].index]
+
+  local deck_usage = G.PROFILES[G.SETTINGS.profile].deck_usage[deck.key]
+  local unlocked_stakes = {}
+  for i, v in ipairs(G.P_CENTER_POOLS.Stake) do
+    if (deck_usage and deck_usage.wins[i-1]) or i == 1 or G.PROFILES[G.SETTINGS.profile].all_unlocked then
+      table.insert(unlocked_stakes, i)
+    end
+  end
+  local stake = unlocked_stakes[G.SANDBOX.stake_index]
+
+  G.FUNCS.start_run(e, {sandbox = true, stake = stake, deck = deck.name, seed = G.SANDBOX.seeded_run and G.SANDBOX.seed or nil})
 end
 
 G.FUNCS.start_run = function(e, args) 

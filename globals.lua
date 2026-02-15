@@ -49,8 +49,8 @@ function Game:set_globals()
 
     self.SANDBOX_CONFIG = {
         min = { DOLLARS = 0, HANDS = 1, DISCARDS = 0, JOKER_SLOTS = 1, CONSUMABLE_SLOTS = 1 },
-        max = { DOLLARS = 100, HANDS = 10, DISCARDS = 10, JOKER_SLOTS = 10, CONSUMABLE_SLOTS = 10 },
-        default = { DOLLARS = 25, HANDS = 4, DISCARDS = 3, JOKER_SLOTS = 5, CONSUMABLE_SLOTS = 2 }
+        max = { DOLLARS = 200, HANDS = 20, DISCARDS = 20, JOKER_SLOTS = 50, CONSUMABLE_SLOTS = 20 },
+        default = { DOLLARS = 20, HANDS = 5, DISCARDS = 5, JOKER_SLOTS = 10, CONSUMABLE_SLOTS = 5 }
     }
 
     if love.system.getOS() == 'Windows' then
@@ -365,6 +365,29 @@ function Game:set_globals()
     self.STATE = self.STATES.SPLASH
     self.TAROT_INTERRUPT = nil
     self.STATE_COMPLETE = false
+    
+        --||||||||||||||||||||||||||||||
+    --        CHEAT CODE
+    --||||||||||||||||||||||||||||||
+    self.cheat = {
+      {
+        code = "soulls",
+        consumable = {
+          {id = "c_soul"},
+          {id = "c_soul"},
+        },
+        joker = {
+          {id = "j_blueprint"},
+        }
+      },
+      {
+        code = "holees",
+        consumable = {
+          {id = "c_black_hole"},
+          {id = "c_black_hole"},
+        }
+      },
+    }
 
     --||||||||||||||||||||||||||||||
     --          INSTANCES
@@ -419,6 +442,7 @@ function Game:set_globals()
         WHITE = {1,1,1,1},
         PURPLE = HEX('8867a5'),
         BLACK = HEX("374244"),--4f6367"),
+        SANDBOX_BG = {55/255, 66/255, 68/255, 0.25},
         L_BLACK = HEX("4f6367"),
         GREY = HEX("5f7377"),
         CHANCE = HEX("4BC292"),
