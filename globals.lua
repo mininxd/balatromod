@@ -47,6 +47,12 @@ function Game:set_globals()
     self.F_HIDE_LOADING_BAR = nil
     self.F_BABYNAMES = nil                  --use if platform needs name change for collabs
 
+    self.SANDBOX_CONFIG = {
+        min = { DOLLARS = 0, HANDS = 1, DISCARDS = 0, JOKER_SLOTS = 1, CONSUMABLE_SLOTS = 1 },
+        max = { DOLLARS = 100, HANDS = 10, DISCARDS = 10, JOKER_SLOTS = 10, CONSUMABLE_SLOTS = 10 },
+        default = { DOLLARS = 25, HANDS = 4, DISCARDS = 3, JOKER_SLOTS = 5, CONSUMABLE_SLOTS = 2 }
+    }
+
     if love.system.getOS() == 'Windows' then
         self.F_DISCORD = true
         self.F_SAVE_TIMER = 5

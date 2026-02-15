@@ -2277,7 +2277,7 @@ function Game:start_run(args)
     if not saveTable then ease_background_colour_blind(G.STATE, 'Small Blind')
     else ease_background_colour_blind(G.STATE, saveTable.BLIND.name:gsub("%s+", "") ~= '' and saveTable.BLIND.name or 'Small Blind') end
 
-    local selected_back = saveTable and saveTable.BACK.name or (args.challenge and args.challenge.deck and args.challenge.deck.type) or (self.GAME.viewed_back and self.GAME.viewed_back.name) or self.GAME.selected_back and self.GAME.selected_back.name or 'Red Deck'
+    local selected_back = args.deck or saveTable and saveTable.BACK.name or (args.challenge and args.challenge.deck and args.challenge.deck.type) or (self.GAME.viewed_back and self.GAME.viewed_back.name) or self.GAME.selected_back and self.GAME.selected_back.name or 'Red Deck'
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     if Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
@@ -2310,6 +2310,14 @@ function Game:start_run(args)
         if self.GAME.stake >= 8 then self.GAME.modifiers.enable_rentals_in_shop = true end
 
         self.GAME.selected_back:apply_to_run()
+
+        if args.sandbox and G.SANDBOX then
+            self.GAME.starting_params.dollars = G.SANDBOX.dollars or self.GAME.starting_params.dollars
+            self.GAME.starting_params.hands = G.SANDBOX.hand or self.GAME.starting_params.hands
+            self.GAME.starting_params.discards = G.SANDBOX.discard or self.GAME.starting_params.discards
+            self.GAME.starting_params.joker_slots = G.SANDBOX.joker_slot or self.GAME.starting_params.joker_slots
+            self.GAME.starting_params.consumable_slots = G.SANDBOX.consumable_slot or self.GAME.starting_params.consumable_slots
+        end
 
         if args.challenge then
             self.GAME.challenge = args.challenge.id

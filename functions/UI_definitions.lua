@@ -5515,6 +5515,63 @@ function G.UIDEF.challenges(from_game_over)
   }}
 end
 
+function G.UIDEF.sandbox()
+  G.SANDBOX = G.SANDBOX or {}
+  G.SANDBOX.dollars = G.SANDBOX.dollars or G.SANDBOX_CONFIG.default.DOLLARS
+  G.SANDBOX.hand = G.SANDBOX.hand or G.SANDBOX_CONFIG.default.HANDS
+  G.SANDBOX.discard = G.SANDBOX.discard or G.SANDBOX_CONFIG.default.DISCARDS
+  G.SANDBOX.joker_slot = G.SANDBOX.joker_slot or G.SANDBOX_CONFIG.default.JOKER_SLOTS
+  G.SANDBOX.consumable_slot = G.SANDBOX.consumable_slot or G.SANDBOX_CONFIG.default.CONSUMABLE_SLOTS
+  G.SANDBOX.deck_index = G.SANDBOX.deck_index or 1
+  G.SANDBOX.stake = G.SANDBOX.stake or 1
+  G.SANDBOX.seeded_run = G.SANDBOX.seeded_run or false
+  G.SANDBOX.seed = G.SANDBOX.seed or ''
+
+  local deck_names = {}
+  for _, v in ipairs(G.P_CENTER_POOLS.Back) do
+    table.insert(deck_names, localize{type = 'name_text', set = 'Back', key = v.key})
+  end
+  local stake_names = {}
+  for _, v in ipairs(G.P_CENTER_POOLS.Stake) do
+    table.insert(stake_names, localize{type = 'name_text', set = 'Stake', key = v.key})
+  end
+
+  return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.CLEAR, minh = 7, minw = 15}, nodes={
+    {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+      {n=G.UIT.C, config={align = "tm", padding = 0.05}, nodes={
+        {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.BLACK, emboss = 0.05, minw = 7.0, minh = 5.5}, nodes={
+           create_option_cycle({label = 'Deck', options = deck_names, current_option = G.SANDBOX.deck_index, opt_callback = 'sandbox_change_deck', w = 4.5, scale = 0.9}),
+           create_option_cycle({label = 'Stake', options = stake_names, current_option = G.SANDBOX.stake, opt_callback = 'sandbox_change_stake', w = 4.5, scale = 0.9}),
+           {n=G.UIT.R, config={align = "cm", padding = 0, minh = 0.1}, nodes={}},
+           {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+             {n=G.UIT.C, config={align = "cm", minw = 2.4}, nodes={
+               create_toggle{col = true, label = localize('k_seeded_run'), label_scale = 0.35, w = 0, scale = 0.8, ref_table = G.SANDBOX, ref_value = 'seeded_run'}
+             }},
+           }},
+           {n=G.UIT.R, config={align = "cm", padding = 0.01, minh = 0.9}, nodes={
+             {n=G.UIT.O, config={align = "cm", func = 'sandbox_toggle_seeded_run', object = Moveable()}, nodes={
+             }},
+           }},
+        }},
+      }},
+      {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
+      {n=G.UIT.C, config={align = "tm", padding = 0.05}, nodes={
+        {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.BLACK, emboss = 0.05, minw = 7.2, minh = 5.8}, nodes={
+           create_slider({label = 'Dollars', w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'dollars', min = G.SANDBOX_CONFIG.min.DOLLARS, max = G.SANDBOX_CONFIG.max.DOLLARS}),
+           create_slider({label = 'Hands', w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'hand', min = G.SANDBOX_CONFIG.min.HANDS, max = G.SANDBOX_CONFIG.max.HANDS}),
+           create_slider({label = 'Discards', w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'discard', min = G.SANDBOX_CONFIG.min.DISCARDS, max = G.SANDBOX_CONFIG.max.DISCARDS}),
+           create_slider({label = 'Joker Slots', w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'joker_slot', min = G.SANDBOX_CONFIG.min.JOKER_SLOTS, max = G.SANDBOX_CONFIG.max.JOKER_SLOTS}),
+           create_slider({label = 'Consumable Slots', w = 5, h = 0.4, ref_table = G.SANDBOX, ref_value = 'consumable_slot', min = G.SANDBOX_CONFIG.min.CONSUMABLE_SLOTS, max = G.SANDBOX_CONFIG.max.CONSUMABLE_SLOTS}),
+        }},
+      }},
+    }},
+    {n=G.UIT.R, config={align = "cm", minh = 0.15}, nodes={}},
+    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
+       UIBox_button({label = {"Start Sandbox"}, button = 'start_sandbox', colour = G.C.GREEN, minw = 8, scale = 0.85, minh = 0.8}),
+    }},
+  }}
+end
+
 function G.UIDEF.daily_overview()
   local hist_height, hist_width = 3, 3
 
@@ -5542,35 +5599,39 @@ function G.UIDEF.run_setup(from_game_over)
 
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
+  
+  local tabs = {}
+  tabs[#tabs+1] = {
+      label = localize('b_new_run'),
+      chosen = (not _challenge_chosen) and (not _can_continue),
+      tab_definition_function = G.UIDEF.run_setup_option,
+      tab_definition_function_args = 'New Run'
+  }
+  if G.STAGE == G.STAGES.MAIN_MENU then
+    tabs[#tabs+1] = {
+        label = localize('b_continue'),
+        chosen = (not _challenge_chosen) and _can_continue,
+        tab_definition_function = G.UIDEF.run_setup_option,
+        tab_definition_function_args = 'Continue',
+        func = 'can_continue'
+    }
+  end
+  tabs[#tabs+1] = {
+    label = localize('b_challenges'),
+    tab_definition_function = G.UIDEF.challenges,
+    tab_definition_function_args = from_game_over,
+    chosen = _challenge_chosen
+  }
+  tabs[#tabs+1] = {
+    label = 'Sandbox',
+    tab_definition_function = G.UIDEF.sandbox,
+    tab_definition_function_args = from_game_over,
+  }
+
   local t =   create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
-        {tabs = {
-            {
-                label = localize('b_new_run'),
-                chosen = (not _challenge_chosen) and (not _can_continue),
-                tab_definition_function = G.UIDEF.run_setup_option,
-                tab_definition_function_args = 'New Run'
-            },
-            G.STAGE == G.STAGES.MAIN_MENU and {
-                label = localize('b_continue'),
-                chosen = (not _challenge_chosen) and _can_continue,
-                tab_definition_function = G.UIDEF.run_setup_option,
-                tab_definition_function_args = 'Continue',
-                func = 'can_continue'
-            } or {
-              label = localize('b_challenges'),
-              tab_definition_function = G.UIDEF.challenges,
-              tab_definition_function_args = from_game_over,
-              chosen = _challenge_chosen
-            },
-            G.STAGE == G.STAGES.MAIN_MENU and {
-              label = localize('b_challenges'),
-              tab_definition_function = G.UIDEF.challenges,
-              tab_definition_function_args = from_game_over,
-              chosen = _challenge_chosen
-            } or nil,
-        },
+        {tabs = tabs,
         snap_to_nav = true}),
       }},
   }})

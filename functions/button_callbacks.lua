@@ -3106,6 +3106,119 @@ G.FUNCS.cash_out = function(e)
       delay(0.6)
 end
 
+G.FUNCS.sandbox_change_deck = function(args)
+    G.SANDBOX.deck_index = args.to_key
+end
+
+G.FUNCS.sandbox_change_stake = function(args)
+    G.SANDBOX.stake = args.to_key
+end
+
+G.FUNCS.sandbox_check_deck = function(e)
+    if not G.SANDBOX or not G.SANDBOX.deck_index or not G.P_CENTER_POOLS or not G.P_CENTER_POOLS.Back then return end
+    if e.config.id ~= G.SANDBOX.deck_index then
+        e.config.id = G.SANDBOX.deck_index
+        local deck_center = G.P_CENTER_POOLS.Back[G.SANDBOX.deck_index]
+        if not deck_center then return end
+        if e.config.object then e.config.object:remove() end
+        e.config.object = UIBox{
+            definition = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
+                {n=G.UIT.O, config={object = Sprite(0, 0, G.CARD_W*0.6, G.CARD_H*0.6, G.ASSET_ATLAS[deck_center.atlas or "centers"], deck_center.pos)}}
+            }},
+            config = {offset = {x=0, y=0}, parent = e, align = 'cm'}
+        }
+    end
+end
+
+G.FUNCS.sandbox_check_deck_name = function(e)
+    if not G.SANDBOX or not G.SANDBOX.deck_index or not G.P_CENTER_POOLS or not G.P_CENTER_POOLS.Back then return end
+    if e.config.id ~= G.SANDBOX.deck_index then
+        e.config.id = G.SANDBOX.deck_index
+        local deck_center = G.P_CENTER_POOLS.Back[G.SANDBOX.deck_index]
+        if not deck_center then return end
+        if e.config.object then e.config.object:remove() end
+        e.config.object = UIBox{
+            definition = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
+                {n=G.UIT.T, config={text = localize{type = 'name_text', set = 'Back', key = deck_center.key}, scale = 0.35, colour = G.C.WHITE, shadow = true}}
+            }},
+            config = {offset = {x=0, y=0}, parent = e, align = 'cm'}
+        }
+    end
+end
+
+G.FUNCS.sandbox_check_stake = function(e)
+    if not G.SANDBOX or not G.SANDBOX.stake or not G.P_CENTER_POOLS or not G.P_CENTER_POOLS.Stake then return end
+    if e.config.id ~= G.SANDBOX.stake then
+        e.config.id = G.SANDBOX.stake
+        local stake_center = G.P_CENTER_POOLS.Stake[G.SANDBOX.stake]
+        if not stake_center then return end
+        if e.config.object then e.config.object:remove() end
+        e.config.object = UIBox{
+            definition = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
+                {n=G.UIT.O, config={object = Sprite(0, 0, 0.6, 0.6, G.ASSET_ATLAS["stickers"], stake_center.pos)}}
+            }},
+            config = {offset = {x=0, y=0}, parent = e, align = 'cm'}
+        }
+    end
+end
+
+G.FUNCS.sandbox_check_stake_name = function(e)
+    if not G.SANDBOX or not G.SANDBOX.stake or not G.P_CENTER_POOLS or not G.P_CENTER_POOLS.Stake then return end
+    if e.config.id ~= G.SANDBOX.stake then
+        e.config.id = G.SANDBOX.stake
+        local stake_center = G.P_CENTER_POOLS.Stake[G.SANDBOX.stake]
+        if not stake_center then return end
+        if e.config.object then e.config.object:remove() end
+        e.config.object = UIBox{
+            definition = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
+                {n=G.UIT.T, config={text = localize{type = 'name_text', set = 'Stake', key = stake_center.key}, scale = 0.35, colour = G.C.WHITE, shadow = true}}
+            }},
+            config = {offset = {x=0, y=0}, parent = e, align = 'cm'}
+        }
+    end
+end
+
+G.FUNCS.sandbox_toggle_seeded_run = function(e)
+
+  if e.config.object and e.config.object.is and e.config.object:is(UIBox) and not G.SANDBOX.seeded_run then
+
+    e.config.object:remove()
+
+    e.config.object = Moveable()
+
+  elseif (not e.config.object or not e.config.object:is(UIBox)) and G.SANDBOX.seeded_run then
+
+    e.config.object = UIBox{
+
+      definition = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
+
+        {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={
+
+          create_text_input({max_length = 8, all_caps = true, ref_table = G.SANDBOX, ref_value = 'seed', prompt_text = localize('k_enter_seed')}),
+
+          {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
+
+          UIBox_button({label = localize('ml_paste_seed'),minw = 1, minh = 0.6, button = 'paste_seed', colour = G.C.BLUE, scale = 0.3, col = true})
+
+        }},
+
+      }},
+
+      config = {offset = {x=0,y=0}, parent = e, type = 'cm'}
+
+    }
+
+    e.config.object:recalculate()
+
+  end
+
+end
+
+G.FUNCS.start_sandbox = function(e)
+  local deck = G.P_CENTER_POOLS.Back[G.SANDBOX.deck_index]
+  G.FUNCS.start_run(e, {sandbox = true, stake = G.SANDBOX.stake, deck = deck.name, seed = G.SANDBOX.seeded_run and G.SANDBOX.seed or nil})
+end
+
 G.FUNCS.start_run = function(e, args) 
   G.SETTINGS.paused = true
   if e and e.config.id == 'restart_button' then G.GAME.viewed_back = nil end
