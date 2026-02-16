@@ -752,11 +752,18 @@ G.CHALLENGES = {
         },
         consumeables = {
         },
-        zodiac = "z_sagitarius",
+        zodiac = "z_pisces",
         vouchers = {
         },
         deck = {
             type = 'Challenge Deck',
+            cards = {
+                {s='S',r='T'},
+                {s='S',r='J'},
+                {s='S',r='Q'},
+                {s='S',r='K'},
+                {s='S',r='A'},
+            }
         },
         restrictions = {
             banned_cards = {},

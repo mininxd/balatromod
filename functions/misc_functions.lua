@@ -1904,6 +1904,7 @@ return {
     joker_slots = 5,
     ante_scaling = 1,
     consumable_slots = 2,
+    zodiac_slots = 1,
     no_faces = false,
     erratic_suits_and_ranks = false,
   }

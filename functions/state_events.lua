@@ -651,7 +651,7 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
         for i=1, #G.jokers.cards + #G.zodiacs.cards do
             local _card = G.jokers.cards[i] or G.zodiacs.cards[i - #G.jokers.cards]
             --calculate the joker effects
-            local effects = eval_card(_card, {cardarea = _card.area, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true})
+            local effects = eval_card(_card, {cardarea = _card.area, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, disp_text = non_loc_disp_text, before = true})
             if effects.jokers then
                 card_eval_status_text(_card, 'jokers', nil, percent, nil, effects.jokers)
                 percent = percent + percent_delta
@@ -690,7 +690,7 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                 local reps = {1}
                 
                 --From Red seal
-                local eval = eval_card(scoring_hand[i], {repetition_only = true,cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, repetition = true})
+                local eval = eval_card(scoring_hand[i], {repetition_only = true,cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, disp_text = non_loc_disp_text, repetition = true})
                 if eval.seals and eval.seals.repetitions then 
                     for h = 1, eval.seals.repetitions do
                         reps[#reps+1] = eval
@@ -699,7 +699,7 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                 --From jokers
                 for j=1, #G.jokers.cards do
                     --calculate the joker effects
-                    local eval = eval_card(G.jokers.cards[j], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = scoring_hand[i], repetition = true})
+                    local eval = eval_card(G.jokers.cards[j], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, disp_text = non_loc_disp_text, other_card = scoring_hand[i], repetition = true})
                     if eval.jokers and eval.jokers.repetitions then 
                         for h = 1, eval.jokers.repetitions do
                             reps[#reps+1] = eval
@@ -713,10 +713,10 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                     end
                     
                     --calculate the hand effects
-                    local effects = {eval_card(scoring_hand[i], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, poker_hand = text})}
+                    local effects = {eval_card(scoring_hand[i], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, poker_hand = text, disp_text = non_loc_disp_text})}
                     for k=1, #G.jokers.cards do
                         --calculate the joker individual card effects
-                        local eval = G.jokers.cards[k]:calculate_joker({cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = scoring_hand[i], individual = true})
+                        local eval = G.jokers.cards[k]:calculate_joker({cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, disp_text = non_loc_disp_text, other_card = scoring_hand[i], individual = true})
                         if eval then 
                             table.insert(effects, eval)
                         end

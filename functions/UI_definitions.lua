@@ -1692,7 +1692,7 @@ end
 function create_UIBox_zodiac_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
-    G.ROOM.T.x + (G.TILE_W - _size*G.CARD_W*1.1)/2, G.hand.T.y,
+    G.ROOM.T.x + 9 + G.hand.T.x, G.hand.T.y,
     _size*G.CARD_W*1.1 + 0.5,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
@@ -5601,7 +5601,7 @@ function G.UIDEF.challenge_list(from_game_over)
       _ch_comp = _ch_comp + 1
     end
   end
-  local t = create_UIBox_generic_options({ back_id = from_game_over and 'from_game_over' or nil, back_func = 'setup_run', back_id = 'challenge_list', contents = {
+  local t = create_UIBox_generic_options({ back_id = from_game_over and 'from_game_over' or nil, back_func = 'setup_run', back_id = 'challenge_list', padding = 0.5, contents = {
     {n=G.UIT.C, config={align = "cm", padding = 0.0}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 7, minw = 4.2}, nodes={
         {n=G.UIT.O, config={id = 'challenge_list', object = Moveable()}},
@@ -5613,7 +5613,7 @@ function G.UIDEF.challenge_list(from_game_over)
         {n=G.UIT.T, config={text = localize{type = 'variable', key = 'challenges_completed', vars = {_ch_comp, _ch_tot}}, scale = 0.4, colour = G.C.WHITE}},
       }},
     }},
-    {n=G.UIT.C, config={align = "cm", minh = 9, minw = 11.5}, nodes={
+    {n=G.UIT.C, config={align = "cm", minh = 9, minw = 13}, nodes={
       {n=G.UIT.O, config={id = 'challenge_area', object = Moveable()}},
     }},
   }})
@@ -5646,7 +5646,7 @@ function G.UIDEF.challenge_list_page(_page)
 end
 function G.UIDEF.challenge_description(_id, daily, is_row)
   local challenge = G.CHALLENGES[_id]
-  if not challenge then return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, minh = 8.82, minw = 11.5, r = 0.1}, nodes={{n=G.UIT.T, config={text = localize('ph_select_challenge'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT}}}} end
+  if not challenge then return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, minh = 8.82, minw = 13.5, r = 0.1}, nodes={{n=G.UIT.T, config={text = localize('ph_select_challenge'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT}}}} end
   local joker_size = 0.6
   local jokers = CardArea(0,0,
       10*joker_size,
@@ -5684,7 +5684,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
   end
   local consumable_col = {n=G.UIT.C, config={align = "cm", padding = 0.05, colour = G.C.L_BLACK, r = 0.1, maxh = 1.8}, nodes={
     {n=G.UIT.T, config={text = localize('k_cap_consumables'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT, vert = true, shadow = true}},
-    {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
+    {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, minw = 2, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
       consumeables and {n=G.UIT.O, config={object = consumeables}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}},
     }}
   }}
@@ -5707,10 +5707,27 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       vouchers and {n=G.UIT.O, config={object = vouchers}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}},
     }}
   }}
+
+  local zodiacs = CardArea(0,0,
+    1.5*joker_size,
+    0.6*G.CARD_H, 
+    {card_limit = get_challenge_rule(challenge, 'modifiers', 'zodiac_slots') or 1,
+    card_w = joker_size*G.CARD_W, type = 'title_2', highlight_limit = 0})
+  if challenge.zodiac then 
+    local zodiac_id = type(challenge.zodiac) == 'table' and challenge.zodiac.id or challenge.zodiac
+    local card = Card(0,0, G.CARD_W*joker_size, G.CARD_H*joker_size, nil, G.P_CENTERS[zodiac_id], {bypass_discovery_center = true,bypass_discovery_ui = true, bypass_lock=true})
+    zodiacs:emplace(card)
+  end
+  local zodiac_col = {n=G.UIT.C, config={align = "cm", padding = 0.05, colour = G.C.L_BLACK, r = 0.1, maxh = 1.8}, nodes={
+    {n=G.UIT.T, config={text = localize('k_zodiac_cap'), scale = 0.33, colour = G.C.UI.TEXT_LIGHT, vert = true, shadow = true}},
+    {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, minw = 1.25, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
+      zodiacs and {n=G.UIT.O, config={object = zodiacs}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}},
+    }}
+  }}
   
   return {n=is_row and G.UIT.R or G.UIT.ROOT, config={align = "cm", r = 0.1, colour = G.C.BLACK}, nodes={
-    {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
-      joker_col, consumable_col, voucher_col
+    {n=G.UIT.R, config={align = "cm", padding = 0.15}, nodes={
+      joker_col, consumable_col, voucher_col, zodiac_col
     }},
     {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
       create_tabs(
@@ -5761,6 +5778,7 @@ function G.UIDEF.challenge_description_tab(args)
       reroll_cost = {value = starting_params.reroll_cost, order = 7},
       joker_slots = {value = starting_params.joker_slots, order = 4},
       consumable_slots = {value = starting_params.consumable_slots, order = 5},
+      zodiac_slots = {value = starting_params.zodiac_slots, order = 6},
       hand_size = {value = starting_params.hand_size, order = 3},
   }
   local bonus_mods = 100

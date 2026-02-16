@@ -2626,6 +2626,14 @@ return {
                     "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})",
                 },
             },
+            z_pisces={
+                name="Pisces",
+                text={
+                "Upgrade {C:orange}Straight{}",
+                "{C:orange}Flush{} 3 Times if hand",
+                "is {C:orange}Royal Flush{}",
+                }
+            },
             z_sagitarius = {
                 name = "Sagitarius",
                 text = {
@@ -4458,6 +4466,9 @@ return {
             },
             ch_m_joker_slots={
                 "{C:attention}#1#{} Joker Slots",
+            },
+            ch_m_zodiac_slots={
+                "{C:attention}#1#{} Zodiac Slots",
             },
             ch_m_none={
                 "{C:inactive}None",

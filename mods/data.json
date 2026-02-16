@@ -1,0 +1,52 @@
+ {
+  "player_id": 1829192929,
+  "player_name": "P1",
+  "score": "1e308",
+  "status": "win",
+  "seed": "F8J2K9LP",
+  "deck": "plasma_deck",
+  "stake": "gold_stake",
+  "joker": [
+    { "name": "j_joker", "edition": "negative", "eternal": true },
+    { "name": "j_perkeo", "eternal": true }
+  ],
+  "consumable": {
+    "tarot": [{ "c_fool": 10 }, { "c_magician": 2 }],
+    "planet": [{ "c_earth": 20 }, { "count": 2 }],
+    "zodiac": "z_sagitarius"
+  },
+  "progress": {
+    "highest_ante": 2,
+    "boss": [
+      { "ante": 2, "name": "Violet Vessel" },
+      { "ante": 1, "name": "The Plant" }
+    ]
+  },
+  "stats": {
+    "dollars": 72,
+    "hands": 12,
+    "discards": 10
+    },
+    "shop": {
+    "rerolls": 13,
+    "purchased": {
+      "joker": 25,
+      "booster": 6
+    },
+    "vouchers": ["v_antimatter", "v_telescope"],
+    "boosters": [ {"Bufoon Pack": 3}, {}]
+  },
+  "hand_levels": {
+    "Flush Five": 15,
+    "Five of a Kind": 10
+  },
+  "cards": {
+    "cards_in_deck": 52,
+    "list": [
+      { "rank": "Ace", "suit": "S", "edition": "Foil", "seal": "Blue" },
+      { "rank": "Jack", "suit": "D" },
+      { "rank": "6", "suit": "H" },
+      { "rank": "Jack", "suit": "C", "edition": "Polychrome" }
+    ]
+  }
+}

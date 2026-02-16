@@ -711,7 +711,7 @@ function Game:init_item_prototypes()
         p_buffoon_normal_2 =        {order = 26, discovered = false, name = "Buffoon Pack", weight = 0.6, kind = 'Buffoon', cost = 4, pos = {x=1,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 2, choose = 1}},
         p_buffoon_jumbo_1 =         {order = 27, discovered = false, name = "Jumbo Buffoon Pack", weight = 0.6, kind = 'Buffoon', cost = 6, pos = {x=2,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 4, choose = 1}},
         p_buffoon_mega_1 =          {order = 28, discovered = false, name = "Mega Buffoon Pack", weight = 0.15, kind = 'Buffoon', cost = 8, pos = {x=3,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 4, choose = 2}},
-        p_zodiac_normal_1 =         {order = 33, discovered = false, name = "Zodiac Pack", weight = 2, kind = 'Zodiac', cost = 4, pos = {x=1,y=5}, atlas = 'Booster', set = 'Booster', config = {extra = 2, choose = 1}},
+        p_zodiac_normal_1 =         {order = 33, discovered = false, name = "Zodiac Pack", weight = 2, kind = 'Zodiac', cost = 4, pos = {x=1,y=5}, atlas = 'Booster', set = 'Booster', config = {extra = 3, choose = 1}},
 
         --Extras       
         soul={pos = {x=0,y=1}},
@@ -804,13 +804,15 @@ function Game:init_item_prototypes()
         end
         if not v.wip and not v.demo then 
             if TESTHELPER_unlocks then v.unlocked = true; v.discovered = true;v.alerted = true end --REMOVE THIS
-            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_')) and meta.unlocked[k] then 
+            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_') or v.set == 'Zodiac') and meta.unlocked[k] then 
                 v.unlocked = true
             end
-            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_')) then self.P_LOCKED[#self.P_LOCKED+1] = v end
-            if not v.discovered and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^e_') or string.find(k, '^c_') or string.find(k, '^p_') or string.find(k, '^v_') or string.find(k, '^z_')) and meta.discovered[k] then 
+            if v.set == 'Zodiac' and v.unlocked == nil then v.unlocked = true end
+            if not v.unlocked and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^v_') or string.find(k, '^z_') or v.set == 'Zodiac') then self.P_LOCKED[#self.P_LOCKED+1] = v end
+            if not v.discovered and (string.find(k, '^j_') or string.find(k, '^b_') or string.find(k, '^e_') or string.find(k, '^c_') or string.find(k, '^p_') or string.find(k, '^v_') or string.find(k, '^z_') or v.set == 'Zodiac') and meta.discovered[k] then 
                 v.discovered = true
             end
+            if v.set == 'Zodiac' and v.discovered then v.unlocked = true end
             if v.discovered and meta.alerted[k] or v.set == 'Back' or v.start_alerted then 
                 v.alerted = true
             elseif v.discovered then
@@ -2589,7 +2591,7 @@ function Game:start_run(args)
         0, 0,
         G.CARD_W,
         CAI.consumeable_H, 
-        {card_limit = 1, type = 'zodiac', highlight_limit = 1})
+        {card_limit = self.GAME.starting_params.zodiac_slots, type = 'zodiac', highlight_limit = 1})
 
     self.jokers = CardArea(
         0, 0,

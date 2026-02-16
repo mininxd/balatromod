@@ -666,7 +666,7 @@ function eval_card(card, context)
         end
     end
 
-    if context.cardarea == G.jokers or context.card == G.consumeables or context.cardarea == G.zodiacs then
+    if context.cardarea == G.jokers or context.cardarea == G.consumeables or context.cardarea == G.zodiacs then
         local jokers = nil
         if context.edition then
             jokers = card:get_edition(context)
@@ -2013,6 +2013,7 @@ function discover_card(card)
         G.GAME.round_scores.new_collection.amt = G.GAME.round_scores.new_collection.amt+1
     end
     card.discovered = true
+    if card.set == 'Zodiac' then card.unlocked = true end
     set_discover_tallies()
     G.E_MANAGER:add_event(Event({
         func = (function()
@@ -2076,13 +2077,37 @@ function get_pack(_key, _type)
     end
     local cume, it, center = 0, 0, nil
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
-        if (not _type or _type == v.kind) and not G.GAME.banned_keys[v.key] then cume = cume + (v.weight or 1 ) end
+        local can_add = true
+        if v.kind == 'Zodiac' then
+            if G.zodiacs and #G.zodiacs.cards > 0 then can_add = false end
+            if can_add and G.GAME.current_round.used_packs then
+                for _, pack_key in pairs(G.GAME.current_round.used_packs) do
+                    if pack_key ~= 'USED' and G.P_CENTERS[pack_key] and G.P_CENTERS[pack_key].kind == 'Zodiac' then
+                        can_add = false; break
+                    end
+                end
+            end
+        end
+        if can_add and (not _type or _type == v.kind) and not G.GAME.banned_keys[v.key] then cume = cume + (v.weight or 1 ) end
     end
     local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..G.GAME.round_resets.ante))*cume
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
         if not G.GAME.banned_keys[v.key] then 
-            if not _type or _type == v.kind then it = it + (v.weight or 1) end
-            if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
+            local can_add = true
+            if v.kind == 'Zodiac' then
+                if G.zodiacs and #G.zodiacs.cards > 0 then can_add = false end
+                if can_add and G.GAME.current_round.used_packs then
+                    for _, pack_key in pairs(G.GAME.current_round.used_packs) do
+                        if pack_key ~= 'USED' and G.P_CENTERS[pack_key] and G.P_CENTERS[pack_key].kind == 'Zodiac' then
+                            can_add = false; break
+                        end
+                    end
+                end
+            end
+            if can_add then
+                if not _type or _type == v.kind then it = it + (v.weight or 1) end
+                if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
+            end
         end
     end
     return center

@@ -339,7 +339,7 @@ function CardArea:draw()
             end
         end
 
-        if self.config.type == 'joker' or self.config.type == 'consumeable' or self.config.type == 'shop' or self.config.type == 'title_2' then 
+        if self.config.type == 'joker' or self.config.type == 'zodiac' or self.config.type == 'consumeable' or self.config.type == 'shop' or self.config.type == 'title_2' then 
             for i = 1, #self.cards do 
                 if self.cards[i] ~= G.CONTROLLER.focused.target then
                     if not self.cards[i].highlighted then

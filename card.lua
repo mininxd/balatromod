@@ -2415,6 +2415,17 @@ end
 function Card:calculate_joker(context)
     if self.debuff then return nil end
     if self.ability.set == "Zodiac" and not self.debuff then
+        if self.ability.name == 'Pisces' or self.config.center.name == 'Pisces' then
+            if context.before and (context.disp_text == "Royal Flush") then
+                update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize('Straight Flush', 'poker_hands'),chips = G.GAME.hands['Straight Flush'].chips, mult = G.GAME.hands['Straight Flush'].mult, level = G.GAME.hands['Straight Flush'].level})
+                level_up_hand(self, 'Straight Flush', nil, 3)
+                return {
+                    message = localize('k_level_up'),
+                    colour = G.C.MULT,
+                    card = self
+                }
+            end
+        end
         if self.ability.name == 'Capricorn' or self.config.center.name == 'Capricorn' then
             if context.before and (context.scoring_name == "Straight" or (context.poker_hands and next(context.poker_hands['Straight']))) then
                 local aces = 0
