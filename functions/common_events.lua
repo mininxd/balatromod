@@ -337,6 +337,8 @@ function ease_background_colour_blind(state, blind_override)
         ease_colour(G.C.DYN_UI.MAIN, G.C.FILTER)
     elseif state == G.STATES.PLANET_PACK then
         ease_colour(G.C.DYN_UI.MAIN, mix_colours(G.C.SECONDARY_SET.Planet, G.C.BLACK, 0.9))
+    elseif state == G.STATES.ZODIAC_PACK then
+        ease_colour(G.C.DYN_UI.MAIN, mix_colours(G.C.BLUE, G.C.BLACK, 0.9))
     elseif G.GAME.blind then 
         G.GAME.blind:change_colour()
     end
@@ -351,6 +353,8 @@ function ease_background_colour_blind(state, blind_override)
         ease_background_colour{new_colour = G.C.FILTER, special_colour = G.C.BLACK, contrast = 2}
     elseif state == G.STATES.PLANET_PACK then
         ease_background_colour{new_colour = G.C.BLACK, contrast = 3}
+    elseif state == G.STATES.ZODIAC_PACK then
+        ease_background_colour{new_colour = G.C.BLUE, special_colour = G.C.BLACK, contrast = 2}
     elseif G.GAME.won then 
         ease_background_colour{new_colour = G.C.BLIND.won, contrast = 1}
     elseif blindname == 'Small Blind' or blindname == 'Big Blind' or blindname == '' then
@@ -2150,6 +2154,10 @@ function get_current_pool(_type, _rarity, _legendary, _append)
 
             if v.no_pool_flag and G.GAME.pool_flags[v.no_pool_flag] then add = nil end
             if v.yes_pool_flag and not G.GAME.pool_flags[v.yes_pool_flag] then add = nil end
+
+            if v.set == 'Booster' and v.kind == 'Zodiac' then
+                if G.zodiacs and #G.zodiacs.cards > 0 then add = nil end
+            end
             
             if add and not G.GAME.banned_keys[v.key] then 
                 _pool[#_pool + 1] = v.key
@@ -2775,6 +2783,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         elseif _c.name == 'Buffoon Pack' then desc_override = 'p_buffoon_normal'; loc_vars = {_c.config.choose, _c.config.extra}
         elseif _c.name == 'Jumbo Buffoon Pack' then desc_override = 'p_buffoon_jumbo'; loc_vars = {_c.config.choose, _c.config.extra}
         elseif _c.name == 'Mega Buffoon Pack' then desc_override = 'p_buffoon_mega'; loc_vars = {_c.config.choose, _c.config.extra}
+        elseif _c.name == 'Zodiac Pack' then desc_override = 'p_zodiac_normal'; loc_vars = {_c.config.choose, _c.config.extra}
         end
         name_override = desc_override
         if not full_UI_table.name then full_UI_table.name = localize{type = 'name', set = 'Other', key = name_override, nodes = full_UI_table.name} end

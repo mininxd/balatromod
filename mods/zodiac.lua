@@ -2,7 +2,7 @@ return {
  z_sagitarius = {
    order = 1,
    cost = 5,
-   consumeable = true,
+   consumeable = false,
    name = "Sagitarius", 
    pos = {x=0,y=0}, 
    set = "Zodiac",
@@ -13,7 +13,7 @@ return {
  z_capricorn = {
    order = 12,
    cost = 5,
-   consumeable = true,
+   consumeable = false,
    name = "Capricorn", 
    pos = {x=4,y=1}, 
    set = "Zodiac", 

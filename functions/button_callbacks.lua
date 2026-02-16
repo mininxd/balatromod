@@ -2280,7 +2280,7 @@ end
   end
 
   G.FUNCS.select_button_check = function(e)
-    if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
+    if (e.config.ref_table.ability.set == 'Zodiac' and #G.zodiacs.cards < G.zodiacs.config.card_limit) or e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
     else
@@ -2290,6 +2290,7 @@ end
   end
 
   G.FUNCS.can_select_card = function(_card)
+    if _card.ability.set == 'Zodiac' then return #G.zodiacs.cards < G.zodiacs.config.card_limit end
     if _card.ability.set ~= 'Joker' or (_card.edition and _card.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
       return true
     end
@@ -2308,7 +2309,7 @@ end
 
   G.FUNCS.can_skip_booster = function(e)
     if G.pack_cards and G.pack_cards.cards and (G.pack_cards.cards[1]) and 
-    (G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK or (G.hand and (G.hand.cards[1] or (G.hand.config.card_limit <= 0)))) then 
+    (G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK or G.STATE == G.STATES.ZODIAC_PACK or (G.hand and (G.hand.cards[1] or (G.hand.config.card_limit <= 0)))) then 
         e.config.colour = G.C.GREY
         e.config.button = 'skip_booster'
     else
@@ -2359,6 +2360,7 @@ end
       (G.STATE == G.STATES.SPECTRAL_PACK and G.STATES.SPECTRAL_PACK) or
       (G.STATE == G.STATES.STANDARD_PACK and G.STATES.STANDARD_PACK) or
       (G.STATE == G.STATES.BUFFOON_PACK and G.STATES.BUFFOON_PACK) or
+      (G.STATE == G.STATES.ZODIAC_PACK and G.STATES.ZODIAC_PACK) or
       G.STATES.PLAY_TAROT
       
     G.CONTROLLER.locks.use = true
@@ -2386,7 +2388,7 @@ end
     if card.area then card.area:remove_card(card) end
     
     if card.ability.consumeable then
-      if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK then
+      if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.ZODIAC_PACK then
         card.T.x = G.hand.T.x + G.hand.T.w/2 - card.T.w/2
         card.T.y = G.hand.T.y + G.hand.T.h/2 - card.T.h/2 - 0.5
         discover_card(card.config.center)
@@ -2410,6 +2412,13 @@ end
     elseif card.ability.set == 'Joker' then 
       card:add_to_deck()
       G.jokers:emplace(card)
+      play_sound('card1', 0.8, 0.6)
+      play_sound('generic1')
+      dont_dissolve = true
+      delay_fac = 0.2
+    elseif card.ability.set == 'Zodiac' then 
+      card:add_to_deck()
+      G.zodiacs:emplace(card)
       play_sound('card1', 0.8, 0.6)
       play_sound('generic1')
       dont_dissolve = true
@@ -2443,7 +2452,7 @@ end
 
                 if (prev_state == G.STATES.TAROT_PACK or prev_state == G.STATES.PLANET_PACK or
                   prev_state == G.STATES.SPECTRAL_PACK or prev_state == G.STATES.STANDARD_PACK or
-                  prev_state == G.STATES.BUFFOON_PACK) and G.booster_pack then
+                  prev_state == G.STATES.BUFFOON_PACK or prev_state == G.STATES.ZODIAC_PACK) and G.booster_pack then
                   if area == G.consumeables then
                     G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
                     G.booster_pack.alignment.offset.py = nil
@@ -2570,9 +2579,10 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
+    not (card.ability.set == 'Zodiac' and #G.zodiacs.cards < G.zodiacs.config.card_limit) and
     not ((card.ability.set == 'Joker' or card.ability.set == 'custom_joker') and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
     not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) then
-      alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
+      alert_no_space(card, card.ability.set == 'Zodiac' and G.zodiacs or (card.ability.consumeable and G.consumeables or G.jokers))
     return false
   end
   return true
@@ -2606,7 +2616,9 @@ G.FUNCS.buy_from_shop = function(e)
             playing_card_joker_effects({c1})
             table.insert(G.playing_cards, c1)
           elseif e.config.id ~= 'buy_and_use' then
-            if c1.ability.consumeable then
+            if c1.ability.set == 'Zodiac' then
+              G.zodiacs:emplace(c1)
+            elseif c1.ability.consumeable then
               G.consumeables:emplace(c1)
             else
               G.jokers:emplace(c1)

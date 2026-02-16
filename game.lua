@@ -711,6 +711,7 @@ function Game:init_item_prototypes()
         p_buffoon_normal_2 =        {order = 26, discovered = false, name = "Buffoon Pack", weight = 0.6, kind = 'Buffoon', cost = 4, pos = {x=1,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 2, choose = 1}},
         p_buffoon_jumbo_1 =         {order = 27, discovered = false, name = "Jumbo Buffoon Pack", weight = 0.6, kind = 'Buffoon', cost = 6, pos = {x=2,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 4, choose = 1}},
         p_buffoon_mega_1 =          {order = 28, discovered = false, name = "Mega Buffoon Pack", weight = 0.15, kind = 'Buffoon', cost = 8, pos = {x=3,y=8}, atlas = 'Booster', set = 'Booster', config = {extra = 4, choose = 2}},
+        p_zodiac_normal_1 =         {order = 33, discovered = false, name = "Zodiac Pack", weight = 2, kind = 'Zodiac', cost = 4, pos = {x=1,y=5}, atlas = 'Booster', set = 'Booster', config = {extra = 2, choose = 1}},
 
         --Extras       
         soul={pos = {x=0,y=1}},
@@ -2588,7 +2589,7 @@ function Game:start_run(args)
         0, 0,
         G.CARD_W,
         CAI.consumeable_H, 
-        {card_limit = 1, type = 'joker', highlight_limit = 1})
+        {card_limit = 1, type = 'zodiac', highlight_limit = 1})
 
     self.jokers = CardArea(
         0, 0,
@@ -2976,6 +2977,10 @@ function Game:update(dt)
 
         if self.STATE == self.STATES.PLANET_PACK then
             self:update_celestial_pack(dt)
+        end
+
+        if self.STATE == self.STATES.ZODIAC_PACK then
+            self:update_zodiac_pack(dt)
         end
 
         if self.STATE == self.STATES.GAME_OVER then
@@ -4071,6 +4076,42 @@ function Game:update_celestial_pack(dt)
                         G.CONTROLLER:recall_cardarea_focus('pack_cards')
                         return true
                     end}))
+                return true
+            end
+        }))  
+    end
+end
+
+function Game:update_zodiac_pack(dt)
+    if self.buttons then self.buttons:remove(); self.buttons = nil end
+    if self.shop then G.shop.alignment.offset.y = G.ROOM.T.y+11 end
+
+    if not G.STATE_COMPLETE then
+        G.STATE_COMPLETE = true
+        G.CONTROLLER.interrupt.focus = true
+        G.E_MANAGER:add_event(Event({
+            trigger = 'immediate',
+            func = function()
+                G.booster_pack = UIBox{
+                    definition = create_UIBox_zodiac_pack(),
+                    config = {align="tmi", offset = {x=0,y=G.ROOM.T.y + 9},major = G.hand, bond = 'Weak'}
+                }
+                G.booster_pack.alignment.offset.y = -2.2
+                        G.ROOM.jiggle = G.ROOM.jiggle + 3
+                ease_background_colour_blind(G.STATES.ZODIAC_PACK)
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'immediate',
+                    func = function()
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.5,
+                            func = function()
+                                G.CONTROLLER:recall_cardarea_focus('pack_cards')
+                                return true
+                            end}))
+                        return true
+                    end
+                }))  
                 return true
             end
         }))  

@@ -350,6 +350,7 @@ function Game:set_globals()
         NEW_ROUND = 19,
         ASYNC_WAIT = 20,
         ASYNC_OFFLINE = 21,
+        ZODIAC_PACK = 22,
     }
 
     self.STAGES = {

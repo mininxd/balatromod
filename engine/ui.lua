@@ -390,7 +390,7 @@ function UIElement:set_values(_T, recalculate)
         if self.config.object then self.config.object.states.collide.can = self.states.collide.can end
     end
 
-    if self.UIT == G.UIT.O and not self.config.no_role then
+    if self.UIT == G.UIT.O and self.config.object and not self.config.no_role then
         self.config.object:set_role(self.config.role or {role_type = 'Minor', major = self, xy_bond = 'Strong', wh_bond = 'Weak', scale_bond = 'Weak'})
     end
 
@@ -403,7 +403,7 @@ function UIElement:set_values(_T, recalculate)
     if self.config.juice then
         if self.UIT == G.UIT.ROOT then self:juice_up() end
         if self.UIT == G.UIT.T then self:juice_up() end
-        if self.UIT == G.UIT.O then self.config.object:juice_up(0.5) end
+        if self.UIT == G.UIT.O and self.config.object then self.config.object:juice_up(0.5) end
         if self.UIT == G.UIT.B then self:juice_up() end
         if self.UIT == G.UIT.C then self:juice_up() end
         if self.UIT == G.UIT.R then self:juice_up() end

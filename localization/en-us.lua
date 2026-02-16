@@ -2083,6 +2083,14 @@ return {
                     "be used immediately",
                 },
             },
+            p_zodiac_normal={
+                name="Zodiac Pack",
+                text={
+                    "Choose {C:attention}#1#{} of up to",
+                    "{C:attention}#2#{C:tarot} Zodiac{} cards to",
+                    "be used immediately",
+                },
+            },
             p_arcana_normal={
                 name="Arcana Pack",
                 text={
@@ -3687,6 +3695,7 @@ return {
             k_ante="Ante",
             k_ante_cap="ANTE",
             k_arcana_pack="Arcana Pack",
+            k_zodiac_pack="Zodiac Pack",
             k_balanced="Balanced",
             k_banned_cards="Banned Cards",
             k_banned_tags="Banned Tags",

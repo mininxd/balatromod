@@ -1,7 +1,6 @@
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
 G.UIDEF = {}
-
 function create_UIBox_zodiac_card(card)
   G.zodiac_card_area = CardArea(
     0, 0,
@@ -12,7 +11,6 @@ function create_UIBox_zodiac_card(card)
   card.T.x = G.zodiac_card_area.T.x
   card.T.y = G.zodiac_card_area.T.y
   G.zodiac_card_area:emplace(card)
-
   local t = {n=G.UIT.ROOT, config = {align = 'cm', r = 0.15, colour = G.C.BLACK, padding = 0.15, shadow = true}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
       {n=G.UIT.T, config={text = "ZODIAC CARD", scale = 0.8, colour = G.C.WHITE, shadow = true}}
@@ -28,7 +26,6 @@ function create_UIBox_zodiac_card(card)
   }}
   return t
 end
-
 function create_UIBox_debug_tools()
   G.debug_tool_config = G.debug_tool_config or {}
   G.FUNCS.DT_add_money = function() if G.STAGE == G.STAGES.RUN then ease_dollars(10) end end
@@ -73,7 +70,6 @@ function create_UIBox_debug_tools()
         blockable = false,
         func = function()
             G.DT_jimbo = Card_Character({x = G.ROOM.T.w/2,y = G.ROOM.T.h/2}) 
-
             G.DT_jimbo:set_alignment{
                                   major = G.ROOM_ATTACH,
                                   type = 'cm'
@@ -81,7 +77,6 @@ function create_UIBox_debug_tools()
                         return true
                 end
             }))
-
     end end
     G.FUNCS.DT_jimbo_talk = function() 
       if G.DT_jimbo then
@@ -92,7 +87,6 @@ function create_UIBox_debug_tools()
       }, 'cr')
         G.DT_jimbo:say_stuff(4) end
     end
-
     local t = {n=G.UIT.ROOT, config = {align = 'cm', r = 0.1}, nodes={
       UIBox_dyn_container({
       {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
@@ -168,14 +162,12 @@ function create_UIBox_debug_tools()
   }}
   return t
 end
-
 function create_UIBox_notify_alert(_achievement, _type, _from_left)
   local _c, _atlas = G.P_CENTERS[_achievement],
     (_type == 'Joker' or _type == 'custom_joker') and G.ASSET_ATLAS[(_type == 'custom_joker' and 'custom_joker' or 'Joker')] or
     _type == 'Voucher' and G.ASSET_ATLAS["Voucher"] or
     _type == 'Back' and G.ASSET_ATLAS["centers"] or
     G.ASSET_ATLAS["icons"]
-
   local t_s = Sprite(0,0,1.5*(_atlas.px/_atlas.py),1.5,_atlas, _c and _c.pos or {x=3, y=0})
   t_s.states.drag.can = false
   t_s.states.hover.can = false
@@ -185,10 +177,8 @@ function create_UIBox_notify_alert(_achievement, _type, _from_left)
     (_type == 'Joker' or _type == 'custom_joker') and localize('k_joker') or 
     _type == 'Voucher' and localize('k_voucher') or
     _type == 'Back' and localize('k_deck') or 'ERROR'
-
   if _achievement == 'b_challenge' then subtext = localize('k_challenges') end
   local name = _type == 'achievement' and localize(_achievement, 'achievement_names') or 'ERROR'
-
     local t = {n=G.UIT.ROOT, config = {align = _from_left and 'cr' or 'cl', r = 0.1, padding = 0.06, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
     {n=G.UIT.R, config={align = _from_left and 'cr' or 'cl', padding = 0.2, minw = 20, r = 0.1, colour = G.C.BLACK, outline = 1.5, outline_colour = G.C.GREY}, nodes={
       {n=G.UIT.R, config={align = "cm", r = 0.1}, nodes={
@@ -219,7 +209,6 @@ function create_UIBox_notify_alert(_achievement, _type, _from_left)
   }}
   return t
 end
-
 function create_UIBox_online_high_scores()
   G.HTTP_MANAGER.out_channel:push({get_score = true})
   local padding, col, minw = 0.05, G.C.UI.TRANSPARENT_DARK, 0
@@ -229,14 +218,12 @@ function create_UIBox_online_high_scores()
   }}
   return t
 end
-
 function create_UIBox_loading_screen()
   local t = {n=G.UIT.ROOT, config = {align = 'cm', r = 0.1, colour = G.C.CLEAR}, nodes={
     {n=G.UIT.O, config={object = DynaText({string = {'Loading Cloud save...'}, colours = {G.C.WHITE},shadow = true, bump = true, scale = 0.5}),}},
   }}
 return t
 end
-
 function create_UIBox_offline()
   local text_loc = localize('ml_offline_message')
   if type(text_loc) ~= 'table' then text_loc = {"ERROR"} end
@@ -246,7 +233,6 @@ function create_UIBox_offline()
       {n=G.UIT.T, config={text = v,colour = G.C.UI.TEXT_LIGHT, scale = 0.5}}
     }}
   end
-
   local t = create_UIBox_generic_options({no_back = true, contents = {
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes=
       text_rows
@@ -258,7 +244,6 @@ function create_UIBox_offline()
   }})
 return t
 end
-
 function create_UIBox_high_scores_filling(_resp)
   local scores = {}
   _resp = assert(loadstring(_resp))()
@@ -291,11 +276,10 @@ function create_UIBox_high_scores_filling(_resp)
   end
   return {n=G.UIT.ROOT, config = {align = 'cm', r = 0.1, colour = G.C.L_BLACK, padding = 0.05}, nodes=scores}
 end
-
 function G.UIDEF.use_and_sell_buttons(card)
   local sell = nil
   local use = nil
-  if card.area and card.area.config.type == 'joker' then
+  if card.area and (card.area.config.type == 'joker' or card.area.config.type == 'zodiac') then
     sell = {n=G.UIT.C, config={align = "cr"}, nodes={
       {n=G.UIT.C, config={ref_table = card, align = "cr",padding = 0.1, r=0.08, minw = 1.25, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'sell_card', func = 'can_sell_card'}, nodes={
         {n=G.UIT.B, config = {w=0.1,h=0.6}},
@@ -325,7 +309,7 @@ function G.UIDEF.use_and_sell_buttons(card)
     use = 
     {n=G.UIT.C, config={align = "cr"}, nodes={
       
-      {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, minh = (card.area and card.area.config.type == 'joker') and 0 or 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={
+      {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, minh = (card.area and (card.area.config.type == 'joker' or card.area.config.type == 'zodiac')) and 0 or 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={
         {n=G.UIT.B, config = {w=0.1,h=0.6}},
         {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true}}
       }}
@@ -351,16 +335,12 @@ function G.UIDEF.use_and_sell_buttons(card)
     }}
   return t
 end
-
 function G.UIDEF.card_focus_ui(card)
   local card_width = card.T.w + (card.ability.consumeable and -0.1 or card.ability.set == 'Voucher' and -0.16 or 0)
-
   local playing_card_colour = copy_table(G.C.WHITE)
   playing_card_colour[4] = 1.5
   if G.hand and card.area == G.hand then ease_value(playing_card_colour, 4, -1.5, nil, 'REAL',nil, 0.2, 'quad') end
-
   local tcnx, tcny = card.T.x + card.T.w/2 - G.ROOM.T.w/2, card.T.y + card.T.h/2 - G.ROOM.T.h/2
-
   local base_background = UIBox{
     T = {card.VT.x,card.VT.y,0,0},
     definition = 
@@ -377,16 +357,12 @@ function G.UIDEF.card_focus_ui(card)
         r_bond = (not G.hand or card.area ~= G.hand) and 'Weak' or 'Strong'
       }
   }
-
   base_background.set_alignment = function()
     local cnx, cny = card.T.x + card.T.w/2 - G.ROOM.T.w/2, card.T.y + card.T.h/2 - G.ROOM.T.h/2
     Moveable.set_alignment(card.children.focused_ui, {offset = {x= 0.007*cnx*card.T.w, y = 0.007*cny*card.T.h}})
   end
-
   local base_attach = base_background:get_UIE_by_ID('ATTACH_TO_ME')
-
-  --The card UI can have BUY, REDEEM, USE, and SELL buttons depending on the context of the card
-  if card.area == G.shop_jokers and G.shop_jokers then --Add a buy button
+  if card.area == G.shop_jokers and G.shop_jokers then 
     local buy_and_use = nil
     if card.ability.consumeable then 
       base_attach.children.buy_and_use = G.UIDEF.card_focus_button{
@@ -400,48 +376,44 @@ function G.UIDEF.card_focus_ui(card)
       func = 'buy_button_check', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use
     }
   end
-  if card.area == G.shop_vouchers and G.shop_vouchers then --Add a redeem button
+  if card.area == G.shop_vouchers and G.shop_vouchers then 
     base_attach.children.redeem = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'buy',
       func = 'can_redeem', button = 'redeem_from_shop', card_width = card_width
     }
   end
-  if card.area == G.shop_booster and G.shop_booster then --Add a redeem button
+  if card.area == G.shop_booster and G.shop_booster then 
     base_attach.children.redeem = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'buy',
       func = 'can_open', button = 'open_booster', card_width = card_width*0.85
     }
   end
   if ((card.area == G.consumeables and G.consumeables) or (card.area == G.pack_cards and G.pack_cards)) and
-  card.ability.consumeable then --Add a use button
+  card.ability.consumeable then 
     base_attach.children.use = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'use',
       func = 'can_use_consumeable', button = 'use_card', card_width = card_width
     }
   end
-  if (card.area == G.pack_cards and G.pack_cards) and not card.ability.consumeable then --Add a use button
+  if (card.area == G.pack_cards and G.pack_cards) and not card.ability.consumeable then 
     base_attach.children.use = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'select',
       func = 'select_button_check', button = 'use_card', card_width = card_width
     }
   end
-  if (card.area == G.jokers and G.jokers or card.area == G.consumeables and G.consumeables) and G.STATE ~= G.STATES.TUTORIAL then --Add a sell button
+  if (card.area == G.jokers or card.area == G.consumeables or card.area == G.zodiacs) and G.STATE ~= G.STATES.TUTORIAL then
     base_attach.children.sell = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'sell',
       func = 'can_sell_card', button = 'sell_card', card_width = card_width
     }
   end
-
   return base_background
 end
-
 function G.UIDEF.card_focus_button(args)
   if not args then return end
-
   local button_contents = {}
   if args.type == 'sell' then 
-    button_contents = 
-    {n=G.UIT.C, config={align = "cl"}, nodes={
+    button_contents = {n=G.UIT.C, config={align = "cl"}, nodes={
       {n=G.UIT.R, config={align = "cl", maxw = 1}, nodes={
         {n=G.UIT.T, config={text = localize('b_sell'),colour = G.C.UI.TEXT_LIGHT, scale = 0.4, shadow = true}}
       }},
@@ -459,8 +431,7 @@ function G.UIDEF.card_focus_button(args)
   elseif args.type == 'use' then
     button_contents = {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.WHITE, scale = 0.5}}
   elseif args.type == 'buy_and_use' then
-    button_contents = 
-    {n=G.UIT.C, config={align = "cr"}, nodes={
+    button_contents = {n=G.UIT.C, config={align = "cr"}, nodes={
       {n=G.UIT.R, config={align = "cr", maxw = 1}, nodes={
         {n=G.UIT.T, config={text = localize('b_buy'),colour = G.C.UI.TEXT_LIGHT, scale = 0.4, shadow = true}}
       }},
@@ -469,26 +440,24 @@ function G.UIDEF.card_focus_button(args)
       }}
     }}
   end
-
   return UIBox{
     T = {args.card.VT.x,args.card.VT.y,0,0},
-    definition = 
-      {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
-        {n=G.UIT.R, config={id = args.type == 'buy_and_use' and 'buy_and_use' or nil, ref_table = args.card, ref_parent = args.parent, align =  args.type == 'sell' and 'cl' or 'cr', colour = G.C.BLACK, shadow = true, r = 0.08, func = args.func, one_press = true, button = args.button, focus_args = {type = 'none'}, hover = true}, nodes={
-          {n=G.UIT.R, config={align = args.type == 'sell' and 'cl' or 'cr', minw = 1 + (args.type == 'select' and 0.1 or 0), minh = args.type == 'sell' and 1.5 or 1, padding = 0.08,
-              focus_args = {button = args.type == 'sell' and 'leftshoulder' or args.type == 'buy_and_use' and 'leftshoulder' or 'rightshoulder', scale = 0.55, orientation = args.type == 'sell' and 'tli' or 'tri', offset = {x = args.type == 'sell' and 0.1 or -0.1, y = 0}, type = 'none'},
-              func = 'set_button_pip'}, nodes={
-            {n=G.UIT.R, config={align = "cm", minh = 0.3}, nodes={}},
-            {n=G.UIT.R, config={align = "cm"}, nodes={
-              args.type ~= 'sell' and {n=G.UIT.C, config={align = "cm",minw = 0.2, minh = 0.6}, nodes={}} or nil,
-              {n=G.UIT.C, config={align = "cm", maxw = 1}, nodes={
-                button_contents
-              }},
-              args.type == 'sell' and {n=G.UIT.C, config={align = "cm",minw = 0.2, minh = 0.6}, nodes={}} or nil,
-            }}
+    definition = {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
+      {n=G.UIT.R, config={id = args.type == 'buy_and_use' and 'buy_and_use' or nil, ref_table = args.card, ref_parent = args.parent, align =  args.type == 'sell' and 'cl' or 'cr', colour = G.C.BLACK, shadow = true, r = 0.08, func = args.func, one_press = true, button = args.button, focus_args = {type = 'none'}, hover = true}, nodes={
+        {n=G.UIT.R, config={align = args.type == 'sell' and 'cl' or 'cr', minw = 1 + (args.type == 'select' and 0.1 or 0), minh = args.type == 'sell' and 1.5 or 1, padding = 0.08,
+            focus_args = {button = args.type == 'sell' and 'leftshoulder' or args.type == 'buy_and_use' and 'leftshoulder' or 'rightshoulder', scale = 0.55, orientation = args.type == 'sell' and 'tli' or 'tri', offset = {x = args.type == 'sell' and 0.1 or -0.1, y = 0}, type = 'none'},
+            func = 'set_button_pip'}, nodes={
+          {n=G.UIT.R, config={align = "cm", minh = 0.3}, nodes={}},
+          {n=G.UIT.R, config={align = "cm"}, nodes={
+            args.type ~= 'sell' and {n=G.UIT.C, config={align = "cm",minw = 0.2, minh = 0.6}, nodes={}} or nil,
+            {n=G.UIT.C, config={align = "cm", maxw = 1}, nodes={
+              button_contents
+            }},
+            args.type == 'sell' and {n=G.UIT.C, config={align = "cm",minw = 0.2, minh = 0.6}, nodes={}} or nil,
           }}
         }}
-      }}, 
+      }}
+    }}, 
     config = {
         align = args.type == 'sell' and 'cl' or 'cr',
         offset = {x=(args.type == 'sell' and -1 or 1)*((args.card_width or 0) - 0.17 - args.card.T.w/2),y=args.type == 'buy_and_use' and 0.6 or (args.buy_and_use) and -0.6 or 0}, 
@@ -496,7 +465,6 @@ function G.UIDEF.card_focus_button(args)
       }
   }
 end
-
 function G.UIDEF.speech_bubble(text_key, loc_vars) 
   local text = {}
   if loc_vars and loc_vars.quip then
@@ -515,15 +483,12 @@ function G.UIDEF.speech_bubble(text_key, loc_vars)
               }}
   return t
 end
-
 function create_UIBox_highlight(rect)
   local t = {n=G.UIT.ROOT, config = {align = "cm", minh = rect.T.h+0.1, minw = rect.T.w+0.15, r = 0.15, colour = G.C.DARK_EDITION}, nodes={
   }}
 return t
 end
-
 function G.UIDEF.deck_preview(args) 
-
   local _minh, _minw = 0.35, 0.5
   local suit_labels = {}
   local suit_counts = {
@@ -551,17 +516,14 @@ function G.UIDEF.deck_preview(args)
     Clubs = {},
     Diamonds = {},
   }
-
   for k, v in pairs(SUITS) do
     for i = 1, 14 do
       SUITS[k][#SUITS[k]+1] = {}
     end
   end
-
   local suit_map = {'Spades', 'Hearts', 'Clubs', 'Diamonds'}
   local stones = nil
   local rank_name_mapping = {'A','K','Q','J','10',9,8,7,6,5,4,3,2}
-
   for k, v in ipairs(G.playing_cards) do
     if v.ability.effect == 'Stone Card' then
       stones = stones or 0
@@ -582,10 +544,8 @@ function G.UIDEF.deck_preview(args)
       end
     end
   end
-
   wheel_flipped_text = (wheel_flipped > 0) and {n=G.UIT.T, config={text = '?',colour = G.C.FILTER, scale =0.25, shadow = true}} or nil
   flip_col = wheel_flipped_text and mix_colours(G.C.FILTER, G.C.WHITE,0.7) or G.C.WHITE
-
   suit_labels[#suit_labels+1] = {n=G.UIT.R, config={align = "cm", r = 0.1, padding = 0.04, minw = _minw, minh = 2*_minh+0.25}, nodes={
     stones and {n=G.UIT.T, config={text = localize('ph_deck_preview_stones')..': ',colour = G.C.WHITE, scale =0.25, shadow = true}}
     or nil,
@@ -614,7 +574,6 @@ function G.UIDEF.deck_preview(args)
     table.insert(_row, _col)
   end
   table.insert(deck_tables, {n=G.UIT.R, config={align = "cm", padding = 0.04}, nodes=_row})
-
   for j = 1, 4 do
       _row = {}
       _bg_col = mix_colours(G.C.SUITS[suit_map[j]], G.C.L_BLACK, 0.7)
@@ -629,16 +588,13 @@ function G.UIDEF.deck_preview(args)
       end
       table.insert(deck_tables, {n=G.UIT.R, config={align = "cm", r = 0.1, padding = 0.04, minh = 0.4, colour = _bg_col}, nodes=_row})
   end
-
   for k, v in ipairs(suit_map) do
     local _x = (v == 'Spades' and 3) or (v == 'Hearts' and 0) or (v == 'Clubs' and 2) or (v == 'Diamonds' and 1)
     local t_s = Sprite(0,0,0.3,0.3,G.ASSET_ATLAS["ui_"..(G.SETTINGS.colourblind_option and 2 or 1)], {x=_x, y=1})
     t_s.states.drag.can = false
     t_s.states.hover.can = false
     t_s.states.collide.can = false
-
     if mod_suit_counts[v] ~= suit_counts[v] then mod_suit_diff = true end
-
     suit_labels[#suit_labels+1] = 
     {n=G.UIT.R, config={align = "cm", r = 0.1, padding = 0.03, colour = G.C.JOKER_GREY}, nodes={
       {n=G.UIT.C, config={align = "cm", minw = _minw, minh = _minh}, nodes={
@@ -650,8 +606,6 @@ function G.UIDEF.deck_preview(args)
       }}
     }}
   end
-
-
   local t = 
   {n=G.UIT.ROOT, config={align = "cm", colour = G.C.JOKER_GREY, r = 0.1, emboss = 0.05, padding = 0.07}, nodes={
     {n=G.UIT.R, config={align = "cm", r = 0.1, emboss = 0.05, colour = G.C.BLACK, padding = 0.1}, nodes={
@@ -673,13 +627,11 @@ function G.UIDEF.deck_preview(args)
   }}
   return t
 end
-
 function create_UIBox_character_button(args) 
   local button = args.button or "NONE"
   local func = args.func or nil
   local colour = args.colour or G.C.RED
   local update_func = args.update_func or nil
-
   local t = {n=G.UIT.ROOT, config = {align = "cm", padding = 0.1, colour = G.C.CLEAR}, nodes={
     {n=G.UIT.C, config={align = "tm", minw = 2.0, padding = 0.2, minh = 1.5, r = 0.1, hover = true, colour = colour, button = func, func = update_func, shadow = true, maxw = args.maxw}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
@@ -697,7 +649,6 @@ function G.UIDEF.shop()
       G.GAME.shop.joker_max*1.02*G.CARD_W,
       1.05*G.CARD_H, 
       {card_limit = G.GAME.shop.joker_max, type = 'shop', highlight_limit = 1})
-
     if G.FTP_LOCKED then
      G.shop_demo = G.GAME.round_resets.blind_states.Small == 'Upcoming' and CardArea(
        G.hand.T.x+0,
@@ -706,21 +657,18 @@ function G.UIDEF.shop()
        1.05*G.CARD_H, 
        {card_limit = 100, type = 'shop', highlight_limit = 0}) or nil
     end
-
     G.shop_vouchers = CardArea(
       G.hand.T.x+0,
       G.hand.T.y+G.ROOM.T.y + 9,
       2.1*G.CARD_W,
       1.05*G.CARD_H, 
       {card_limit = 1, type = 'shop', highlight_limit = 1})
-
     G.shop_booster = CardArea(
       G.hand.T.x+0,
       G.hand.T.y+G.ROOM.T.y + 9,
       2.4*G.CARD_W,
       1.15*G.CARD_H, 
       {card_limit = 2, type = 'shop', highlight_limit = 1, card_w = 1.27*G.CARD_W})
-
     local shop_sign = AnimatedSprite(0,0, 4.4, 2.2, G.ANIMATION_ATLAS['shop_sign'])
     shop_sign:define_draw_steps({
       {shader = 'dissolve', shadow_height = 0.05},
@@ -874,7 +822,6 @@ end
           end
       end
   end
-
   function create_shop_card_ui(card, type, area)
       G.E_MANAGER:add_event(Event({
         trigger = 'after',
@@ -912,7 +859,6 @@ end
               }} 
             }}
             
-
           card.children.price = UIBox{
             definition = t1,
             config = {
@@ -923,7 +869,6 @@ end
               parent = card
             }
           }
-
           card.children.buy_button = UIBox{
             definition = t2,
             config = {
@@ -934,7 +879,6 @@ end
               parent = card
             }
           }
-
           if card.ability.consumeable then --and card:can_use_consumeable(true, true)
             card.children.buy_and_use_button = UIBox{
               definition = t3,
@@ -947,14 +891,11 @@ end
               }
             }
           end
-
           card.children.price.alignment.offset.y = card.ability.set == 'Booster' and 0.5 or 0.38
-
             return true
         end)
       }))
   end
-
   function drag_target(args)
     args = args or {}
     args.text = args.text or {'BUY'}
@@ -969,14 +910,11 @@ end
       offset = args.offset or {x=0,y=0}, 
       major = args.cover or args.major or nil,
     }
-
     local drag_area_width =(args.T and args.T.w or args.cover and args.cover.T.w or 0.001) + (args.cover_padding or 0)
-
     local text_rows = {}
     for k, v in ipairs(args.text) do
       text_rows[#text_rows+1] = {n=G.UIT.R, config={align = "cm", padding = 0.05, maxw = drag_area_width-0.1}, nodes={{n=G.UIT.O, config={object = DynaText({scale = args.scale, string = v, maxw = args.maxw or (drag_area_width-0.1), colours = {args.text_colour},float = true, shadow = true, silent = not args.noisy, 0.7, pop_in = 0, pop_in_rate = 6, rotate = args.rotate or nil})}}}}
     end
-
     args.DT = UIBox{
       T = {0,0,0,0},
       definition = 
@@ -984,11 +922,9 @@ end
       config = args.uibox_config
     }
     args.DT.attention_text = true
-
     if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.highlights then 
       G.OVERLAY_TUTORIAL.highlights[#G.OVERLAY_TUTORIAL.highlights+1] = args.DT
     end
-
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0,
@@ -1010,7 +946,6 @@ end
       end
       }))
   end
-
   function attention_text(args)
     args = args or {}
     args.text = args.text or 'test'
@@ -1020,9 +955,7 @@ end
     args.pos = args.pos or {x = 0, y = 0}
     args.align = args.align or 'cm'
     args.emboss = args.emboss or nil
-
     args.fade = 1
-
     if args.cover then
       args.cover_colour = copy_table(args.cover_colour or G.C.RED)
       args.cover_colour_l = copy_table(lighten(args.cover_colour, 0.2))
@@ -1030,13 +963,11 @@ end
     else
       args.cover_colour = copy_table(G.C.CLEAR)
     end
-
     args.uibox_config = {
       align = args.align or 'cm',
       offset = args.offset or {x=0,y=0}, 
       major = args.cover or args.major or nil,
     }
-
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0,
@@ -1052,7 +983,6 @@ end
             config = args.uibox_config
           }
           args.AT.attention_text = true
-
           args.text = args.AT.UIRoot.children[1].config.object
           args.text:pulse(0.5)
           
@@ -1087,7 +1017,6 @@ end
           return true
       end
       }))
-
       G.E_MANAGER:add_event(Event({
         trigger = 'after',
         delay = args.hold,
@@ -1113,7 +1042,6 @@ end
         end
       }))
   end
-
   function create_UIBox_buttons()
     local text_scale = 0.45
     local button_height = 1.3
@@ -1122,17 +1050,14 @@ end
         {n=G.UIT.T, config={text = localize('b_play_hand'), scale = text_scale, colour = G.C.UI.TEXT_LIGHT, focus_args = {button = 'x', orientation = 'bm'}, func = 'set_button_pip'}}
       }},
     }}
-
     local discard_button = {n=G.UIT.C, config={id = 'discard_button',align = "tm", padding = 0.3, r = 0.1, minw = 2.5, minh = button_height, hover = true, colour = G.C.RED, button = "discard_cards_from_highlighted", one_press = true, shadow = true, func = 'can_discard'}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
         {n=G.UIT.T, config={text = localize('b_discard'), scale = text_scale, colour = G.C.UI.TEXT_LIGHT, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
       }}
     }}
-
     local t = {
       n=G.UIT.ROOT, config = {align = "cm", minw = 1, minh = 0.3,padding = 0.15, r = 0.1, colour = G.C.CLEAR}, nodes={
           G.SETTINGS.play_button_pos == 1 and discard_button or play_button,
-
           {n=G.UIT.C, config={align = "cm", padding = 0.1, r = 0.1, colour =G.C.UI.TRANSPARENT_DARK, outline = 1.5, outline_colour = mix_colours(G.C.WHITE,G.C.JOKER_GREY, 0.7), line_emboss = 1}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
               {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
@@ -1154,7 +1079,6 @@ end
       }
     return t
   end
-
   function desc_from_rows(desc_nodes, empty, maxw)
     local t = {}
     for k, v in ipairs(desc_nodes) do
@@ -1164,7 +1088,6 @@ end
       {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}
     }}
   end
-
   function transparent_multiline_text(desc_nodes)
     local t = {}
     for k, v in ipairs(desc_nodes) do
@@ -1172,7 +1095,6 @@ end
     end
     return {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}
   end
-
   function info_tip_from_rows(desc_nodes, name)
     local t = {}
     for k, v in ipairs(desc_nodes) do
@@ -1183,7 +1105,6 @@ end
       {n=G.UIT.R, config={align = "cm", minw = 1.5, minh = 0.4, r = 0.1, padding = 0.05, colour = G.C.WHITE}, nodes={{n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}}}
     }}
   end
-
   function overlay_infotip(text_rows)
     local t = {}
     if type(text_rows) ~= 'table' then text_rows = {"ERROR"} end
@@ -1194,17 +1115,16 @@ end
     end
     return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR, padding = 0.1}, nodes=t}
   end
-
   function name_from_rows(name_nodes, background_colour)
     if not name_nodes or (type(name_nodes) ~= 'table') or not next(name_nodes) then return end
     return {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = background_colour, emboss = background_colour and 0.05 or nil}, nodes=name_nodes}
   end
-
   function G.UIDEF.card_h_popup(card)
     if card.ability_UIBox_table then
       local AUT = card.ability_UIBox_table
       local debuffed = card.debuff
       local card_type_colour = get_type_colour(card.config.center or card.config, card)
+      if AUT.card_type == 'Zodiac' then card_type_colour = G.C.SECONDARY_SET.Tarot end
       local card_type_background = 
           (AUT.card_type == 'Locked' and G.C.BLACK) or 
           ((AUT.card_type == 'Undiscovered') and darken(G.C.JOKER_GREY, 0.3)) or 
@@ -1213,22 +1133,17 @@ end
           (card_type_colour and darken(G.C.BLACK, 0.1)) or
           G.C.SET[AUT.card_type] or
           {0, 1, 1, 1}
-
       local outer_padding = 0.05
       local card_type = localize('k_'..string.lower(AUT.card_type))
       if AUT.card_type == 'Zodiac' then card_type = localize('b_zodiac_cards') end
-
       if (AUT.card_type == 'Joker' or AUT.card_type == 'custom_joker' or (AUT.badges and AUT.badges.force_rarity)) and AUT.card_type ~= 'Zodiac' then card_type = ({localize('k_common'), localize('k_uncommon'), localize('k_rare'), localize('k_legendary')})[card.config.center.rarity] end
       if AUT.card_type == 'Enhanced' then card_type = localize{type = 'name_text', key = card.config.center.key, set = 'Enhanced'} end
       card_type = (debuffed and AUT.card_type ~= 'Enhanced') and localize('k_debuffed') or card_type
-
       local disp_type, is_playing_card = 
                 (AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' and AUT.card_type ~= 'Default') or debuffed,
                 AUT.card_type == 'Enhanced' or AUT.card_type == 'Default'
-
       local info_boxes = {}
       local badges = {}
-
       if AUT.badges.card_type or AUT.badges.force_rarity then
         badges[#badges + 1] = create_badge(((card.ability.name == 'Pluto' or card.ability.name == 'Ceres' or card.ability.name == 'Eris') and localize('k_dwarf_planet')) or (card.ability.name == 'Planet X' and localize('k_planet_q') or card_type),card_type_colour, nil, 1.2)
       end
@@ -1238,7 +1153,6 @@ end
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
         end
       end
-
       if AUT.info then
         for k, v in ipairs(AUT.info) do
           info_boxes[#info_boxes+1] =
@@ -1249,7 +1163,6 @@ end
         }}
         end
       end
-
       return {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
         {n=G.UIT.C, config={align = "cm", func = 'show_infotip',object = Moveable(),ref_table = next(info_boxes) and info_boxes or nil}, nodes={
           {n=G.UIT.R, config={padding = outer_padding, r = 0.12, colour = lighten(G.C.JOKER_GREY, 0.5), emboss = 0.07}, nodes={
@@ -1263,7 +1176,6 @@ end
       }}
     end
   end
-
   function get_badge_colour(key)
     G.BADGE_COL = G.BADGE_COL or {
       eternal = G.C.ETERNAL,
@@ -1281,7 +1193,6 @@ end
     }
     return G.BADGE_COL[key] or {1, 0, 0, 1}
   end
-
   function create_badge(_string, _badge_col, _text_col, scaling)
     scaling = scaling or 1
     return {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1292,7 +1203,6 @@ end
       }}
     }}
   end
-
   function create_UIBox_detailed_tooltip(_center)
     local full_UI_table = {
         main = {},
@@ -1338,12 +1248,10 @@ end
         {{n=G.UIT.C, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.WHITE, emboss = 0.05}, nodes=rows}}}
     return t
   end
-
 function create_UIBox_HUD_blind()
   local scale = 0.4
   local stake_sprite = get_stake_sprite(G.GAME.stake or 1, 0.5)
   G.GAME.blind:change_dim(1.5,1.5)
-
   return {n=G.UIT.ROOT, config={align = "cm", minw = 4.5, r = 0.1, colour = G.C.BLACK, emboss = 0.05, padding = 0.05, func = 'HUD_blind_visible', id = 'HUD_blind'}, nodes={
       {n=G.UIT.R, config={align = "cm", minh = 0.7, r = 0.1, emboss = 0.05, colour = G.C.DYN_UI.MAIN}, nodes={
         {n=G.UIT.C, config={align = "cm", minw = 3}, nodes={
@@ -1380,7 +1288,6 @@ function create_UIBox_HUD_blind()
       }},
     }}
 end
-
 function add_tag(_tag)
   G.HUD_tags = G.HUD_tags or {}
   local tag_sprite_ui = _tag:generate_UI()
@@ -1394,7 +1301,6 @@ function add_tag(_tag)
         major = G.HUD_tags[1] and G.HUD_tags[#G.HUD_tags] or G.ROOM_ATTACH}
   }
   discover_card(G.P_TAGS[_tag.key])
-
   for i = 1, #G.GAME.tags do
     G.GAME.tags[i]:apply_to_run({type = 'tag_add', tag = _tag})
   end
@@ -1402,13 +1308,10 @@ function add_tag(_tag)
   G.GAME.tags[#G.GAME.tags+1] = _tag
   _tag.HUD_tag = G.HUD_tags[#G.HUD_tags]
 end
-
 function create_UIBox_HUD()
     local scale = 0.4
     local stake_sprite = get_stake_sprite(G.GAME.stake or 1, 0.5)
-
     local contents = {}
-
     local spacing = 0.13
     local temp_col = G.C.DYN_UI.BOSS_MAIN
     local temp_col2 = G.C.DYN_UI.BOSS_DARK
@@ -1471,7 +1374,6 @@ function create_UIBox_HUD()
               }},
             }},            
     }
-
     contents.hand =
         {n=G.UIT.R, config={align = "cm", id = 'hand_text_area', colour = darken(G.C.BLACK, 0.1), r = 0.1, emboss = 0.05, padding = 0.03}, nodes={
             {n=G.UIT.C, config={align = "cm"}, nodes={
@@ -1514,7 +1416,6 @@ function create_UIBox_HUD()
         }}
       }}
     }}
-
     contents.buttons = {
       {n=G.UIT.C, config={align = "cm", r=0.1, colour = G.C.CLEAR, shadow = true, id = 'button_area', padding = 0.2}, nodes={
           {n=G.UIT.R, config={id = 'run_info_button', align = "cm", minh = 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.RED, button = "run_info", shadow = true}, nodes={
@@ -1532,7 +1433,6 @@ function create_UIBox_HUD()
           }}
         }}
     }
-
     return {n=G.UIT.ROOT, config = {align = "cm", padding = 0.03, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
       {n=G.UIT.R, config = {align = "cm", padding= 0.05, colour = G.C.DYN_UI.MAIN, r=0.1}, nodes={
         {n=G.UIT.R, config={align = "cm", colour = G.C.DYN_UI.BOSS_DARK, r=0.1, minh = 30, padding = 0.08}, nodes={
@@ -1548,7 +1448,6 @@ function create_UIBox_HUD()
       }}
     }}
 end
-
 function create_UIBox_blind_select()
   G.blind_prompt_box = UIBox{
     definition =
@@ -1571,7 +1470,6 @@ function create_UIBox_blind_select()
         return true
     end)
   }))
-
   local width = G.hand.T.w
   G.GAME.blind_on_deck = 
     not (G.GAME.round_resets.blind_states.Small == 'Defeated' or G.GAME.round_resets.blind_states.Small == 'Skipped' or G.GAME.round_resets.blind_states.Small == 'Hide') and 'Small' or
@@ -1592,7 +1490,6 @@ function create_UIBox_blind_select()
   }}
   return t 
 end
-
 function create_UIBox_blind_tag(blind_choice, run_info)
   G.GAME.round_resets.blind_tags = G.GAME.round_resets.blind_tags or {}
   if not G.GAME.round_resets.blind_tags[blind_choice] then return nil end
@@ -1616,20 +1513,16 @@ function create_UIBox_blind_tag(blind_choice, run_info)
       }}
   }}
 end
-
 function create_UIBox_blind_choice(type, run_info)
   if not G.GAME.blind_on_deck then
     G.GAME.blind_on_deck = 'Small'
   end
   if not run_info then G.GAME.round_resets.blind_states[G.GAME.blind_on_deck] = 'Select' end
-
   local disabled = false
   type = type or 'Small'
-
   local blind_choice = {
     config = G.P_BLINDS[G.GAME.round_resets.blind_choices[type]],
   }
-
   blind_choice.animation = AnimatedSprite(0,0, 1.4, 1.4, G.ANIMATION_ATLAS['blind_chips'],  blind_choice.config.pos)
   blind_choice.animation:define_draw_steps({
     {shader = 'dissolve', shadow_height = 0.05},
@@ -1637,21 +1530,15 @@ function create_UIBox_blind_choice(type, run_info)
   })
   local extras = nil
   local stake_sprite = get_stake_sprite(G.GAME.stake or 1, 0.5)
-
   G.GAME.orbital_choices = G.GAME.orbital_choices or {}
   G.GAME.orbital_choices[G.GAME.round_resets.ante] = G.GAME.orbital_choices[G.GAME.round_resets.ante] or {}
-
   if not G.GAME.orbital_choices[G.GAME.round_resets.ante][type] then 
     local _poker_hands = {}
     for k, v in pairs(G.GAME.hands) do
         if v.visible then _poker_hands[#_poker_hands+1] = k end
     end
-
     G.GAME.orbital_choices[G.GAME.round_resets.ante][type] = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
   end
-
-
-
   if type == 'Small' then
     extras = create_UIBox_blind_tag(type, run_info)
   elseif type == 'Big' then
@@ -1681,7 +1568,6 @@ function create_UIBox_blind_choice(type, run_info)
   local text_table = loc_target
   local blind_col = get_blind_main_colour(type)
   local blind_amt = get_blind_amount(G.GAME.round_resets.blind_ante)*blind_choice.config.mult*G.GAME.starting_params.ante_scaling
-
   local blind_state = G.GAME.round_resets.blind_states[type]
   local _reward = true
   if G.GAME.modifiers.no_blind_reward and G.GAME.modifiers.no_blind_reward[type] then _reward = nil end
@@ -1739,7 +1625,6 @@ function create_UIBox_blind_choice(type, run_info)
         {n=G.UIT.R, config={id = 'blind_extras', align = "cm"}, nodes={
           extras,
         }}
-
     }}
   return t
 end
@@ -1760,7 +1645,6 @@ function create_UIBox_round_evaluation()
     }}
 return t
 end
-
 function create_UIBox_arcana_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
@@ -1768,7 +1652,6 @@ function create_UIBox_arcana_pack()
     _size*G.CARD_W,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
-
     local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1806,7 +1689,50 @@ function create_UIBox_arcana_pack()
   }}
   return t
 end
-
+function create_UIBox_zodiac_pack()
+  local _size = G.GAME.pack_size
+  G.pack_cards = CardArea(
+    G.ROOM.T.x + (G.TILE_W - _size*G.CARD_W*1.1)/2, G.hand.T.y,
+    _size*G.CARD_W*1.1 + 0.5,
+    1.05*G.CARD_H, 
+    {card_limit = _size, type = 'consumeable', highlight_limit = 1})
+    local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
+      {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
+        {n=G.UIT.R, config={align = "cm"}, nodes={
+        {n=G.UIT.C, config={align = "cm", padding = 0.1}, nodes={
+          {n=G.UIT.C, config={align = "cm", r=0.2, colour = G.C.CLEAR, shadow = true}, nodes={
+            {n=G.UIT.O, config={object = G.pack_cards}},
+          }}
+        }}
+      }},
+      {n=G.UIT.R, config={align = "cm", minh = 0.4}, nodes={
+      }},
+      {n=G.UIT.R, config={align = "tm"}, nodes={
+        {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={}},
+        {n=G.UIT.C,config={align = "tm", padding = 0.05}, nodes={
+        UIBox_dyn_container({
+          {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 8}, nodes={
+            {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
+              {n=G.UIT.O, config={object = DynaText({string = localize('k_zodiac_pack'), colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.7, maxw = 4, pop_in = 0.5})}}
+            }},
+            {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
+              {n=G.UIT.O, config={object = DynaText({string = {localize('k_choose')..' '}, colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.5, pop_in = 0.7})}},
+              {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.GAME, ref_value = 'pack_choices'}}, colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.5, pop_in = 0.7})}}
+            }},
+          }}
+        }),
+      }},
+        {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
+          {n=G.UIT.R,config={minh =0.2}, nodes={}},
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
+            {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
+          }}
+        }}
+      }}
+    }}
+  }}
+  return t
+end
 function create_UIBox_spectral_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
@@ -1814,7 +1740,6 @@ function create_UIBox_spectral_pack()
     _size*G.CARD_W,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
-
     local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1852,7 +1777,6 @@ function create_UIBox_spectral_pack()
   }}
   return t
 end
-
 function create_UIBox_standard_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
@@ -1860,7 +1784,6 @@ function create_UIBox_standard_pack()
     _size*G.CARD_W*1.1,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
-
     local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1898,7 +1821,6 @@ function create_UIBox_standard_pack()
   }}
   return t
 end
-
 function create_UIBox_buffoon_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
@@ -1906,7 +1828,6 @@ function create_UIBox_buffoon_pack()
     _size*G.CARD_W*1.1,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
-
     local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1944,7 +1865,6 @@ function create_UIBox_buffoon_pack()
   }}
   return t
 end
-
 function create_UIBox_celestial_pack()
   local _size = G.GAME.pack_size
   G.pack_cards = CardArea(
@@ -1952,7 +1872,6 @@ function create_UIBox_celestial_pack()
     _size*G.CARD_W*1.1 + 0.5,
     1.05*G.CARD_H, 
     {card_limit = _size, type = 'consumeable', highlight_limit = 1})
-
     local t = {n=G.UIT.ROOT, config = {align = 'tm', r = 0.15, colour = G.C.CLEAR, padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cl", colour = G.C.CLEAR,r=0.15, padding = 0.1, minh = 2, shadow = true}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -1990,7 +1909,6 @@ function create_UIBox_celestial_pack()
   }}
   return t
 end
-
 function create_UIBox_card_alert(args)
   args = args or {}
   return {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR, refresh_movement = true}, nodes={
@@ -1999,7 +1917,6 @@ function create_UIBox_card_alert(args)
       }},
   }}
 end
-
 function create_slider(args)
   args = args or {}
   args.colour = args.colour or G.C.RED
@@ -2012,7 +1929,6 @@ function create_slider(args)
   args.decimal_places = args.decimal_places or 0
   args.text = string.format("%."..tostring(args.decimal_places).."f", args.ref_table[args.ref_value])
   local startval = args.w * (args.ref_table[args.ref_value] - args.min)/(args.max - args.min)
-
   local t = 
         {n=G.UIT.C, config={align = "cm", minw = args.w, min_h = args.h, padding = 0.1, r = 0.1, colour = G.C.CLEAR, focus_args = {type = 'slider'}}, nodes={
           {n=G.UIT.C, config={align = "cl", minw = args.w, r = 0.1,min_h = args.h,collideable = true, hover = true, colour = G.C.BLACK,emboss = 0.05,func = 'slider', refresh_movement = true}, nodes={
@@ -2034,7 +1950,6 @@ function create_slider(args)
   end
   return t
 end
-
 function create_toggle(args)
   args = args or {}
   args.active_colour = args.active_colour or G.C.RED
@@ -2046,11 +1961,9 @@ function create_toggle(args)
   args.label_scale = args.label_scale or 0.4
   args.ref_table = args.ref_table or {}
   args.ref_value = args.ref_value or 'test'
-
   local check = Sprite(0,0,0.5*args.scale,0.5*args.scale,G.ASSET_ATLAS["icons"], {x=1, y=0})
   check.states.drag.can = false
   check.states.visible = false
-
   local info = nil
   if args.info then 
     info = {}
@@ -2061,7 +1974,6 @@ function create_toggle(args)
     end
     info =  {n=G.UIT.R, config={align = "cm", minh = 0.05}, nodes=info}
   end
-
   local t = 
         {n=args.col and G.UIT.C or G.UIT.R, config={align = "cm", padding = 0.1, r = 0.1, colour = G.C.CLEAR, focus_args = {funnel_from = true}}, nodes={
           {n=G.UIT.C, config={align = "cr", minw = args.w}, nodes={
@@ -2086,7 +1998,6 @@ function create_toggle(args)
    end
   return t
 end
-
 function create_option_cycle(args)
   args = args or {}
   args.colour = args.colour or G.C.RED
@@ -2107,7 +2018,6 @@ function create_option_cycle(args)
   args.r = '>'
   args.focus_args = args.focus_args or {}
   args.focus_args.type = 'cycle'
-
   local info = nil
   if args.info then 
     info = {}
@@ -2118,7 +2028,6 @@ function create_option_cycle(args)
     end
     info =  {n=G.UIT.R, config={align = "cm", minh = 0.05}, nodes=info}
   end
-
   local disabled = #args.options < 2
   local pips = {}
   for i = 1, #args.options do 
@@ -2126,7 +2035,6 @@ function create_option_cycle(args)
   end
   
   local choice_pips = not args.no_pips and {n=G.UIT.R, config={align = "cm", padding = (0.05 - (#args.options > 15 and 0.03 or 0))*args.scale}, nodes=pips} or nil
-
   local t = 
         {n=G.UIT.C, config={align = "cm", padding = 0.1, r = 0.1, colour = G.C.CLEAR, id = args.id and (not args.label and args.id or nil) or nil, focus_args = args.focus_args}, nodes={
           {n=G.UIT.C, config={align = "cm",r = 0.1, minw = (G.F_MOBILE and 1.2 or 0.6)*args.scale, hover = not disabled, colour = not disabled and args.colour or G.C.BLACK,shadow = not disabled, button = not disabled and 'option_cycle' or nil, ref_table = args, ref_value = 'l', focus_args = {type = 'none'}}, nodes={
@@ -2153,7 +2061,6 @@ function create_option_cycle(args)
             {n=G.UIT.T, config={ref_table = args, ref_value = 'r', scale = args.text_scale, colour = not disabled and G.C.UI.TEXT_LIGHT or G.C.UI.TEXT_INACTIVE}}
           }},
         }}
-
   if args.cycle_shoulders then 
     t =    
     {n=G.UIT.R, config={align = "cm", colour = G.C.CLEAR}, nodes = {
@@ -2178,7 +2085,6 @@ function create_option_cycle(args)
   end
   return t
 end
-
 function create_tabs(args)
   args = args or {}
   args.colour = args.colour or G.C.RED
@@ -2212,14 +2118,11 @@ function create_tabs(args)
       }} end
     }
   }
-
   local tab_buttons = {}
-
   for k, v in ipairs(args.tabs) do
     if v.chosen then args.current = {k = k, v = v} end
     tab_buttons[#tab_buttons+1] = UIBox_button({id = 'tab_but_'..(v.label or ''), ref_table = v, button = 'change_tab', label = {v.label}, minh = 0.8*args.scale, minw = 2.5*args.scale, col = true, choice = true, scale = args.text_scale, chosen = v.chosen, func = v.func, focus_args = {type = 'none'}})
   end
-
   local t = 
   {n=G.UIT.R, config={padding = 0.0, align = "cm", colour = G.C.CLEAR}, nodes={
     {n=G.UIT.R, config={align = "cm", colour = G.C.CLEAR}, nodes = {
@@ -2231,10 +2134,8 @@ function create_tabs(args)
       {n=G.UIT.O, config={id = 'tab_contents', object = UIBox{definition = args.current.v.tab_definition_function(args.current.v.tab_definition_function_args), config = {offset = {x=0,y=0}}}}}
     }},
   }}
-
   return t
 end
-
 function create_text_input(args)
   args = args or {}
   args.colour = copy_table(args.colour) or copy_table(G.C.BLUE)
@@ -2246,7 +2147,6 @@ function create_text_input(args)
   args.all_caps = args.all_caps or false
   args.prompt_text = args.prompt_text or localize('k_enter_text')
   args.current_prompt_text = ''
-
   local text = {ref_table = args.ref_table, ref_value = args.ref_value, letters = {}, current_position = string.len(args.ref_table[args.ref_value])}
   local ui_letters = {}
   for i = 1, args.max_length do
@@ -2254,12 +2154,9 @@ function create_text_input(args)
     ui_letters[i] = {n=G.UIT.T, config={ref_table = text.letters, ref_value = i, scale = args.text_scale, colour = G.C.UI.TEXT_LIGHT, id = 'letter_'..i}}
   end
   args.text = text
-
   local position_text_colour = lighten(copy_table(G.C.BLUE), 0.4)
-
   ui_letters[#ui_letters+1] = {n=G.UIT.T, config={ref_table = args, ref_value = 'current_prompt_text', scale = args.text_scale, colour = lighten(copy_table(args.colour), 0.4), id = 'prompt'}}
   ui_letters[#ui_letters+1] = {n=G.UIT.B, config={r = 0.03,w=0.1, h=0.4, colour = position_text_colour, id = 'position', func = 'flash'}}
-
   local t = 
        {n=G.UIT.C, config={align = "cm", draw_layer = 1, colour = G.C.CLEAR}, nodes = {
           {n=G.UIT.C, config={id = 'text_input', align = "cm", padding = 0.05, r = 0.1, draw_layer = 2, hover = true, colour = args.colour,minw = args.w, min_h = args.h, button = 'select_text_input', shadow = true}, nodes={
@@ -2272,7 +2169,6 @@ function create_text_input(args)
         }}
   return t
 end
-
 function create_keyboard_input(args)
   local overall_scale = G.F_MOBILE and 1.1 or 1
   local keyboard_rows = {
@@ -2313,7 +2209,6 @@ function create_keyboard_input(args)
     
   }}
 end
-
 function create_keyboard_button(key, binding)
   local overall_scale = G.F_MOBILE and 1.4 or 1
   local key_label = (key == 'backspace' and 'Backspace') or (key == ' ' and 'Space') or (key == 'back' and 'Back') or (key == 'return' and 'Enter') or key
@@ -2322,33 +2217,25 @@ function create_keyboard_button(key, binding)
       minh = key == 'return' and 1.5 or key == 'backspace' and 1.5 or key == 'back' and 0.8 or overall_scale*0.7,
       col = true, colour = G.C.GREY, focus_args = binding and {button = binding, orientation = (key == ' ' or key == 'back') and 'cr' or 'bm', set_button_pip= true} or nil}
 end
-
 function create_dynatext_pips(args)
   args = args or {}
-
   args.active_colour = copy_table(args.colour) or G.C.RED
   args.inactive_colour = copy_table(args.inactive_colour) or {0,0,0,0.08}
   args.w = args.w or 0.07
   args.h = args.h or 0.07
-
   if not (args.dynatext) or not (#args.dynatext.strings > 1) then return end
-
   local pips = {}
-
   for i = 1, #args.dynatext.strings do
     pips[i] = {n=G.UIT.C, config={ref_table = args.dynatext, minw = args.w, minh = args.h, colour = G.C.UI.TEXT_INACTIVE, r = 0.1, id = 'pip_'..i, pipcol1 = args.active_colour, pipcol2 = args.inactive_colour, func = 'pip_dynatext'}}
   end
-
   return {n=G.UIT.R, config={padding = 0.05, align = "cm"}, nodes=pips}
 end
-
 function create_UIBox_options()  
   local current_seed = nil
   local restart = nil
   local main_menu = nil
   local your_collection = nil
   local credits = nil
-
   G.E_MANAGER:add_event(Event({
     blockable = false,
     func = function()
@@ -2356,7 +2243,6 @@ function create_UIBox_options()
     return true
     end
   }))
-
   if G.STAGE == G.STAGES.RUN then
     restart = UIBox_button{id = 'restart_button', label = {localize('b_start_new_run')}, button = "setup_run", minw = 5}
     main_menu = UIBox_button{ label = {localize('b_main_menu')}, button = "go_to_menu", minw = 5}
@@ -2380,11 +2266,9 @@ function create_UIBox_options()
   if G.STAGE == G.STAGES.MAIN_MENU then
     credits = UIBox_button{ label = {localize('b_credits')}, button = "show_credits", minw = 5}
   end
-
   local settings = UIBox_button({button = 'settings', label = {localize('b_settings')}, minw = 5, focus_args = {snap_to = true}})
   local high_scores = UIBox_button{ label = {localize('b_stats')}, button = "high_scores", minw = 5}
   local customize = UIBox_button{ label = {localize('b_customize_deck')}, button = "customize_deck", minw = 5}
-
   local t = create_UIBox_generic_options({ contents = {
       settings,
       G.GAME.seeded and current_seed or nil,
@@ -2397,7 +2281,6 @@ function create_UIBox_options()
     }})
   return t
 end
-
 function create_UIBox_settings()
   local tabs = {}
   tabs[#tabs+1] = {
@@ -2422,7 +2305,6 @@ function create_UIBox_settings()
     tab_definition_function = G.UIDEF.settings_tab,
     tab_definition_function_args = 'Audio'
   }
-
   local t = create_UIBox_generic_options({back_func = 'options',contents = {create_tabs(
     {tabs = tabs,
     tab_h = 7.7,
@@ -2431,7 +2313,6 @@ function create_UIBox_settings()
     )}})
 return t
 end
-
 function G.UIDEF.settings_tab(tab)
   if tab == 'Game' then
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
@@ -2473,10 +2354,8 @@ function G.UIDEF.settings_tab(tab)
       --create_option_cycle({w = 4,scale = 0.8, label = localize("b_set_CRT_bloom"),options = localize('ml_bloom_opt'), opt_callback = 'change_crt_bloom', current_option = G.SETTINGS.GRAPHICS.bloom}),
     }}
   end
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR, minh = 5, minw = 5}, nodes={}}
 end
-
 function create_UIBox_test_framework(variables)
   variables = variables or {};
   local nodes = {}
@@ -2529,7 +2408,6 @@ function create_UIBox_test_framework(variables)
   }}
 return t                                      
 end
-
 function G.UIDEF.usage_tabs()
   return create_UIBox_generic_options({back_func = 'high_scores', contents ={create_tabs(
     {tabs = {
@@ -2568,7 +2446,6 @@ function G.UIDEF.usage_tabs()
     tab_h = 8,
     snap_to_nav = true})}})
 end
-
 function create_UIBox_usage(args)
   args = args or {}
   _type, _set = args[1], args[2]
@@ -2580,13 +2457,9 @@ function create_UIBox_usage(args)
       if v.count > max_amt then max_amt = v.count end
     end
   end
-
   local _col = G.C.SECONDARY_SET[_set] or G.C.RED
-
   table.sort(used_cards, function (a, b) return a.count > b.count end )
-
   local histograms = {}
-
   for i = 1, 10 do
     local v = used_cards[i]
     if v then 
@@ -2598,7 +2471,6 @@ function create_UIBox_usage(args)
         G.CARD_H*0.7, 
         {card_limit = 2, type = 'title', highlight_limit = 0})
       cardarea:emplace(card)
-
       histograms[#histograms +1] = 
       {n=G.UIT.C, config={align = "bm",minh = 6.2,  colour = G.C.UI.TRANSPARENT_DARK, r = 0.1}, nodes={
         
@@ -2630,7 +2502,6 @@ function create_UIBox_usage(args)
       }}
     end
   end
-
   local t = {n=G.UIT.ROOT, config={align = "cm", minw = 3, padding = 0.1, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
       {n=G.UIT.B, config={w=0.2,h=0.2,r =0.1,colour = G.C.FILTER}},
@@ -2642,10 +2513,8 @@ function create_UIBox_usage(args)
     }},
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes=histograms},
   }}
-
   return t
 end
-
 function create_UIBox_customize_deck()
   local t = create_UIBox_generic_options({ back_func = 'options', snap_back = nil, contents = {
     {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
@@ -2677,42 +2546,34 @@ function create_UIBox_customize_deck()
   })
   return t
 end
-
 function G.UIDEF.custom_deck_tab(_suit)
   local t = {}
-
   local face_cards = CardArea(
     0,0,
     4*G.CARD_W,
     1.4*G.CARD_H, 
     {card_limit = 3, type = 'title', highlight_limit = 0})
-
   table.insert(t, 
     {n=G.UIT.R, config={align = "cm", colour = G.C.BLACK, r = 0.1, padding = 0.07, no_fill = true}, nodes={
       {n=G.UIT.O, config={object = face_cards}}
     }}
   )
-
   local loc_options = localize(_suit..(G.F_BABYNAMES and 'Alt' or ''), 'collabs')
   local conv_loc_options = {}
   for k, v in pairs(loc_options) do
     conv_loc_options[tonumber(k)] = v
   end
-
   loc_options = conv_loc_options
-
   local current_option = 1
   for k, v in pairs(G.COLLABS.options[_suit]) do
     if G.SETTINGS.CUSTOM_DECK.Collabs[_suit] == v then current_option = k end
   end
-
   table.insert(t, 
     {n=G.UIT.R, config={align = "cm"}, nodes={
       create_option_cycle({options = loc_options, w = 5.5, cycle_shoulders = true, curr_suit = _suit, opt_callback = 'change_collab', current_option = current_option, colour = G.C.RED, focus_args = {snap_to = true, nav = 'wide'}}),
     }}
   )
   table.insert(t, create_toggle({label = localize('b_high_contrast_cards'), ref_table = G.SETTINGS, ref_value = 'colourblind_option', callback = G.FUNCS.refresh_contrast_mode}))
-
   local faces = {'K','Q','J'}
   for i = 1, 3 do
     local card_code = (string.sub(_suit, 1, 1))..'_'..faces[i]
@@ -2720,15 +2581,12 @@ function G.UIDEF.custom_deck_tab(_suit)
     card.no_ui = true
     face_cards:emplace(card)
   end
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.CLEAR, r = 0.1, minw = 7, minh = 4.2}, nodes=t}
 end
-
 function create_UIBox_high_scores()
   fetch_achievements()
   set_profile_progress()
   set_discover_tallies()
-
   local scores = {
     create_UIBox_high_scores_row("hand"),
     create_UIBox_high_scores_row("furthest_round"),
@@ -2752,14 +2610,11 @@ function create_UIBox_high_scores()
     }},
     not G.F_NO_ACHIEVEMENTS and {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.CLEAR}, nodes=cheevs} or nil
   }})
-
   return t
 end
-
 function create_progress_box(_profile_progress, smaller)
   local rows, protos = {}, {'collection', 'challenges', 'joker_stickers', 'deck_stake_wins'}
   _profile_progress = _profile_progress or G.PROFILES[G.SETTINGS.profile].progress
-
   if G.FTP_LOCKED then 
     _profile_progress.challenges.tally = 0
     _profile_progress.challenges.of = 20
@@ -2771,10 +2626,8 @@ function create_progress_box(_profile_progress, smaller)
   _profile_progress.joker_stickers.tally/_profile_progress.joker_stickers.of +
   _profile_progress.challenges.tally/_profile_progress.challenges.of,
   4
-
   local text_scale = smaller and 0.7 or 1
   local bar_colour = G.PROFILES[G.focused_profile].all_unlocked and G.C.RED or G.C.BLUE
-
   for _, v in ipairs(protos) do
     local tab, val, max = nil,nil,nil
     if v == 'collection' then
@@ -2799,7 +2652,6 @@ function create_progress_box(_profile_progress, smaller)
       {n=G.UIT.O, config={object = DynaText({string = {math.floor(0.01+100*_profile_progress.challenges.tally/_profile_progress.challenges.of)..'%'}, colours = {G.C.WHITE},shadow = true, float = true, scale = 0.55*text_scale})}},
       {n=G.UIT.T, config={text = " (".._profile_progress.challenges.tally..'/'.._profile_progress.challenges.of..")", scale = 0.35, colour = G.C.JOKER_GREY}}
     }
-
     rows[#rows+1] = {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = darken(G.C.JOKER_GREY, 0.1), emboss = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 3.5*text_scale, maxw = 3.5*text_scale}, nodes={
           {n=G.UIT.T, config={text = localize('k_'..v), scale = 0.5*text_scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
@@ -2812,7 +2664,6 @@ function create_progress_box(_profile_progress, smaller)
       }},
     }}
   end
-
   return {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 3.5*text_scale, maxw = 3.5*text_scale}, nodes={
@@ -2830,7 +2681,6 @@ function create_progress_box(_profile_progress, smaller)
     {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes=rows},
     }}
 end
-
 function create_UIBox_high_scores_row(score)
   if not G.PROFILES[G.SETTINGS.profile].high_scores[score] then return nil end
   local label_scale = 0.65 - 0.025*math.max(string.len(G.PROFILES[G.SETTINGS.profile].high_scores[score].label)-8, 0)
@@ -2885,7 +2735,6 @@ function create_UIBox_high_scores_row(score)
     }},
   }}
 end
-
 function create_UIBox_win()
   local show_lose_cta = false
   local eased_green = copy_table(G.C.GREEN)
@@ -2938,9 +2787,7 @@ function create_UIBox_win()
   t.config.id = 'you_win_UI'
   return t
 end
-
 function create_UIBox_exit_CTA()
-
   local t = create_UIBox_generic_options({ back_label = 'Quit Game', back_func = 'quit' , colour = G.C.BLACK, back_colour = G.C.RED, padding = 0, contents = {
     {n=G.UIT.C, config={align = "tm", padding = 0.15}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
@@ -2965,13 +2812,11 @@ function create_UIBox_exit_CTA()
   --t.nodes[1].config.mid = true
   return t
 end
-
 function create_UIBox_small_cta()
   return {n=G.UIT.ROOT, config={align = "cm", minw = 4, minh = 3}, nodes={
     {n=G.UIT.O, config={object = DynaText({string = {localize('ph_demo_thanks_1')}, colours = {G.C.WHITE},shadow = true, float = true, scale = 0.3})}},
   }}
 end
-
 function create_UIBox_demo_video_CTA()
   G.E_MANAGER:add_event(Event({
     trigger = 'after',
@@ -2984,25 +2829,19 @@ function create_UIBox_demo_video_CTA()
         G.exception_queue = nil
         return true
   end)}), 'other')
-
   RESTART_MUSIC()
-
   local video_file = love.graphics.newVideo('resources/democta.ogv')
   local vid_sprite = Sprite(0,0,11*16/9,11,G.ASSET_ATLAS["ui_"..(G.SETTINGS.colourblind_option and 2 or 1)], {x=0, y=0})
   video_file:getSource():setVolume(G.SETTINGS.SOUND.volume*G.SETTINGS.SOUND.game_sounds_volume/(100*100))
   vid_sprite.video = video_file
   video_file:play()
-
   local t = create_UIBox_generic_options({ back_delay = 7, back_label = localize('b_skip'), back_func = 'go_to_demo_cta' , colour = G.C.BLACK, padding = 0, contents = {
     {n=G.UIT.O, config={object = vid_sprite}},
   }})
   return t
 end
-
 function create_UIBox_game_over()
   local show_lose_cta = false
-
-
   local eased_red = copy_table(G.GAME.round_resets.ante <= G.GAME.win_ante and G.C.RED or G.C.BLUE)
   eased_red[4] = 0
   ease_value(eased_red, 4, 0.8, nil, nil, true)
@@ -3065,17 +2904,14 @@ function create_UIBox_game_over()
     }},
     {n=G.UIT.C, config={align = "cm", padding = 0.1}, nodes={t.nodes[1]}}}
 }
-
   --t.nodes[1].config.mid = true
   return t
 end
-
 function create_UIBox_round_scores_row(score, text_colour)
   local label = G.GAME.round_scores[score] and localize('ph_score_'..score) or ''
   local check_high_score = false
   local score_tab = {}
   local label_w, score_w, h = ({hand=true,poker_hand=true})[score] and 3.5 or 2.9, ({hand=true,poker_hand=true})[score] and 3.5 or 1, 0.5
-
   if score == 'furthest_ante' then
     label_w = 1.9
     check_high_score = true
@@ -3118,9 +2954,7 @@ function create_UIBox_round_scores_row(score, text_colour)
       }},
     }
   end
-
   local label_scale = 0.5
-
   if score == 'poker_hand' then 
     local handname, amount = localize('k_none'), 0
     for k, v in pairs(G.GAME.hand_usage) do if v.count > amount then handname = v.order; amount = v.count end end
@@ -3156,7 +2990,6 @@ function create_UIBox_round_scores_row(score, text_colour)
     }},
   }}
 end
-
 function create_UIBox_hand_tip(handname)
   if not G.GAME.hands[handname].example then return {n=G.UIT.R, config={align = "cm"},nodes = {}} end 
   local cardarea = CardArea(
@@ -3171,14 +3004,12 @@ function create_UIBox_hand_tip(handname)
       ease_value(card.T, 'scale',v[2] and 0.25 or -0.15,nil,'REAL',true,0.2)
       cardarea:emplace(card)
   end
-
   return {n=G.UIT.R, config={align = "cm", colour = G.C.WHITE, r = 0.1}, nodes={
     {n=G.UIT.C, config={align = "cm"}, nodes={
       {n=G.UIT.O, config={object = cardarea}}
     }}
   }}
 end
-
 function create_UIBox_current_hand_row(handname, simple)
   return (G.GAME.hands[handname].visible) and
   (not simple and
@@ -3215,7 +3046,6 @@ function create_UIBox_current_hand_row(handname, simple)
   }})
   or nil
 end
-
 function create_UIBox_current_hands(simple)
   local hands = {
     create_UIBox_current_hand_row("Flush Five", simple),
@@ -3231,16 +3061,13 @@ function create_UIBox_current_hands(simple)
     create_UIBox_current_hand_row("Pair", simple),
     create_UIBox_current_hand_row("High Card", simple)
   }
-
   local t = {n=G.UIT.ROOT, config={align = "cm", minw = 3, padding = 0.1, r = 0.1, colour = G.C.CLEAR}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.04}, nodes=
       hands
     },
   }}
-
   return t
 end
-
 function G.UIDEF.deck_info(_show_remaining)
   return create_UIBox_generic_options({contents ={create_tabs(
     {tabs = _show_remaining and {
@@ -3264,7 +3091,6 @@ function G.UIDEF.deck_info(_show_remaining)
     tab_h = 8,
     snap_to_nav = true})}})
 end
-
 function G.UIDEF.run_info()
   return create_UIBox_generic_options({contents ={create_tabs(
     {tabs = {
@@ -3289,7 +3115,6 @@ function G.UIDEF.run_info()
     tab_h = 8,
     snap_to_nav = true})}})
 end
-
 function G.UIDEF.current_blinds()
   return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR, padding = 0.2}, nodes={
     G.GAME.round_resets.blind_states['Small'] ~= 'Hide' and {n=G.UIT.C, config={align = "tm", padding = 0.1, outline = 2, r = 0.1, line_emboss = 0.2, outline_colour = G.C.BLACK}, nodes={
@@ -3303,7 +3128,6 @@ function G.UIDEF.current_blinds()
     }} or nil
   }}
 end
-
 function G.UIDEF.deck_stake_column(_deck_key)
   local deck_usage = G.PROFILES[G.SETTINGS.profile].deck_usage[_deck_key]
   local stake_col = {}
@@ -3318,7 +3142,6 @@ function G.UIDEF.deck_stake_column(_deck_key)
     end
     return {n=G.UIT.ROOT, config={align = 'cm', colour = G.C.CLEAR}, nodes =stake_col}
 end
-
 function G.UIDEF.current_stake()
   local other_col = nil
   if G.GAME.stake > 2 then
@@ -3342,7 +3165,6 @@ function G.UIDEF.current_stake()
     end
     other_col = {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.L_BLACK}, nodes=stake_desc_rows}
   end
-
   local stake_sprite = get_stake_sprite(G.GAME.stake, 0.8)
   local _stake_desc = {}
   local _stake_center = G.P_CENTER_POOLS.Stake[G.GAME.stake]
@@ -3363,12 +3185,10 @@ function G.UIDEF.current_stake()
       }}
     }}
   }}
-
   return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, r = 0.1, padding = 0.1}, nodes={
     current_col,other_col
   }}
 end
-
 function G.UIDEF.view_deck(unplayed_only)
   local deck_tables = {}
   remove_nils(G.playing_cards)
@@ -3396,7 +3216,6 @@ function G.UIDEF.view_deck(unplayed_only)
         {n=G.UIT.O, config={object = view_deck}}
       }}
       )
-
       for i = 1, #SUITS[suit_map[j]] do
         if SUITS[suit_map[j]][i] then
           local greyed, _scale = nil, 0.7
@@ -3407,16 +3226,13 @@ function G.UIDEF.view_deck(unplayed_only)
           copy.greyed = greyed
           copy.T.x = view_deck.T.x + view_deck.T.w/2
           copy.T.y = view_deck.T.y
-
           copy:hard_set_T()
           view_deck:emplace(copy)
         end
       end
     end
   end
-
   local flip_col = G.C.WHITE
-
   local suit_tallies = {['Spades']  = 0, ['Hearts'] = 0, ['Clubs'] = 0, ['Diamonds'] = 0}
   local mod_suit_tallies = {['Spades']  = 0, ['Hearts'] = 0, ['Clubs'] = 0, ['Diamonds'] = 0}
   local rank_tallies = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -3429,7 +3245,6 @@ function G.UIDEF.view_deck(unplayed_only)
   local ace_tally = 0
   local mod_ace_tally = 0
   local wheel_flipped = 0
-
   for k, v in ipairs(G.playing_cards) do
     if v.ability.name ~= 'Stone Card' and (not unplayed_only or ((v.area and v.area == G.deck) or v.ability.wheel_flipped)) then 
       if v.ability.wheel_flipped and unplayed_only then wheel_flipped = wheel_flipped + 1 end
@@ -3439,7 +3254,6 @@ function G.UIDEF.view_deck(unplayed_only)
       mod_suit_tallies['Hearts'] = (mod_suit_tallies['Hearts'] or 0) + (v:is_suit('Hearts') and 1 or 0)
       mod_suit_tallies['Clubs'] = (mod_suit_tallies['Clubs'] or 0) + (v:is_suit('Clubs') and 1 or 0)
       mod_suit_tallies['Diamonds'] = (mod_suit_tallies['Diamonds'] or 0) + (v:is_suit('Diamonds') and 1 or 0)
-
       --for face cards/numbered cards/aces
       local card_id = v:get_id()
       face_tally = face_tally + ((card_id ==11 or card_id ==12 or card_id ==13) and 1 or 0)
@@ -3452,21 +3266,17 @@ function G.UIDEF.view_deck(unplayed_only)
         ace_tally = ace_tally + 1
         if not v.debuff then mod_ace_tally = mod_ace_tally + 1 end 
       end
-
       --ranks
       rank_tallies[card_id - 1] = rank_tallies[card_id - 1] + 1
       if not v.debuff then mod_rank_tallies[card_id - 1] = mod_rank_tallies[card_id - 1] + 1 end 
     end
   end
-
   local modded = (face_tally ~= mod_face_tally) or
     (mod_suit_tallies['Spades'] ~= suit_tallies['Spades']) or
     (mod_suit_tallies['Hearts'] ~= suit_tallies['Hearts']) or
     (mod_suit_tallies['Clubs'] ~= suit_tallies['Clubs']) or
     (mod_suit_tallies['Diamonds'] ~= suit_tallies['Diamonds'])
-
   if wheel_flipped > 0 then flip_col = mix_colours(G.C.FILTER, G.C.WHITE,0.7) end
-
   local rank_cols = {}
   for i = 13, 1, -1 do
     local mod_delta = mod_rank_tallies[i] ~= rank_tallies[i]
@@ -3480,8 +3290,6 @@ function G.UIDEF.view_deck(unplayed_only)
       }}
     }}
   end
-
-
   local t = 
   {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={}},
@@ -3539,7 +3347,6 @@ function G.UIDEF.view_deck(unplayed_only)
   }}
   return t
 end
-
 function tally_sprite(pos, value, tooltip)
   local text_colour = G.C.BLACK
   if type(value) == "table" and value[1].string==value[2].string then 
@@ -3561,9 +3368,7 @@ function tally_sprite(pos, value, tooltip)
     }},
   }}
 end
-
 function G.UIDEF.used_vouchers()
-
   local silent = false
   local keys_used = {}
   local area_count = 0
@@ -3613,7 +3418,6 @@ function G.UIDEF.used_vouchers()
   table.insert(voucher_table_rows,
           {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true}, nodes=voucher_tables}
         )
-
   
   local t = silent and {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR}, nodes={
     {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -3630,9 +3434,6 @@ function G.UIDEF.used_vouchers()
   }}
   return t
 end
-
-
-
 function create_UIBox_your_collection()
   set_discover_tallies()
   G.E_MANAGER:add_event(Event({
@@ -3673,10 +3474,8 @@ function create_UIBox_your_collection()
   }})
   return t
 end
-
 function create_UIBox_your_collection_jokers()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 3 do
     G.your_collection[j] = CardArea(
@@ -3690,12 +3489,10 @@ function create_UIBox_your_collection_jokers()
     }}
     )
   end
-
   local joker_options = {}
   for i = 1, math.ceil(#G.P_CENTER_POOLS.Joker/(5*#G.your_collection)) do
     table.insert(joker_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.ceil(#G.P_CENTER_POOLS.Joker/(5*#G.your_collection))))
   end
-
   for i = 1, 5 do
     for j = 1, #G.your_collection do
       local center = G.P_CENTER_POOLS["Joker"][i+(j-1)*5]
@@ -3704,7 +3501,6 @@ function create_UIBox_your_collection_jokers()
       G.your_collection[j]:emplace(card)
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t =  create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3715,10 +3511,8 @@ function create_UIBox_your_collection_jokers()
     }})
   return t
 end
-
 function create_UIBox_your_collection_zodiacs()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3732,7 +3526,6 @@ function create_UIBox_your_collection_zodiacs()
     }}
     )
   end
-
   for i = 1, 6 do
     for j = 1, #G.your_collection do
       local center = G.P_CENTER_POOLS["Zodiac"][i+(j-1)*6]
@@ -3742,7 +3535,6 @@ function create_UIBox_your_collection_zodiacs()
       end
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t =  create_UIBox_generic_options({ back_func = 'your_collection', padding = 0, contents = {
@@ -3750,10 +3542,8 @@ function create_UIBox_your_collection_zodiacs()
     }})
   return t
 end
-
 function create_UIBox_your_collection_custom_jokers()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 3 do
     G.your_collection[j] = CardArea(
@@ -3767,12 +3557,10 @@ function create_UIBox_your_collection_custom_jokers()
     }}
     )
   end
-
   local joker_options = {}
   for i = 1, math.ceil(#G.P_CENTER_POOLS.custom_joker/(5*#G.your_collection)) do
     table.insert(joker_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.ceil(#G.P_CENTER_POOLS.custom_joker/(5*#G.your_collection))))
   end
-
   for i = 1, 5 do
     for j = 1, #G.your_collection do
       local center = G.P_CENTER_POOLS["custom_joker"][i+(j-1)*5]
@@ -3783,7 +3571,6 @@ function create_UIBox_your_collection_custom_jokers()
       end
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t =  create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3794,10 +3581,8 @@ function create_UIBox_your_collection_custom_jokers()
     }})
   return t
 end
-
 function create_UIBox_your_collection_tarots()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3811,12 +3596,10 @@ function create_UIBox_your_collection_tarots()
     }}
     )
   end
-
   local tarot_options = {}
   for i = 1, math.floor(#G.P_CENTER_POOLS.Tarot/11) do
     table.insert(tarot_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.floor(#G.P_CENTER_POOLS.Tarot/11)))
   end
-
     for j = 1, #G.your_collection do
       for i = 1, 4+j do
       local center = G.P_CENTER_POOLS["Tarot"][i+(j-1)*(5)]
@@ -3825,7 +3608,6 @@ function create_UIBox_your_collection_tarots()
       G.your_collection[j]:emplace(card)
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3836,10 +3618,8 @@ function create_UIBox_your_collection_tarots()
           }})
   return t
 end
-
 function create_UIBox_your_collection_boosters()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3853,12 +3633,10 @@ function create_UIBox_your_collection_boosters()
     }}
     )
   end
-
   local booster_options = {}
   for i = 1, math.ceil(#G.P_CENTER_POOLS.Booster/8) do
     table.insert(booster_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.ceil(#G.P_CENTER_POOLS.Booster/8)))
   end
-
     for j = 1, #G.your_collection do
       for i = 1, 4 do
       local center = G.P_CENTER_POOLS["Booster"][i+(j-1)*4]
@@ -3867,7 +3645,6 @@ function create_UIBox_your_collection_boosters()
       G.your_collection[j]:emplace(card)
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3878,10 +3655,8 @@ function create_UIBox_your_collection_boosters()
           }})
   return t
 end
-
 function create_UIBox_your_collection_planets()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3895,7 +3670,6 @@ function create_UIBox_your_collection_planets()
     }}
     )
   end
-
     for j = 1, #G.your_collection do
       for i = 1, 6 do
       local center = G.P_CENTER_POOLS["Planet"][i+(j-1)*(6)]
@@ -3904,7 +3678,6 @@ function create_UIBox_your_collection_planets()
       G.your_collection[j]:emplace(card)
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3913,10 +3686,8 @@ function create_UIBox_your_collection_planets()
           }})
   return t
 end
-
 function create_UIBox_your_collection_spectrals()
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3930,7 +3701,6 @@ function create_UIBox_your_collection_spectrals()
     }}
     )
   end
-
     for j = 1, #G.your_collection do
       for i = 1, 3+j do
       local center = G.P_CENTER_POOLS["Spectral"][i+(j-1)*3 + j - 1]
@@ -3940,12 +3710,10 @@ function create_UIBox_your_collection_spectrals()
       G.your_collection[j]:emplace(card)
     end
   end
-
   local spectral_options = {}
   for i = 1, math.floor(#G.P_CENTER_POOLS.Tarot/9) do
     table.insert(spectral_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.floor(#G.P_CENTER_POOLS.Spectral/9)))
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
@@ -3956,10 +3724,8 @@ function create_UIBox_your_collection_spectrals()
           }})
   return t
 end
-
 function create_UIBox_your_collection_vouchers(exit)
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -3973,12 +3739,10 @@ function create_UIBox_your_collection_vouchers(exit)
     }}
     )
   end
-
   local voucher_options = {}
   for i = 1, math.ceil(#G.P_CENTER_POOLS.Voucher/(4*#G.your_collection)) do
     table.insert(voucher_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.ceil(#G.P_CENTER_POOLS.Voucher/(4*#G.your_collection))))
   end
-
   for i = 1, 4 do
     for j = 1, #G.your_collection do
       local center = G.P_CENTER_POOLS["Voucher"][i+(j-1)*4]
@@ -3988,7 +3752,6 @@ function create_UIBox_your_collection_vouchers(exit)
       G.your_collection[j]:emplace(card)
     end
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ back_func = exit or 'your_collection', contents = {
@@ -3999,10 +3762,8 @@ function create_UIBox_your_collection_vouchers(exit)
           }})
   return t
 end
-
 function create_UIBox_your_collection_seals(exit)
   local deck_tables = {}
-
   G.your_collection = CardArea(
       G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h,
       4.25*G.CARD_W,
@@ -4013,7 +3774,6 @@ function create_UIBox_your_collection_seals(exit)
       {n=G.UIT.O, config={object = G.your_collection}}
     }}
     )
-
   for k, v in ipairs(G.P_CENTER_POOLS['Seal']) do
     local center = G.P_CENTERS.c_base
     local card = Card(G.your_collection.T.x + G.your_collection.T.w/2, G.your_collection.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, center)
@@ -4026,10 +3786,8 @@ function create_UIBox_your_collection_seals(exit)
           }})
   return t
 end
-
 function create_UIBox_your_collection_enhancements(exit)
   local deck_tables = {}
-
   G.your_collection = {}
   for j = 1, 2 do
     G.your_collection[j] = CardArea(
@@ -4043,7 +3801,6 @@ function create_UIBox_your_collection_enhancements(exit)
     }}
     )
   end
-
   for i = 1, 4 do
     for j = 1, #G.your_collection do
       local center = G.P_CENTER_POOLS["Enhanced"][i+(j-1)*4]
@@ -4057,7 +3814,6 @@ function create_UIBox_your_collection_enhancements(exit)
           }})
   return t
 end
-
 function create_UIBox_your_collection_editions()
   G.your_collection = {}
   G.your_collection[1] = CardArea(
@@ -4069,16 +3825,13 @@ function create_UIBox_your_collection_editions()
   {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true}, nodes={
     {n=G.UIT.O, config={object = G.your_collection[1]}}
   }}
-
   local editions = {'base', 'foil','holo','polychrome','negative'}
-
   for i = 1, 5 do
       local card = Card(G.your_collection[1].T.x + G.your_collection[1].T.w/2, G.your_collection[1].T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['e_'..editions[i]])
       card:start_materialize()
       if G.P_CENTERS['e_'..editions[i]].discovered then card:set_edition({[editions[i]] = true}, true, true) end
       G.your_collection[1]:emplace(card)
   end
-
   INIT_COLLECTION_CARD_ALERTS()
   
   local t = create_UIBox_generic_options({ infotip = localize('ml_edition_seal_enhancement_explanation'), back_func = 'your_collection', snap_back = true, contents = {
@@ -4086,7 +3839,6 @@ function create_UIBox_your_collection_editions()
           }})
   return t
 end
-
 function create_UIBox_your_collection_decks()
   G.GAME.viewed_back = Back(G.P_CENTERS.b_red)
   
@@ -4095,7 +3847,6 @@ function create_UIBox_your_collection_decks()
     1.2*G.CARD_W,
     1.2*G.CARD_H, 
     {card_limit = 52, type = 'deck', highlight_limit = 0})
-
   for i = 1, 52 do
     local card = Card(G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h, G.CARD_W*1.2, G.CARD_H*1.2, pseudorandom_element(G.P_CARDS), G.P_CENTERS.c_base, {playing_card = i, viewed_back = true})
     card.sprite_facing = 'back'
@@ -4103,7 +3854,6 @@ function create_UIBox_your_collection_decks()
     area:emplace(card)
     if i == 52 then G.sticker_card = card; card.sticker = get_deck_win_sticker(G.GAME.viewed_back.effect.center) end
   end
-
   local ordered_names = {}
   for k, v in ipairs(G.P_CENTER_POOLS.Back) do
     ordered_names[#ordered_names+1] = v.name
@@ -4129,7 +3879,6 @@ function create_UIBox_your_collection_decks()
           }})
   return t
 end
-
 function create_UIBox_your_collection_tags()
   local tag_matrix = {
     {},{},{},{},
@@ -4140,9 +3889,7 @@ function create_UIBox_your_collection_tags()
         tag_tab[#tag_tab+1] = v
     end
   end
-
   table.sort(tag_tab, function (a, b) return a.order < b.order end)
-
   local tags_to_be_alerted = {}
   for k, v in ipairs(tag_tab) do
     local discovered = v.discovered
@@ -4156,7 +3903,6 @@ function create_UIBox_your_collection_tags()
       tags_to_be_alerted[#tags_to_be_alerted+1] = temp_tag_sprite
     end
   end
-
   G.E_MANAGER:add_event(Event({
     trigger = 'immediate',
     func = (function()
@@ -4170,8 +3916,6 @@ function create_UIBox_your_collection_tags()
         return true
     end)
   }))
-
-
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
     {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.BLACK, padding = 0.1, emboss = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm"}, nodes={
@@ -4186,7 +3930,6 @@ function create_UIBox_your_collection_tags()
   }})
   return t
 end
-
 function create_UIBox_your_collection_custom_tags()
   local tag_matrix = {
     {},{},{},{},
@@ -4197,9 +3940,7 @@ function create_UIBox_your_collection_custom_tags()
         tag_tab[#tag_tab+1] = v
     end
   end
-
   table.sort(tag_tab, function (a, b) return a.order < b.order end)
-
   local tags_to_be_alerted = {}
   for k, v in ipairs(tag_tab) do
     local discovered = v.discovered
@@ -4213,7 +3954,6 @@ function create_UIBox_your_collection_custom_tags()
       tags_to_be_alerted[#tags_to_be_alerted+1] = temp_tag_sprite
     end
   end
-
   G.E_MANAGER:add_event(Event({
     trigger = 'immediate',
     func = (function()
@@ -4227,8 +3967,6 @@ function create_UIBox_your_collection_custom_tags()
         return true
     end)
   }))
-
-
   local t = create_UIBox_generic_options({ back_func = 'your_collection', contents = {
     {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.BLACK, padding = 0.1, emboss = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm"}, nodes={
@@ -4243,7 +3981,6 @@ function create_UIBox_your_collection_custom_tags()
   }})
   return t
 end
-
 function create_UIBox_your_collection_blinds(exit)
   local blind_matrix = {
     {},{},{}, {}, {}, {}
@@ -4252,9 +3989,7 @@ function create_UIBox_your_collection_blinds(exit)
   for k, v in pairs(G.P_BLINDS) do
     blind_tab[#blind_tab+1] = v
   end
-
   table.sort(blind_tab, function (a, b) return a.order < b.order end)
-
   local blinds_to_be_alerted = {}
   for k, v in ipairs(blind_tab) do
     local discovered = v.discovered
@@ -4307,7 +4042,6 @@ function create_UIBox_your_collection_blinds(exit)
       (k==5 or k ==15 or k == 25) and {n=G.UIT.B, config={h=0.2,w=0.5}} or nil,
     }}
   end
-
   G.E_MANAGER:add_event(Event({
     trigger = 'immediate',
     func = (function()
@@ -4321,7 +4055,6 @@ function create_UIBox_your_collection_blinds(exit)
         return true
     end)
   }))
-
   local ante_amounts = {}
   for i = 1, math.min(16, math.max(16, G.PROFILES[G.SETTINGS.profile].high_scores.furthest_ante.amt)) do 
     local spacing = 1 - math.min(20, math.max(15, G.PROFILES[G.SETTINGS.profile].high_scores.furthest_ante.amt))*0.06
@@ -4370,14 +4103,12 @@ function create_UIBox_your_collection_blinds(exit)
   }})
   return t
 end
-
 function create_UIBox_blind_popup(blind, discovered, vars)
   local blind_text = {}
   
   local _dollars = blind.dollars
   local loc_target = localize{type = 'raw_descriptions', key = blind.key, set = 'Blind', vars = vars or blind.vars}
   local loc_name = localize{type = 'name_text', key = blind.key, set = 'Blind'}
-
   if discovered then 
     local ability_text = {}
     if loc_target then 
@@ -4419,8 +4150,6 @@ function create_UIBox_blind_popup(blind, discovered, vars)
   {n=G.UIT.R, config={align = "cm"}, nodes=blind_text},
  }}
 end 
-
-
 function create_UIBox_card_unlock(card_center)
   G.your_collection = CardArea(
     G.ROOM.T.x + G.ROOM.T.w/2,G.ROOM.T.h,
@@ -4436,7 +4165,6 @@ function create_UIBox_card_unlock(card_center)
   locked_card.states.click.can = false
   card.states.visible = false
   card.no_ui = true
-
   G.E_MANAGER:add_event(Event({timer = 'REAL',blockable = false,blocking = false,
     func = (function() G.OVERLAY_MENU.joker_unlock_table = card.ID return true end) }))
   G.E_MANAGER:add_event(Event({timer = 'REAL',blockable = false,blocking = false, trigger = 'after', delay = 0.6,
@@ -4445,7 +4173,6 @@ function create_UIBox_card_unlock(card_center)
     func = (function() if G.OVERLAY_MENU and G.OVERLAY_MENU.joker_unlock_table == card.ID then locked_card:juice_up(0.45, 0.3); play_sound('cancel', 0.92) end; return true end) }))
   G.E_MANAGER:add_event(Event({timer = 'REAL',blockable = false,blocking = false, trigger = 'after', delay = 1.8,
     func = (function() if G.OVERLAY_MENU and G.OVERLAY_MENU.joker_unlock_table == card.ID then locked_card:juice_up(0.6, 0.4); play_sound('cancel', 1.03) end; return true end) }))
-
   G.E_MANAGER:add_event(Event({
     timer = 'REAL',
     blockable = false,
@@ -4476,7 +4203,6 @@ function create_UIBox_card_unlock(card_center)
   
   G.your_collection:emplace(card)
   G.your_collection:emplace(locked_card)
-
   local t = create_UIBox_generic_options({padding = 0,back_label = localize('b_continue'), no_pip = true, snap_back = true, back_func = 'continue_unlock', minw = 4.5, contents = {
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
         {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
@@ -4501,7 +4227,6 @@ function create_UIBox_card_unlock(card_center)
     }})
   return t
 end
-
 function create_UIBox_deck_unlock(deck_center)
   G.GAME.viewed_back = Back(deck_center)
   local area = CardArea(
@@ -4509,7 +4234,6 @@ function create_UIBox_deck_unlock(deck_center)
     1.2*G.CARD_W,
     1.2*G.CARD_H, 
     {card_limit = 52, type = 'deck', highlight_limit = 0})
-
   for i = 1, 52 do
     local card = Card(G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h, G.CARD_W*1.2, G.CARD_H*1.2, pseudorandom_element(G.P_CARDS), G.P_CENTERS.c_base, {bypass_back = deck_center.pos, playing_card = i, viewed_back = true})
     area:emplace(card)
@@ -4527,13 +4251,11 @@ function create_UIBox_deck_unlock(deck_center)
   elseif deck_center.unlock_condition.type == 'discover_amount' then 
     localize{type = 'descriptions', key = 'deck_locked_discover', set = "Other", nodes = deck_criteria, vars = {deck_center.unlock_condition.amount}, default_col = G.C.WHITE, shadow = true}
   end
-
   local deck_criteria_cols = {}
   for k, v in ipairs(deck_criteria) do
     if k > 1 then deck_criteria_cols[#deck_criteria_cols+1] = {n=G.UIT.C, config={align = "cm", padding = 0, minw = 0.1}, nodes={}} end
     deck_criteria_cols[#deck_criteria_cols+1] = {n=G.UIT.C, config={align = "cm", padding = 0}, nodes=v}
   end
-
   local t = create_UIBox_generic_options({ back_label = localize('b_continue'), no_pip = true, snap_back = true, back_func = 'continue_unlock', minw = 7, contents = {
     {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
       {n=G.UIT.O, config={object = DynaText({string = {{string = localize{type = 'name_text', set = 'Back', key = deck_center.key}, suffix = ' '..localize('k_unlocked_ex'), outer_colour = G.C.UI.TEXT_LIGHT}}, colours = {G.C.BLUE},shadow = true, rotate = true, float = true, scale = 0.7, pop_in = 0.1})}}
@@ -4550,7 +4272,6 @@ function create_UIBox_deck_unlock(deck_center)
   }})
   return t
 end
-
 function G.UIDEF.multiline_credit_text(_lines)
   local t = {}
   for k, v in ipairs(_lines) do
@@ -4558,10 +4279,8 @@ function G.UIDEF.multiline_credit_text(_lines)
       {n=G.UIT.T, config={text = v, scale = 0.28, colour = G.C.WHITE}},
     }}
   end
-
   return t
 end
-
 function create_UIBox_controller_required(_name)
   local text_loc = localize('ml_controller_required')
   if type(text_loc) ~= 'table' then text_loc = {"ERROR"} end
@@ -4571,20 +4290,16 @@ function create_UIBox_controller_required(_name)
       {n=G.UIT.T, config={text = v,colour = G.C.UI.TEXT_LIGHT, scale = 0.5}}
     }}
   end
-
   return create_UIBox_generic_options({no_back = true, minw = 7, contents = {
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes=
     text_rows
   },
   }})
 end
-
 function G.UIDEF.viewed_collab_option(_new_option)
   G.viewed_collab = G.viewed_collab or 'The Binding of Isaac'
-
   local curr_collab = G.collab_credits[G.viewed_collab] or G.collab_credits['The Binding of Isaac']
   local collab_sprite = Sprite(0,0,0.8*G.CARD_W,0.8*G.CARD_H,G.ASSET_ATLAS[curr_collab.art..'_1'], {x=2,y=0})
-
   return  {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, r = 0.1}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
       {n=G.UIT.T, config={text = G.viewed_collab, scale = 0.5, colour = G.C.WHITE}}
@@ -4622,7 +4337,6 @@ function G.UIDEF.viewed_collab_option(_new_option)
     }}
   }}
 end
-
 function G.UIDEF.credits()
   local text_scale = 0.75
   local t =   create_UIBox_generic_options({contents ={
@@ -5290,7 +5004,6 @@ function G.UIDEF.credits()
                     art = 'collab_R'
                   },
                 }
-
                 local middle = {n=G.UIT.R, config={align = "cm", minh = 4.8, minw = 12.3}, nodes={
                   {n=G.UIT.O, config={id = nil, func = 'CREDITS_check_collab', object = Moveable()}},
                 }}
@@ -5301,9 +5014,7 @@ function G.UIDEF.credits()
                 end
                 
                 table.sort(collab_options)
-
                 G.viewed_collab = collab_options[1]
-
                 return 
                       {n=G.UIT.ROOT, config={align = "cm", padding = 0.2, colour = G.C.L_BLACK, r = 0.1, emboss = 0.05, minh = 6, minw = 10}, nodes={
                       {n=G.UIT.C, config={align = "cm", padding = 0.2,outline_colour = G.C.JOKER_GREY, r = 0.1, outline = 1}, nodes={
@@ -5499,7 +5210,6 @@ function G.UIDEF.credits()
   }})
   return t
 end
-
 function G.UIDEF.challenges(from_game_over)
   if G.FTP_LOCKED then 
     local loc_nodes = {}
@@ -5509,9 +5219,7 @@ function G.UIDEF.challenges(from_game_over)
       transparent_multiline_text(loc_nodes)
     }}
   end
-
   if G.PROFILES[G.SETTINGS.profile].all_unlocked then G.PROFILES[G.SETTINGS.profile].challenges_unlocked = #G.CHALLENGES end
-
   if not G.PROFILES[G.SETTINGS.profile].challenges_unlocked then
     local deck_wins = 0
     for k, v in pairs(G.PROFILES[G.SETTINGS.profile].deck_usage) do
@@ -5521,18 +5229,15 @@ function G.UIDEF.challenges(from_game_over)
     end
     local loc_nodes = {}
     localize{type = 'descriptions', key = 'challenge_locked', set = 'Other', nodes = loc_nodes, vars = {G.CHALLENGE_WINS, deck_wins}, default_col = G.C.WHITE}
-
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR, minh = 8.02, minw = 7}, nodes={
       transparent_multiline_text(loc_nodes)
     }}
   end
-
   G.run_setup_seed = nil
   if G.OVERLAY_MENU then 
     local seed_toggle = G.OVERLAY_MENU:get_UIE_by_ID('run_setup_seed')
     if seed_toggle then seed_toggle.states.visible = false end
   end
-
   
   local _ch_comp, _ch_tot = 0,#G.CHALLENGES
   for k, v in ipairs(G.CHALLENGES) do
@@ -5540,9 +5245,7 @@ function G.UIDEF.challenges(from_game_over)
       _ch_comp = _ch_comp + 1
     end
   end
-
   local _ch_tab = {comp = _ch_comp, unlocked = G.PROFILES[G.SETTINGS.profile].challenges_unlocked}
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR, minh = 8, minw = 7}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1, r = 0.1 ,colour = G.C.BLACK}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
@@ -5578,7 +5281,6 @@ function G.UIDEF.challenges(from_game_over)
     }} or nil,
   }}
 end
-
 function G.UIDEF.sandbox()
   local deck_wins = 0
   for k, v in pairs(G.PROFILES[G.SETTINGS.profile].deck_usage) do
@@ -5586,7 +5288,6 @@ function G.UIDEF.sandbox()
       deck_wins = deck_wins + 1
     end
   end
-
   if deck_wins <= 0 and not G.PROFILES[G.SETTINGS.profile].all_unlocked then
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR, minh = 8, minw = 7}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
@@ -5597,7 +5298,6 @@ function G.UIDEF.sandbox()
       }},
     }}
   end
-
   G.SANDBOX = G.SANDBOX or {}
   G.SANDBOX.dollars = math.floor((G.SANDBOX.dollars or G.SANDBOX_CONFIG.default.DOLLARS) + 0.5)
   G.SANDBOX.hand = math.floor((G.SANDBOX.hand or G.SANDBOX_CONFIG.default.HANDS) + 0.5)
@@ -5608,7 +5308,6 @@ function G.UIDEF.sandbox()
   G.SANDBOX.stake_index = G.SANDBOX.stake_index or 1
   G.SANDBOX.seeded_run = G.SANDBOX.seeded_run or false
   G.SANDBOX.seed = G.SANDBOX.seed or ''
-
   local unlocked_decks = {}
   for i, v in ipairs(G.P_CENTER_POOLS.Back) do
     if v.unlocked or G.PROFILES[G.SETTINGS.profile].all_unlocked then
@@ -5619,7 +5318,6 @@ function G.UIDEF.sandbox()
   if G.SANDBOX.deck_index > #unlocked_decks then G.SANDBOX.deck_index = 1 end
   local deck_names = {}
   for _, v in ipairs(unlocked_decks) do table.insert(deck_names, v.name) end
-
   local current_deck_key = unlocked_decks[G.SANDBOX.deck_index].key
   local deck_usage = G.PROFILES[G.SETTINGS.profile].deck_usage[current_deck_key]
   local unlocked_stakes = {}
@@ -5628,11 +5326,9 @@ function G.UIDEF.sandbox()
       table.insert(unlocked_stakes, {name = localize{type = 'name_text', set = 'Stake', key = v.key}, index = i})
     end
   end
-
   if G.SANDBOX.stake_index > #unlocked_stakes then G.SANDBOX.stake_index = 1 end
   local stake_names = {}
   for _, v in ipairs(unlocked_stakes) do table.insert(stake_names, v.name) end
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.CLEAR, minh = 7, minw = 15}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
       -- Left Column: 2 items in vertical
@@ -5674,10 +5370,8 @@ function G.UIDEF.sandbox()
     }},
   }}
 end
-
 function G.UIDEF.daily_overview()
   local hist_height, hist_width = 3, 3
-
   local daily_results = {
     score = {
       me = {val = 20000, percentile = 75},
@@ -5691,15 +5385,12 @@ function G.UIDEF.daily_overview()
   for k, v in ipairs(daily_results.score.hist) do 
     score_hist[#score_hist+1] =  {n=G.UIT.C, config={align = 'bm'}, nodes ={{n=G.UIT.C, config={colour = G.C.BLUE, minw = hist_width/#daily_results.score.hist, minh = (v + 0.05*math.random())/max_score_hist*hist_height}}}}
   end
-
   return {n=G.UIT.R, config={align = "cm"}, nodes=score_hist}
 end
-
 function G.UIDEF.run_setup(from_game_over)
   G.run_setup_seed = nil
   local _challenge_chosen = from_game_over == 'challenge_list'
   from_game_over = from_game_over and not (from_game_over == 'challenge_list')
-
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
   
@@ -5730,7 +5421,6 @@ function G.UIDEF.run_setup(from_game_over)
     tab_definition_function = G.UIDEF.sandbox,
     tab_definition_function_args = from_game_over,
   }
-
   local t =   create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
@@ -5740,10 +5430,8 @@ function G.UIDEF.run_setup(from_game_over)
   }})
   return t
 end
-
 function G.UIDEF.profile_select()
   G.focused_profile = G.focused_profile or G.SETTINGS.profile or 1
-
   local t =   create_UIBox_generic_options({padding = 0,contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1, minw = 4}, nodes={
         create_tabs(
@@ -5772,7 +5460,6 @@ function G.UIDEF.profile_select()
   }})
   return t
 end
-
 function G.UIDEF.profile_option(_profile)
   set_discover_tallies()
   G.focused_profile = _profile
@@ -5783,7 +5470,6 @@ function G.UIDEF.profile_option(_profile)
     profile_data.name = profile_data.name or ("P".._profile)
   end
   G.PROFILES[_profile].name = profile_data and profile_data.name or ''
-
   local lwidth, rwidth, scale = 1, 1, 1
   G.CHECK_PROFILE_DATA = nil
   local t = {n=G.UIT.ROOT, config={align = 'cm', colour = G.C.CLEAR}, nodes={
@@ -5844,17 +5530,14 @@ function G.UIDEF.profile_option(_profile)
   }} 
   return t
 end
-
 function G.UIDEF.stake_description(_stake)
   local _stake_center = G.P_CENTER_POOLS.Stake[_stake]
   local ret_nodes = {}
   if _stake_center then localize{type = 'descriptions', key = _stake_center.key, set = _stake_center.set, nodes = ret_nodes} end 
-
   local desc_t = {}
   for k, v in ipairs(ret_nodes) do
     desc_t[#desc_t+1] = {n=G.UIT.R, config={align = "cm", maxw = 5.3}, nodes=v}
   end
-
   return {n=G.UIT.C, config={align = "cm", padding = 0.05, r = 0.1, colour = G.C.L_BLACK}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
       {n=G.UIT.T, config={text = localize{type = 'name_text', key = _stake_center.key, set = _stake_center.set}, scale = 0.35, colour = G.C.WHITE}}
@@ -5862,12 +5545,10 @@ function G.UIDEF.stake_description(_stake)
     {n=G.UIT.R, config={align = "cm", padding = 0.03, colour = G.C.WHITE, r = 0.1, minh = 1, minw = 5.5}, nodes=desc_t}
   }}
 end
-
 function G.UIDEF.stake_option(_type)
   local middle = {n=G.UIT.R, config={align = "cm", minh = 1.7, minw = 7.3}, nodes={
     {n=G.UIT.O, config={id = nil, func = 'RUN_SETUP_check_stake2', object = Moveable()}},
     }}
-
   local stake_options, max_stake = nil, nil
   if not G.FTP_LOCKED then 
     max_stake = get_deck_win_stake(G.GAME.viewed_back.effect.center.key)
@@ -5879,14 +5560,12 @@ function G.UIDEF.stake_option(_type)
   else
     stake_options = {1}
   end
-
   return  {n=G.UIT.ROOT, config={align = "tm", colour = G.C.CLEAR, minh = 2.03, minw = 8.3}, nodes={_type == 'Continue' and middle or create_option_cycle({options = 
   stake_options,
   opt_callback = 'change_stake', current_option = G.viewed_stake, colour = G.C.RED, w = 6, mid = middle
   })
 }}
 end
-
 function G.UIDEF.viewed_stake_option()
   G.viewed_stake = G.viewed_stake or 1
   local max_stake = get_deck_win_stake(G.GAME.viewed_back.effect.center.key)
@@ -5895,7 +5574,6 @@ function G.UIDEF.viewed_stake_option()
   if _type ~= 'Continue' then G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.viewed_stake end
   
   local stake_sprite = get_stake_sprite(G.viewed_stake)
-
   return  {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, r = 0.1}, nodes={
     {n=G.UIT.C, config={align = "cm", padding = 0}, nodes={
       {n=G.UIT.T, config={text = localize('k_stake'), scale = 0.4, colour = G.C.L_BLACK, vert = true}}
@@ -5908,7 +5586,6 @@ function G.UIDEF.viewed_stake_option()
     }}
   }}
 end
-
 function G.UIDEF.challenge_list(from_game_over)
   G.CHALLENGE_PAGE_SIZE = 10
   local challenge_pages = {}
@@ -5918,14 +5595,12 @@ function G.UIDEF.challenge_list(from_game_over)
   G.E_MANAGER:add_event(Event({func = (function()
     G.FUNCS.change_challenge_list_page{cycle_config = {current_option = 1}}
   return true end)}))
-
   local _ch_comp, _ch_tot = 0,#G.CHALLENGES
   for k, v in ipairs(G.CHALLENGES) do
     if v.id and G.PROFILES[G.SETTINGS.profile].challenge_progress.completed[v.id or ''] then
       _ch_comp = _ch_comp + 1
     end
   end
-
   local t = create_UIBox_generic_options({ back_id = from_game_over and 'from_game_over' or nil, back_func = 'setup_run', back_id = 'challenge_list', contents = {
     {n=G.UIT.C, config={align = "cm", padding = 0.0}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 7, minw = 4.2}, nodes={
@@ -5937,7 +5612,6 @@ function G.UIDEF.challenge_list(from_game_over)
       {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
         {n=G.UIT.T, config={text = localize{type = 'variable', key = 'challenges_completed', vars = {_ch_comp, _ch_tot}}, scale = 0.4, colour = G.C.WHITE}},
       }},
-
     }},
     {n=G.UIT.C, config={align = "cm", minh = 9, minw = 11.5}, nodes={
       {n=G.UIT.O, config={id = 'challenge_area', object = Moveable()}},
@@ -5945,7 +5619,6 @@ function G.UIDEF.challenge_list(from_game_over)
   }})
   return t
 end
-
 function G.UIDEF.challenge_list_page(_page)
   local snapped = false
   local challenge_list = {}
@@ -5954,7 +5627,6 @@ function G.UIDEF.challenge_list_page(_page)
       if G.CONTROLLER.focused.target and G.CONTROLLER.focused.target.config.id == 'challenge_page' then snapped = true end
       local challenge_completed =  G.PROFILES[G.SETTINGS.profile].challenge_progress.completed[v.id or '']
       local challenge_unlocked = G.PROFILES[G.SETTINGS.profile].challenges_unlocked and (G.PROFILES[G.SETTINGS.profile].challenges_unlocked >= k)
-
       challenge_list[#challenge_list+1] = 
       {n=G.UIT.R, config={align = "cm"}, nodes={
         {n=G.UIT.C, config={align = 'cl', minw = 0.8}, nodes = {
@@ -5970,14 +5642,11 @@ function G.UIDEF.challenge_list_page(_page)
       snapped = true
     end
   end
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR}, nodes=challenge_list}
 end
-
 function G.UIDEF.challenge_description(_id, daily, is_row)
   local challenge = G.CHALLENGES[_id]
   if not challenge then return {n=G.UIT.ROOT, config={align = "cm", colour = G.C.BLACK, minh = 8.82, minw = 11.5, r = 0.1}, nodes={{n=G.UIT.T, config={text = localize('ph_select_challenge'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT}}}} end
-
   local joker_size = 0.6
   local jokers = CardArea(0,0,
       10*joker_size,
@@ -5994,20 +5663,17 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       jokers:emplace(card)
     end
   end
-
   local joker_col = {n=G.UIT.C, config={align = "cm", padding = 0.05, colour = G.C.L_BLACK, r = 0.1, maxh = 1.8}, nodes={
     {n=G.UIT.T, config={text = localize('k_jokers_cap'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT, vert = true, shadow = true}},
     {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, minw = 5, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
       jokers and {n=G.UIT.O, config={object = jokers}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
     }}
   }}
-
   local consumeables = CardArea(0,0,
     3*joker_size,
     0.6*G.CARD_H, 
     {card_limit = get_challenge_rule(challenge, 'modifiers', 'consumable_limit') or 2,
     card_w = joker_size*G.CARD_W, type = 'title_2', spread = true, highlight_limit = 0})
-
   if challenge.consumeables then 
   for k, v in ipairs(challenge.consumeables) do
     local card = Card(0,0, G.CARD_W*joker_size, G.CARD_H*joker_size, nil, G.P_CENTERS[v.id], {bypass_discovery_center = true,bypass_discovery_ui = true, bypass_lock=true})
@@ -6016,20 +5682,17 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
     consumeables:emplace(card)
   end
   end
-
   local consumable_col = {n=G.UIT.C, config={align = "cm", padding = 0.05, colour = G.C.L_BLACK, r = 0.1, maxh = 1.8}, nodes={
     {n=G.UIT.T, config={text = localize('k_cap_consumables'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT, vert = true, shadow = true}},
     {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
       consumeables and {n=G.UIT.O, config={object = consumeables}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}},
     }}
   }}
-
   local vouchers = CardArea(0,0,
     3*joker_size,
     0.6*G.CARD_H, 
     {card_limit = nil,
     card_w = joker_size*G.CARD_W, type = 'title_2', spread = true, highlight_limit = 0})
-
   if challenge.vouchers then 
   for k, v in ipairs(challenge.vouchers) do
     local card = Card(0,0, G.CARD_W*joker_size, G.CARD_H*joker_size, nil, G.P_CENTERS[v.id], {bypass_discovery_center = true,bypass_discovery_ui = true, bypass_lock=true})
@@ -6038,16 +5701,13 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
     vouchers:emplace(card)
   end
   end
-
   local voucher_col = {n=G.UIT.C, config={align = "cm", padding = 0.05, colour = G.C.L_BLACK, r = 0.1, maxh = 1.8}, nodes={
     {n=G.UIT.T, config={text = localize('k_vouchers_cap'), scale = 0.33, colour = G.C.UI.TEXT_LIGHT, vert = true, shadow = true}},
     {n=G.UIT.C, config={align = "cm", minh = 0.6*G.CARD_H, r = 0.1, colour = G.C.UI.TRANSPARENT_DARK}, nodes={
       vouchers and {n=G.UIT.O, config={object = vouchers}} or {n=G.UIT.T, config={text = localize('k_none'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}},
     }}
   }}
-
   
-
   return {n=is_row and G.UIT.R or G.UIT.ROOT, config={align = "cm", r = 0.1, colour = G.C.BLACK}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
       joker_col, consumable_col, voucher_col
@@ -6086,7 +5746,6 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
     }} or nil,
   }}
 end
-
 function G.UIDEF.challenge_description_tab(args)
   args = args or {}
   if args._tab == 'Rules' then
@@ -6128,7 +5787,6 @@ function G.UIDEF.challenge_description_tab(args)
       start_rules[#start_rules+1] = {n=G.UIT.R, config={align = "cl", maxw =3.5}, nodes= localize{type = 'text', key = 'ch_m_'..v.key, vars = {v.value}, default_col = not v.custom and G.C.UI.TEXT_INACTIVE or nil}}
     end
   end
-
   if modded_starts then
     start_rules = {
       modded_starts and {n=G.UIT.R, config={align = "cl", padding = 0.05}, nodes=modded_starts} or nil,
@@ -6136,7 +5794,6 @@ function G.UIDEF.challenge_description_tab(args)
       {n=G.UIT.R, config={align = "cl", padding = 0.05}, nodes=start_rules},
     }
   end
-
     if challenge.rules then
       if challenge.rules.custom then
         for k, v in ipairs(challenge.rules.custom) do
@@ -6146,21 +5803,18 @@ function G.UIDEF.challenge_description_tab(args)
     end
     if (not start_rules[1]) and (not modded_starts) then  start_rules[#start_rules+1] = {n=G.UIT.R, config={align = "cl"}, nodes= localize{type = 'text', key = 'ch_m_none', vars = {}}} end
     if not game_rules[1] then  game_rules[#game_rules+1] = {n=G.UIT.R, config={align = "cl"}, nodes= localize{type = 'text', key = 'ch_c_none', vars = {}}} end
-
     local starting_rule_list = {n=G.UIT.C, config={align = "cm", minw = 3, r = 0.1, colour = G.C.BLUE}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.08, minh = 0.6}, nodes={
         {n=G.UIT.T, config={text = localize('k_game_modifiers'), scale = 0.4, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
       }},
       {n=G.UIT.R, config={align = "cm", minh = 4.1, minw = 4.2, padding = 0.05, r = 0.1, colour = G.C.WHITE}, nodes= start_rules}
     }}
-
     local override_rule_list = {n=G.UIT.C, config={align = "cm", minw = 3, r = 0.1, colour = G.C.BLUE}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.08, minh = 0.6}, nodes={
         {n=G.UIT.T, config={text = localize('k_custom_rules'), scale = 0.4, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
       }},
       {n=G.UIT.R, config={align = "cm", minh = 4.1, minw = 6.8, maxw = 6.7, padding = 0.05, r = 0.1, colour = G.C.WHITE}, nodes= game_rules}
     }}
-
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.1, colour = G.C.L_BLACK, r = 0.1, minw = 3}, nodes={
         override_rule_list,starting_rule_list
@@ -6168,9 +5822,7 @@ function G.UIDEF.challenge_description_tab(args)
     }}
   elseif args._tab == 'Restrictions' then
     local challenge = G.CHALLENGES[args._id]
-
     local banned_cards, banned_tags, banned_other = {}, {}, {}
-
     if challenge.restrictions then
       if challenge.restrictions.banned_cards then
         local row_cards = {}
@@ -6182,9 +5834,7 @@ function G.UIDEF.challenge_description_tab(args)
           row_cards[_row][#row_cards[_row]+1] = v
           if #row_cards[_row] > max_width then max_width = #row_cards[_row] end
         end
-
         local card_size = math.max(0.3, 0.75 - 0.01*(max_width*n_rows))
-
         for _, row_card in ipairs(row_cards) do
           local banned_card_area = CardArea(
             0,0,
@@ -6209,7 +5859,6 @@ function G.UIDEF.challenge_description_tab(args)
         end
       
         table.sort(tag_tab, function (a, b) return a.order < b.order end)
-
         for k, v in ipairs(tag_tab) do
           local temp_tag = Tag(v.key)
           local temp_tag_ui = temp_tag:generate_UI(1.1 - 0.25*(math.sqrt(#challenge.restrictions.banned_tags)))
@@ -6229,7 +5878,6 @@ function G.UIDEF.challenge_description_tab(args)
         end
       
         table.sort(other_tab, function (a, b) return a.order < b.order end)
-
         for k, v in ipairs(other_tab) do
           local temp_blind = AnimatedSprite(0,0,1,1, G.ANIMATION_ATLAS['blind_chips'], v.pos)
           temp_blind:define_draw_steps({
@@ -6256,7 +5904,6 @@ function G.UIDEF.challenge_description_tab(args)
             end
           end
           temp_blind.stop_hover = function() temp_blind.hovering = false; Node.stop_hover(temp_blind); temp_blind.hover_tilt = 0 end
-
           table.insert(banned_other, 
           {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
             {n=G.UIT.O, config={object = temp_blind}}
@@ -6268,7 +5915,6 @@ function G.UIDEF.challenge_description_tab(args)
     if not banned_cards[1] then  banned_cards[#banned_cards+1] = {n=G.UIT.R, config={align = "cl"}, nodes= localize{type = 'text', key = 'ch_m_none', vars = {}}} end
     if not banned_tags[1] then  banned_tags[#banned_tags+1] = {n=G.UIT.R, config={align = "cl"}, nodes= localize{type = 'text', key = 'ch_c_none', vars = {}}} end
     if not banned_other[1] then  banned_other[#banned_other+1] = {n=G.UIT.R, config={align = "cl"}, nodes= localize{type = 'text', key = 'ch_c_none', vars = {}}} end
-
     local banned_cards = {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.RED}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.08, minh = 0.6}, nodes={
         {n=G.UIT.T, config={text = localize('k_banned_cards'), scale = 0.4, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
@@ -6277,7 +5923,6 @@ function G.UIDEF.challenge_description_tab(args)
         banned_cards
       }
     }}
-
     local banned_tags = {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.RED}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.08, minh = 0.6, maxw = 1.48}, nodes={
         {n=G.UIT.T, config={text =  localize('k_banned_tags'), scale = 0.3, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
@@ -6285,7 +5930,6 @@ function G.UIDEF.challenge_description_tab(args)
       {n=G.UIT.R, config={align = "cm", minh = 4.1, minw = 1.48, padding = 0.05, r = 0.1, colour = G.C.WHITE}, nodes= 
       banned_tags}
     }}
-
     local banned_other = {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.RED}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.08, minh = 0.6, maxw = 1.84}, nodes={
         {n=G.UIT.T, config={text = localize('k_other'), scale = 0.4, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
@@ -6293,7 +5937,6 @@ function G.UIDEF.challenge_description_tab(args)
       {n=G.UIT.R, config={align = "cm", minh = 4.1, minw = 2, padding = 0.05, r = 0.1, colour = G.C.WHITE}, nodes= 
       banned_other}
     }}
-
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.1, colour = G.C.L_BLACK, r = 0.1}, nodes={
         banned_cards, banned_tags, banned_other
@@ -6314,11 +5957,9 @@ function G.UIDEF.challenge_description_tab(args)
     if challenge then
         _de = challenge.deck
     end
-
     if _de and _de.cards then
         card_protos = _de.cards
     end
-
     if not card_protos then 
         card_protos = {}
         for k, v in pairs(G.P_CARDS) do
@@ -6343,7 +5984,6 @@ function G.UIDEF.challenge_description_tab(args)
       if v.g then _card:set_seal(v.g, true, true) end
       SUITS[v.s][#SUITS[v.s]+1] = _card
     end
-
   for j = 1, 4 do
     if SUITS[suit_map[j]][1] then
       table.sort(SUITS[suit_map[j]], function(a,b) return a:get_nominal() > b:get_nominal() end )
@@ -6357,7 +5997,6 @@ function G.UIDEF.challenge_description_tab(args)
         {n=G.UIT.O, config={object = view_deck}}
       }}
       )
-
       for i = 1, #SUITS[suit_map[j]] do
         if SUITS[suit_map[j]][i] then
           view_deck:emplace(SUITS[suit_map[j]][i])
@@ -6368,21 +6007,17 @@ function G.UIDEF.challenge_description_tab(args)
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.BLACK, r = 0.1, minw = 11.4, minh = 4.2}, nodes=deck_tables}
   end
 end
-
 function G.UIDEF.run_setup_option(type)
   if not G.SAVED_GAME then
     G.SAVED_GAME = G.FILES[G.focused_profile..'/'..'save.jkr']
   end
-
   G.SETTINGS.current_setup = type
   G.GAME.viewed_back = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
-
   if not G.FTP_LOCKED then 
     G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
   else
     G.PROFILES[G.SETTINGS.profile].MEMORY.stake = 1
   end
-
   if type == 'Continue' then 
     G.viewed_stake = 1
     if G.SAVED_GAME ~= nil then
@@ -6395,7 +6030,6 @@ function G.UIDEF.run_setup_option(type)
       G.viewed_stake = saved_game.GAME.stake or 1
     end
   end
-
   if type == 'New Run' then
     if G.OVERLAY_MENU then 
       local seed_toggle = G.OVERLAY_MENU:get_UIE_by_ID('run_setup_seed')
@@ -6410,13 +6044,11 @@ function G.UIDEF.run_setup_option(type)
       if seed_toggle then seed_toggle.states.visible = false end
     end
   end
-
   local area = CardArea(
     G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h,
     G.CARD_W,
     G.CARD_H, 
     {card_limit = 5, type = 'deck', highlight_limit = 0, deck_height = 0.75, thin_draw = 1})
-
   for i = 1, 10 do
     local card = Card(G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h, G.CARD_W, G.CARD_H, pseudorandom_element(G.P_CARDS), G.P_CENTERS.c_base, {playing_card = i, viewed_back = true})
     card.sprite_facing = 'back'
@@ -6424,20 +6056,15 @@ function G.UIDEF.run_setup_option(type)
     area:emplace(card)
     if i == 10 then G.sticker_card = card; card.sticker = get_deck_win_sticker(G.GAME.viewed_back.effect.center) end
   end
-
   local ordered_names, viewed_deck = {}, 1
   for k, v in ipairs(G.P_CENTER_POOLS.Back) do
     ordered_names[#ordered_names+1] = v.name
     if v.name == G.GAME.viewed_back.name then viewed_deck = k end
   end
-
   local lwidth, rwidth = 1.4, 1.8
-
   local type_colour = G.C.BLUE
-
   local scale = 0.39
   G.setup_seed = ''
-
   local t = {n=G.UIT.ROOT, config={align = "cm", colour = G.C.CLEAR, minh = 6.6, minw = 6}, nodes={
                 type == 'Continue' and {n=G.UIT.R, config={align = "tm", minh = 3.8, padding = 0.15}, nodes={
                     {n=G.UIT.R, config={align = "cm", minh = 3.3, minw = 6.8}, nodes={
@@ -6535,9 +6162,7 @@ function G.UIDEF.run_setup_option(type)
             }}
   return t
 end
-
 function create_button_binding_pip(args)
-
   local button_sprite_map = {
     ['a'] = G.F_SWAP_AB_PIPS and 1 or 0,
     ['b'] = G.F_SWAP_AB_PIPS and 0 or 1,
@@ -6562,14 +6187,11 @@ function create_button_binding_pip(args)
   local BUTTON_SPRITE = Sprite(0,0,args.scale or 0.45,args.scale or 0.45,G.ASSET_ATLAS["gamepad_ui"],
     {x=button_sprite_map[args.button],
      y=G.CONTROLLER.GAMEPAD_CONSOLE == 'Nintendo' and 2 or G.CONTROLLER.GAMEPAD_CONSOLE == 'Playstation' and (G.F_PS4_PLAYSTATION_GLYPHS and 3 or 1) or 0})
-
   return {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
         {n=G.UIT.O, config={object = BUTTON_SPRITE}},
     }}
 end
-
 function create_UIBox_profile_button()
-
   local letters = {}
   if G.F_DISP_USERNAME then
     for _, c in utf8.chars(G.F_DISP_USERNAME) do
@@ -6578,11 +6200,9 @@ function create_UIBox_profile_button()
       letters[#letters+1] = {n=G.UIT.T, config={lang = G.LANGUAGES[leng and 'all1' or 'all2'],text = _char, scale = 0.3, colour = mix_colours(G.C.GREEN, G.C.WHITE, 0.7), shadow = true}}
     end
   end
-
   if not G.PROFILES[G.SETTINGS.profile].name then 
     G.PROFILES[G.SETTINGS.profile].name = "P"..G.SETTINGS.profile
   end
-
  return {n=G.UIT.ROOT, config = {align = "cm", colour = G.C.CLEAR}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.2, r = 0.1, emboss = 0.1, colour = G.C.L_BLACK}, nodes={
       {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -6603,7 +6223,6 @@ function create_UIBox_profile_button()
     }} or nil,
   }}
 end
-
 function create_UIBox_main_menu_buttons()
   local text_scale = 0.45
   local language = nil
@@ -6616,11 +6235,8 @@ function create_UIBox_main_menu_buttons()
     linktree = Sprite(0,0,0.7,0.7,G.ASSET_ATLAS["icons"], {x=1, y=1})
     linktree.states.drag.can = false
   end
-
   G.REFRESH_ALERTS = true
-
   local quit_func = 'quit'
-
   local t = {
     n=G.UIT.ROOT, config = {align = "cm",colour = G.C.CLEAR}, nodes={ 
       {n=G.UIT.C, config={align = "bm"}, nodes={      
@@ -6656,14 +6272,12 @@ function create_UIBox_main_menu_buttons()
     }}
   return t
 end
-
 G.UIDEF.link_tree = function()
   local twitter, discord = nil, nil
   discord = Sprite(0,0,0.9,0.9,G.ASSET_ATLAS["icons"], {x=0, y=0})
   discord.states.drag.can = false
   twitter = Sprite(0,0,0.9,0.9,G.ASSET_ATLAS["icons"], {x=0, y=1})
   twitter.states.drag.can = false
-
   local t = create_UIBox_generic_options({contents ={
     {n=G.UIT.R, config={align = "cm", padding = 0.15}, nodes={
       UIBox_button{ label = {localize('b_FAQ')}, button = "go_to_faq", minw = 5},
@@ -6680,7 +6294,6 @@ G.UIDEF.link_tree = function()
   }})
   return t
 end
-
 function create_UIBox_main_menu_competittion_name()
   G.SETTINGS.COMP.name = ''
   local t = {
@@ -6697,7 +6310,6 @@ function create_UIBox_main_menu_competittion_name()
     }}
   return t
 end
-
 function G.UIDEF.language_selector() 
   local rows = {}
   local langs = {}
@@ -6725,7 +6337,6 @@ function G.UIDEF.language_selector()
   local discord = nil
   discord = Sprite(0,0,0.6,0.6,G.ASSET_ATLAS["icons"], {x=2, y=0})
   discord.states.drag.can = false
-
   local t = create_UIBox_generic_options({contents ={
     {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes=rows},
     G.F_EXTERNAL_LINKS and {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
@@ -6737,13 +6348,11 @@ function G.UIDEF.language_selector()
   }})
   return t
 end
-
 function create_UIBox_highlight(rect)
   local t = {n=G.UIT.ROOT, config = {align = "cm", minh = rect.T.h+0.1, minw = rect.T.w+0.15, r = 0.15, colour = G.C.DARK_EDITION}, nodes={
   }}
 return t
 end
-
 function create_UIBox_generic_options(args)
   args = args or {}
   local back_func = args.back_func or "exit_overlay_menu"
@@ -6768,7 +6377,6 @@ function create_UIBox_generic_options(args)
         end
     }))
   end
-
   return {n=G.UIT.ROOT, config = {align = "cm", minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5,padding = 0.1, r = 0.1, colour = args.bg_colour or {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes={
     {n=G.UIT.R, config={align = "cm", minh = 1,r = 0.3, padding = 0.07, minw = 1, colour = args.outline_colour or G.C.JOKER_GREY, emboss = 0.1}, nodes={
       {n=G.UIT.C, config={align = "cm", minh = 1,r = 0.2, padding = 0.15, minw = 1, colour = args.colour or G.C.L_BLACK}, nodes={
@@ -6787,7 +6395,6 @@ function create_UIBox_generic_options(args)
     }},
   }}
 end
-
 function UIBox_dyn_container(inner_table, horizontal, colour_override, background_override, flipped, padding)
   return {n=G.UIT.R, config = {align = "cm", padding= 0.03, colour = G.C.UI.TRANSPARENT_DARK, r=0.1}, nodes={
     {n=G.UIT.R, config = {align = "cm", padding= 0.05, colour = colour_override or G.C.DYN_UI.MAIN, r=0.1}, nodes={
@@ -6795,7 +6402,6 @@ function UIBox_dyn_container(inner_table, horizontal, colour_override, backgroun
       inner_table
   }}}}}
 end
-
 function simple_text_container(_loc, args)
   if not _loc then return nil end
   args = args or {}
@@ -6811,7 +6417,6 @@ function simple_text_container(_loc, args)
     return {n=args.col and G.UIT.C or G.UIT.R, config = {align = "cm", padding= args.padding or 0.03}, nodes=container}
   end
 end
-
 function UIBox_button(args)
   args = args or {}
   args.button = args.button or "exit_overlay_menu"
@@ -6828,9 +6433,7 @@ function UIBox_button(args)
   args.focus_args = args.focus_args or nil
   args.text_colour = args.text_colour or G.C.UI.TEXT_LIGHT
   local but_UIT = args.col == true and G.UIT.C or G.UIT.R
-
   local but_UI_label = {}
-
   local button_pip = nil
   for k, v in ipairs(args.label) do 
     if k == #args.label and args.focus_args and args.focus_args.set_button_pip then 
@@ -6840,7 +6443,6 @@ function UIBox_button(args)
       {n=G.UIT.T, config={text = v, scale = args.scale, colour = args.text_colour, shadow = args.shadow, focus_args = button_pip and args.focus_args or nil, func = button_pip, ref_table = args.ref_table}}
     }})
   end
-
   if args.count then 
     table.insert(but_UI_label, 
     {n=G.UIT.R, config={align = "cm", minh = 0.4}, nodes={
@@ -6848,7 +6450,6 @@ function UIBox_button(args)
     }}
     )
   end
-
   return 
   {n= but_UIT, config = {align = 'cm'}, nodes={
   {n= G.UIT.C, config={

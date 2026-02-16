@@ -1529,17 +1529,9 @@ function Card:use_consumeable(area, copier)
             local card = create_card('Joker', G.jokers, self.ability.name == 'The Soul', nil, nil, nil, nil, self.ability.name == 'Judgement' and 'jud' or 'sou')
             card:add_to_deck()
             card:start_materialize()
+            G.jokers:emplace(card)
             if self.ability.name == 'The Soul' then 
                 check_for_unlock{type = 'spawn_legendary'} 
-                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                    G.zodiac_card_ui = UIBox{
-                        definition = create_UIBox_zodiac_card(card),
-                        config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
-                    }
-                    return true
-                end}))
-            else
-                G.jokers:emplace(card)
             end
             used_tarot:juice_up(0.3, 0.5)
             return true end }))
@@ -1628,9 +1620,8 @@ function Card:use_consumeable(area, copier)
                     hold = 1.4,
                     major = used_tarot,
                     backdrop_colour = G.C.SECONDARY_SET.Tarot,
-                    align = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and 'tm' or 'cm',
-                    offset = {x = 0, y = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and -0.2 or 0},
-                    silent = true
+                            align = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.ZODIAC_PACK) and 'tm' or 'cm',
+                            offset = {x = 0, y = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.ZODIAC_PACK) and -0.2 or 0},                    silent = true
                     })
                     G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, blockable = false, blocking = false, func = function()
                         play_sound('tarot2', 0.76, 0.4);return true end}))
@@ -1644,6 +1635,7 @@ end
 
 function Card:can_use_consumeable(any_state, skip_check)
     if not self.ability.consumeable then return false end
+    if self.ability.set == 'Zodiac' then return true end
     if not skip_check and ((G.play and #G.play.cards > 0) or
         (G.CONTROLLER.locked) or
         (G.GAME.STOP_USE and G.GAME.STOP_USE > 0))
@@ -1684,7 +1676,7 @@ function Card:can_use_consumeable(any_state, skip_check)
                 return false
             end
         end
-        if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK then
+        if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.ZODIAC_PACK then
             if self.ability.consumeable.max_highlighted then
                 if self.ability.consumeable.mod_num >= #G.hand.highlighted and #G.hand.highlighted >= (self.ability.consumeable.min_highlighted or 1) then
                     return true
@@ -1830,6 +1822,9 @@ function Card:open()
         elseif self.ability.name:find('Buffoon') then
             G.STATE = G.STATES.BUFFOON_PACK
             G.GAME.pack_size = self.ability.extra
+        elseif self.ability.name:find('Zodiac') then
+            G.STATE = G.STATES.ZODIAC_PACK
+            G.GAME.pack_size = self.ability.extra
         end
 
         G.GAME.pack_choices = self.config.center.config.choose or 1
@@ -1896,10 +1891,11 @@ function Card:open()
                             else card:set_seal('Purple')
                             end
                         end
-                    elseif self.ability.name:find('Buffoon') then
-                        card = create_card("Joker", G.pack_cards, nil, nil, true, true, nil, 'buf')
-
-                    end
+                                        elseif self.ability.name:find('Buffoon') then
+                                            card = create_card("Joker", G.pack_cards, nil, nil, true, true, nil, 'buf')
+                                        elseif self.ability.name:find('Zodiac') then
+                                            card = create_card("Zodiac", G.pack_cards, nil, nil, true, true, nil, 'zod')
+                                        end
                     card.T.x = self.T.x
                     card.T.y = self.T.y
                     card:start_materialize({G.C.WHITE, G.C.WHITE}, nil, 1.5*G.SETTINGS.GAMESPEED)

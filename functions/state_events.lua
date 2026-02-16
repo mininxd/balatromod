@@ -374,7 +374,7 @@ function new_round()
 end
 
 G.FUNCS.draw_from_deck_to_hand = function(e)
-    if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and
+    if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.ZODIAC_PACK) and
         G.hand.config.card_limit <= 0 and #G.hand.cards == 0 then 
         G.STATE = G.STATES.GAME_OVER; G.STATE_COMPLETE = false 
         return true
@@ -389,7 +389,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
     end
     delay(0.3)
     for i=1, hand_space do --draw cards from deckL
-        if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK then 
+        if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.ZODIAC_PACK then 
             draw_card(G.deck,G.hand, i*100/hand_space,'up', true)
         else
             draw_card(G.deck,G.hand, i*100/hand_space,'up', true)

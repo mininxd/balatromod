@@ -30,6 +30,7 @@ function CardArea:init(X, Y, W, H, config)
 end
 
 function CardArea:emplace(card, location, stay_flipped)
+    if not self.cards then return end
     if location == 'front' or self.config.type == 'deck' then 
         table.insert(self.cards, 1, card)
     else
@@ -119,6 +120,7 @@ function CardArea:can_highlight(card)
     else
         if  self.config.type == 'hand' or
             self.config.type == 'joker' or
+            self.config.type == 'zodiac' or
             self.config.type == 'consumeable' or
             (self.config.type == 'shop' and self.config.highlighted_limit > 0)
         then
@@ -138,7 +140,7 @@ function CardArea:add_to_highlighted(card, silent)
         self.highlighted[#self.highlighted+1] = card
         card:highlight(true)
         if not silent then play_sound('cardSlide1') end
-    elseif self.config.type == 'joker' or self.config.type == 'consumeable' then
+    elseif self.config.type == 'joker' or self.config.type == 'zodiac' or self.config.type == 'consumeable' then
         if #self.highlighted >= self.config.highlighted_limit then 
             self:remove_from_highlighted(self.highlighted[1])
         end
@@ -214,6 +216,7 @@ function CardArea:unhighlight_all()
 end
 
 function CardArea:set_ranks()
+    if not self.cards then return end
     for k, card in ipairs(self.cards) do
         card.rank = k
         card.states.collide.can = true
@@ -247,6 +250,7 @@ function CardArea:move(dt)
 end
 
 function CardArea:update(dt)
+    if not self.cards then return end
     if self == G.hand then
         if G.GAME.modifiers.minus_hand_size_per_X_dollar then
             self.config.last_poll_size = self.config.last_poll_size or 0
@@ -274,6 +278,7 @@ function CardArea:update(dt)
 end
 
 function CardArea:draw()
+    if not self.cards then return end
     if not self.states.visible then return end 
     if G.VIEWING_DECK and (self==G.deck or self==G.hand or self==G.play) then return end
 
@@ -281,7 +286,7 @@ function CardArea:draw()
 
     self.ARGS.invisible_area_types = self.ARGS.invisible_area_types or {discard=1, voucher=1, play=1, consumeable=1, title = 1, title_2 = 1}
     if self.ARGS.invisible_area_types[self.config.type] or
-        (self.config.type == 'hand' and ({[G.STATES.SHOP]=1, [G.STATES.TAROT_PACK]=1, [G.STATES.SPECTRAL_PACK]=1, [G.STATES.STANDARD_PACK]=1,[G.STATES.BUFFOON_PACK]=1,[G.STATES.PLANET_PACK]=1, [G.STATES.ROUND_EVAL]=1, [G.STATES.BLIND_SELECT]=1})[state]) or
+        (self.config.type == 'hand' and ({[G.STATES.SHOP]=1, [G.STATES.TAROT_PACK]=1, [G.STATES.SPECTRAL_PACK]=1, [G.STATES.STANDARD_PACK]=1,[G.STATES.BUFFOON_PACK]=1,[G.STATES.PLANET_PACK]=1, [G.STATES.ROUND_EVAL]=1, [G.STATES.BLIND_SELECT]=1, [G.STATES.ZODIAC_PACK]=1})[state]) or
         (self.config.type == 'deck' and self ~= G.deck) or
         (self.config.type == 'shop' and self ~= G.shop_vouchers) then
     else
@@ -414,6 +419,7 @@ function CardArea:draw()
 end
 
 function CardArea:align_cards()
+    if not self.cards then return end
     if (self == G.hand or self == G.deck or self == G.discard or self == G.play) and G.view_deck and G.view_deck[1] and G.view_deck[1].cards then return end
     if self.config.type == 'deck' then
             local deck_height = (self.config.deck_height or 0.15)/52
@@ -439,7 +445,7 @@ function CardArea:align_cards()
             end
         end
     end
-    if self.config.type == 'hand' and (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK  or G.STATE == G.STATES.PLANET_PACK) then
+    if self.config.type == 'hand' and (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK  or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.ZODIAC_PACK) then
         for k, card in ipairs(self.cards) do
             if not card.states.drag.is then 
                 card.T.r = 0.4*(-#self.cards/2 - 0.5 + k)/(#self.cards)+ (G.SETTINGS.reduced_motion and 0 or 1)*0.02*math.sin(2*G.TIMERS.REAL+card.T.x)
@@ -453,7 +459,7 @@ function CardArea:align_cards()
         end
         table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
     end  
-    if self.config.type == 'hand' and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK) then
+    if self.config.type == 'hand' and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.ZODIAC_PACK) then
 
         for k, card in ipairs(self.cards) do
             if not card.states.drag.is then 
@@ -512,15 +518,15 @@ function CardArea:align_cards()
         end
         table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
     end 
-    if self.config.type == 'joker' or self.config.type == 'title_2' then
+    if self.config.type == 'joker' or self.config.type == 'zodiac' or self.config.type == 'title_2' then
         for k, card in ipairs(self.cards) do
             if not card.states.drag.is then 
                 card.T.r = (self.config.flat and 0 or 0.1)*(-#self.cards/2 - 0.5 + k)/(#self.cards)+ (G.SETTINGS.reduced_motion and 0 or 1)*0.02*math.sin(2*G.TIMERS.REAL+card.T.x)
                 local max_cards = math.max(#self.cards, self.config.temp_limit)
                 card.T.x = self.T.x + (self.T.w-self.card_w)*((k-1)/math.max(max_cards-1, 1) - 0.5*(#self.cards-max_cards)/math.max(max_cards-1, 1)) + 0.5*(self.card_w - card.T.w)
-                if #self.cards > 2 or (#self.cards > 1 and self == G.consumeables) or (#self.cards > 1 and self.config.spread) then
+                if #self.cards > 2 or (#self.cards > 1 and (self == G.consumeables or self == G.zodiacs)) or (#self.cards > 1 and self.config.spread) then
                     card.T.x = self.T.x + (self.T.w-self.card_w)*((k-1)/(#self.cards-1)) + 0.5*(self.card_w - card.T.w)
-                elseif #self.cards > 1 and self ~= G.consumeables then
+                elseif #self.cards > 1 and (self ~= G.consumeables and self ~= G.zodiacs) then
                     card.T.x = self.T.x + (self.T.w-self.card_w)*((k - 0.5)/(#self.cards)) + 0.5*(self.card_w - card.T.w)
                 else
                     card.T.x = self.T.x + self.T.w/2 - self.card_w/2 + 0.5*(self.card_w - card.T.w)
@@ -569,6 +575,7 @@ function CardArea:hard_set_T(X, Y, W, H)
 end
 
 function CardArea:hard_set_cards()
+    if not self.cards then return end
     for k, card in pairs(self.cards) do
         card:hard_set_T()
         card:calculate_parrallax()
@@ -576,11 +583,13 @@ function CardArea:hard_set_cards()
 end
 
 function CardArea:shuffle(_seed)
+    if not self.cards then return end
     pseudoshuffle(self.cards, pseudoseed(_seed or 'shuffle'))
     self:set_ranks()
 end
 
 function CardArea:sort(method)
+    if not self.cards then return end
     self.config.sort = method or self.config.sort
     if self.config.sort == 'desc' then
         table.sort(self.cards, function (a, b) return a:get_nominal() > b:get_nominal() end )
@@ -596,6 +605,7 @@ function CardArea:sort(method)
 end
 
 function CardArea:draw_card_from(area, stay_flipped, discarded_only)
+    if not self.cards then return end
     if area:is(CardArea) then
         if #self.cards < self.config.card_limit or self == G.deck or self == G.hand then
             local card = area:remove_card(nil, discarded_only)
