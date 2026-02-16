@@ -1101,9 +1101,7 @@ function Card:get_chip_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' or self.ability.set == 'custom_joker' then return 0 end
     if self.ability.consumeable then return 0 end
-    if self.ability.set == 'Joker' or self.ability.set == 'custom_joker' then return 0 end
-    if self.ability.x_mult <= 1 then return 0 end
-    return self.ability.x_mult
+    return self.ability.mult
 end
 
 function Card:get_chip_h_mult()

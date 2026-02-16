@@ -1351,9 +1351,8 @@ function Big:f_lambertw(z)
         end
         w=wn
     end
-    print("Iteration failed to converge: "+z)
-    local a = nil
-    return a.b
+    print("Iteration failed to converge: "..tostring(z))
+    return wn or w
 end
 
 function Big:d_lambertw(z)
@@ -1383,44 +1382,33 @@ function Big:d_lambertw(z)
         end
         w = wn
     end
-    print("Iteration failed to converge: "+z)
-    local a = nil
-    return a.b
+    print("Iteration failed to converge: "..tostring(z))
+    return wn or w
 end
 
 ------------------------metastuff----------------------------
 
 function OmegaMeta.__add(b1, b2)
-    if type(b1) == "number" then
-        return Big:create(b1):add(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:add(b2)
 end
 
 function OmegaMeta.__sub(b1, b2)
-    if type(b1) == "number" then
-        return Big:create(b1):sub(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:sub(b2)
 end
 
 function OmegaMeta.__mul(b1, b2)
-    if type(b1) == "number" then
-        return Big:create(b1):mul(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:mul(b2)
 end
 
 function OmegaMeta.__div(b1, b2)
-    if type(b1) == "number" then
-        return Big:create(b1):div(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:div(b2)
 end
 function OmegaMeta.__mod(b1, b2)
-    if type(b1) == "number" then
-        return Big:create(b1):mod(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:mod(b2)
 end
 
@@ -1429,9 +1417,7 @@ function OmegaMeta.__unm(b)
 end
 
 function OmegaMeta.__pow(b1, b2)
-    if type(b1) == "number" then
-        return Big:ensureBig(b1):pow(b2)
-    end
+    b1 = Big:ensureBig(b1)
     return b1:pow(b2)
 end
 
