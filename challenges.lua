@@ -736,34 +736,29 @@ G.CHALLENGES = {
         }
     }, 
     {
-        name = "Aura Farming",
+        name = "Test Challenges",
         id = 'c_test_challenge',
         rules = {
             custom = {},
             modifiers = {
-                {id = 'joker_slots', value = 20},
+                {id = 'joker_slots', value = 1e308},
             }
         },
         jokers = {
-        {id = 'j_blueprint'},
-        {id = 'j_boilerplate'},
-        {id = 'j_brainstorm'},
-        {id = 'j_stuntman'},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_hanging_chad', edition = "polychrome"},
+        {id = 'j_boilerplate', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_photograph', edition = "polychrome"},
+        {id = 'j_chicot', edition = "polychrome"},
+        {id = 'j_stencil', edition = "polychrome"},
         },
-        consumeables = {
-        },
-        zodiac = "z_pisces",
+        consumeables = {},
+        zodiac = "z_capricorn",
         vouchers = {
         },
         deck = {
-            type = 'Challenge Deck',
-            cards = {
-                {s='S',r='T'},
-                {s='S',r='J'},
-                {s='S',r='Q'},
-                {s='S',r='K'},
-                {s='S',r='A'},
-            }
+            type = 'Anaglyph Deck'
         },
         restrictions = {
             banned_cards = {},

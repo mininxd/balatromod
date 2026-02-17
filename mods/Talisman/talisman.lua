@@ -303,26 +303,25 @@ function tal_get_blind_amount(ante)
       to_big(50000 * (scale+1)^2 * (scale/7)^2)
   }
   
-  if ante < 1 then return to_big(100) end
-  if ante <= 8 then 
-    local amount = amounts[ante]
-    if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-      local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-      amount = math.floor(amount / exponent):to_number() * exponent
+      if ante < 1 then return to_big(100) end
+    if ante <= 8 then 
+      local amount = amounts[ante]
+      if (amount:lt(to_big(1e300))) then
+        local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1)))
+        amount = math.floor(amount / exponent) * exponent
+      end
+      amount:normalize()
+      return amount
+      end
+    local a, b, c, d = amounts[8], amounts[8]/amounts[7], ante-8, 1 + 0.2*(ante-8)
+    local amount = math.floor(a*(b + (b*k*c)^d)^c)
+    if (amount:lt(to_big(1e300))) then
+      local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1)))
+      amount = math.floor(amount / exponent) * exponent
     end
     amount:normalize()
     return amount
-    end
-  local a, b, c, d = amounts[8], amounts[8]/amounts[7], ante-8, 1 + 0.2*(ante-8)
-  local amount = math.floor(a*(b + (b*k*c)^d)^c)
-  if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-    local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-    amount = math.floor(amount / exponent):to_number() * exponent
   end
-  amount:normalize()
-  return amount
-end
-
   -- There's too much to override here so we just fully replace this function
   -- Note that any ante scaling tweaks will need to manually changed...
   local gba = get_blind_amount
@@ -338,9 +337,9 @@ end
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
+        if (amount:lt(to_big(1e300))) then
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1)))
+          amount = math.floor(amount / exponent) * exponent
         end
         amount:normalize()
         return amount
@@ -353,9 +352,9 @@ end
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
+        if (amount:lt(to_big(1e300))) then
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1)))
+          amount = math.floor(amount / exponent) * exponent
         end
         amount:normalize()
         return amount
@@ -368,9 +367,9 @@ end
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
+        if (amount:lt(to_big(1e300))) then
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1)))
+          amount = math.floor(amount / exponent) * exponent
         end
         amount:normalize()
         return amount
