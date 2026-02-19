@@ -172,12 +172,7 @@ target = "functions/button_callbacks.lua"
 pattern = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.mult) == 'number' and G.GAME.current_round.current_hand.mult or 1)))) end"
 position = "at"
 payload = '''
-local num = 0
-if to_big(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1) > to_big(1e300) then 
-	num = math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))
-else
-	num = 1e300
-end
+local num = math.max(0,math.floor(math.log10(to_number(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))
 if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, num) end
 '''
 match_indent = true
@@ -188,12 +183,7 @@ target = "functions/button_callbacks.lua"
 pattern = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.chips) == 'number' and G.GAME.current_round.current_hand.chips or 1)))) end"
 position = "at"
 payload = '''
-local num = 0
-if to_big(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1) > to_big(1e300) then 
-	num = math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))
-else
-	num = 1e300
-end
+local num = math.max(0,math.floor(math.log10(to_number(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))
 if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, num) end
 '''
 match_indent = true
@@ -333,123 +323,7 @@ match_indent = true
 
 # For some reason Big leaks into the text engine, this mitigates it
 [[patches]]
-[patches.regex]
-target = "engine/text.lua"
-pattern = '''(?<indent>[\t ]*)if self\.strings\[k\]\.W > self\.config\.W then'''
-position = "before"
-line_prepend = "$indent"
-payload = '''
-if Big then
-	if type(self.strings[k].W) == 'table' then
-		self.strings[k].W = to_number(self.strings[k].W)
-	end
-	if type(self.strings[k].H) == 'table' then
-		self.strings[k].H = to_number(self.strings[k].H)
-	end
-end
-'''
-
-[[patches]]
 [patches.pattern]
-target = "engine/text.lua"
-pattern = "function DynaText:draw()"
-position = "after"
-payload = '''
-if Big then
-	self.scale = to_number(self.scale)
-	if self.shadow_parallax then self.shadow_parallax.x = to_number(self.shadow_parallax.x) end
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "engine/text.lua"
-pattern = "for k, letter in ipairs(self.strings[self.focused_string].letters) do"
-position = "after" # old DynaText backward compat
-payload = '''
-if Big then
-	letter.dims.x = to_number(letter.dims.x)
-	letter.dims.y = to_number(letter.dims.y)
-	letter.offset.x = to_number(letter.offset.x)
-	letter.offset.y = to_number(letter.offset.y)
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "engine/text.lua"
-pattern = "local letter = self.strings[self.focused_string].letters[k]"
-position = "after" # This is for Aiko's new mod menu interference with DynaText
-payload = '''
-if Big then
-	letter.dims.x = to_number(letter.dims.x)
-	letter.dims.y = to_number(letter.dims.y)
-	letter.offset.x = to_number(letter.offset.x)
-	letter.offset.y = to_number(letter.offset.y)
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "engine/ui.lua"
-pattern = "if _th and _tw then"
-position = "after"
-payload = '''
-if Big then
-	_th = to_number(_th)
-	_tw = to_number(_tw)
-end
-'''
-match_indent = true
-
-#these last few are causing lag, so they'll only be applied in the main menu
-[[patches]]
-[patches.pattern]
-target = "engine/ui.lua"
-pattern = "local _cw, _ch = w:set_wh()"
-position = "after"
-payload = "if Big and G.STATE == G.STATES.MENU then _cw = to_number(_cw); _ch = to_number(_ch) end"
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "engine/moveable.lua"
-pattern = "function Moveable:move_wh(dt)"
-position = "after"
-payload = '''
-if Big and G.STATE == G.STATES.MENU then self.T.w = to_number(self.T.w)
-self.T.h = to_number(self.T.h)
-self.VT.w = to_number(self.VT.w)
-self.VT.h = to_number(self.VT.h) end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/misc_functions.lua"
-pattern = "function prep_draw(moveable, scale, rotate, offset)"
-position = "after"
-payload = '''
-if Big and G.STATE == G.STATES.MENU then moveable.VT.x = to_number(moveable.VT.x)
-moveable.VT.y = to_number(moveable.VT.y)
-moveable.VT.w = to_number(moveable.VT.w)
-moveable.VT.h = to_number(moveable.VT.h) end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "engine/ui.lua"
-pattern = "if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end"
-position = "before"
-payload = '''
-if Big and G.STATE == G.STATES.MENU then self.config.scale = to_number(self.config.scale) end
-'''
-match_indent = true
-
 # poker hand level fixes
 [[patches]]
 [patches.pattern]
@@ -1245,7 +1119,7 @@ target = 'functions/misc_functions.lua'
 pattern = "if G.GAME.round_scores[score] and math.floor(amt) > G.GAME.round_scores[score].amt then"
 position = "at"
 payload = '''
-if G.GAME.round_scores[score] and math.floor(amt) > (G.GAME.round_scores[score].amt or 0) then'''
+if G.GAME.round_scores[score] and to_big(amt) > to_big(G.GAME.round_scores[score].amt or 0) then'''
 match_indent = true
 
 [[patches]]
@@ -1254,8 +1128,8 @@ target = 'game.lua'
 pattern = "function Game:update_hand_played(dt)"
 position = "after"
 payload = '''
-G.GAME.chips = (G.GAME.chips or 0)
-G.GAME.blind.chips = (G.GAME.blind.chips or math.huge)'''
+G.GAME.chips = (G.GAME.chips or to_big(0))
+G.GAME.blind.chips = (G.GAME.blind.chips or to_big(1e300))'''
 match_indent = true
 # Naneinf crash fixes end
 
@@ -1399,14 +1273,15 @@ match_indent = true
 target = 'functions/state_events.lua'
 pattern = '''
 else
-    mult = mod_mult(0)
+    mult = to_big(mod_mult(0))
 '''
 position = 'at'
 payload = '''
 return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
 end
 function evaluate_play_debuff(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
-	mult = mod_mult(0)
+	mult = to_big(mod_mult(0))
+    hand_chips = to_big(mod_chips(0))
 '''
 match_indent = true
 
@@ -1455,13 +1330,10 @@ pattern = "G.SHADERS[_shader]:send(v.name, v.val or (v.func and v.func()) or v.r
 position = 'at'
 payload = '''local val = v.val or (v.func and v.func()) or v.ref_table[v.ref_value]
 if type(val) == "table" and is_number(val) then
-	if val > to_big(1e300) then
-		val = 1e300
-	else
-		val = val:tonumber()
-	end
+	val = to_number(val)
 end
 G.SHADERS[_shader]:send(v.name, val)'''
+match_indent = true
 match_indent = true
 
 # Let ambient sounds not use bignums
@@ -1472,18 +1344,10 @@ pattern = "AC[k].vol = (not G.video_organ and G.STATE == G.STATES.SPLASH) and 0 
 position = 'after'
 payload = '''
 if type(AC[k].vol) == "table" then
-	if AC[k].vol > to_big(1e300) then
-		AC[k].vol = 1e300
-	else
-		AC[k].vol = to_number(AC[k].vol)
-	end
+	AC[k].vol = to_number(AC[k].vol)
 end
 if type(AC[k].per) == "table" then
-	if AC[k].per > to_big(1e300) then
-		AC[k].per = 1e300
-	else
-		AC[k].per = to_number(AC[k].per)
-	end
+	AC[k].per = to_number(AC[k].per)
 end
 '''
 match_indent = true
@@ -1494,11 +1358,7 @@ target = 'functions/button_callbacks.lua'
 pattern = "_F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(G.ARGS.score_intensity.earned_score, 5)-2)"
 position = 'after'
 payload = '''if type(_F.intensity) == "table" then
-	if _F.intensity > to_big(1e300) then
-		_F.intensity = 1e300
-	else
-		_F.intensity = to_number(_F.intensity)
-	end
+	_F.intensity = to_number(_F.intensity)
 end
 '''
 match_indent = true
@@ -1537,7 +1397,7 @@ pattern = '''
 G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
 '''
 payload = '''
-G.ARGS.score_intensity.earned_score = math.min(to_number(G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult), 1e300)
+G.ARGS.score_intensity.earned_score = to_big(G.GAME.current_round.current_hand.chips)*G.GAME.current_round.current_hand.mult
 '''
 
 [[patches]]
@@ -1546,7 +1406,7 @@ target = 'functions/misc_functions.lua'
 position = 'at'
 match_indent = true
 pattern = '''SMODS\.calculate_round_score\(true\)'''
-payload = '''math.min(to_number(SMODS.calculate_round_score(true)), 1e300)'''
+payload = '''to_big(SMODS.calculate_round_score(true))'''
 
 # evaluate_play_final_scoring comparison
 [[patches]]

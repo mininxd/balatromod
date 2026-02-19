@@ -966,7 +966,7 @@ function Big:root(other)
         if self:gt(other) then
             return self:clone()
         else
-            Big:create(B.ZERO)
+            return Big:create(B.ZERO)
         end
     end
     return Big:create(10):pow(self:log10():div(other));

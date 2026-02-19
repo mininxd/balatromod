@@ -277,6 +277,13 @@ end
 
 function Moveable:move(dt)
     if self.FRAME.MOVE >= G.FRAMES.MOVE then return end
+    if Big then
+        self.T.x = to_number(self.T.x); self.T.y = to_number(self.T.y); self.T.w = to_number(self.T.w); self.T.h = to_number(self.T.h); self.T.r = to_number(self.T.r); self.T.scale = to_number(self.T.scale)
+        self.VT.x = to_number(self.VT.x); self.VT.y = to_number(self.VT.y); self.VT.w = to_number(self.VT.w); self.VT.h = to_number(self.VT.h); self.VT.r = to_number(self.VT.r); self.VT.scale = to_number(self.VT.scale)
+        if self.velocity then
+            self.velocity.x = to_number(self.velocity.x); self.velocity.y = to_number(self.velocity.y); self.velocity.r = to_number(self.velocity.r); self.velocity.scale = to_number(self.velocity.scale)
+        end
+    end
     self.FRAME.OLD_MAJOR = self.FRAME.MAJOR
     self.FRAME.MAJOR = nil
     self.FRAME.MOVE = G.FRAMES.MOVE

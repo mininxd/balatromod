@@ -528,10 +528,10 @@ function update_hand_text(config, vals)
     func = function()
         local col = G.C.GREEN
         if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
-            local delta = (type(vals.chips) == 'number' and type(G.GAME.current_round.current_hand.chips) == 'number') and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
-            if delta < 0 then delta = ''..delta; col = G.C.RED
-            elseif delta > 0 then delta = '+'..delta
-            else delta = ''..delta
+            local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (to_big(vals.chips) - G.GAME.current_round.current_hand.chips) or to_big(0)
+            if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
+            elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
+            else delta = number_format(delta)
             end
             if type(vals.chips) == 'string' then delta = vals.chips end
             G.GAME.current_round.current_hand.chips = vals.chips
@@ -550,10 +550,10 @@ function update_hand_text(config, vals)
             end
         end
         if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
-            local delta = (type(vals.mult) == 'number' and type(G.GAME.current_round.current_hand.mult) == 'number')and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
-            if delta < 0 then delta = ''..delta; col = G.C.RED
-            elseif delta > 0 then delta = '+'..delta
-            else delta = ''..delta
+            local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (to_big(vals.mult) - G.GAME.current_round.current_hand.mult) or to_big(0)
+            if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
+            elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
+            else delta = number_format(delta)
             end
             if type(vals.mult) == 'string' then delta = vals.mult end
             G.GAME.current_round.current_hand.mult = vals.mult
@@ -2600,7 +2600,9 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         elseif card_type == 'Locked' then
             full_UI_table.name = localize{type = 'name', set = 'Other', key = 'locked', nodes = {}}
         elseif card_type == 'Undiscovered' then 
-            full_UI_table.name = localize{type = 'name', set = 'Other', key = 'undiscovered_'..(string.lower(_c.set)), name_nodes = {}}
+            local loc_key = 'undiscovered_'..(string.lower(_c.set))
+            if _c.set == 'Zodiac' then loc_key = 'undiscovered_tarot' end
+            full_UI_table.name = localize{type = 'name', set = 'Other', key = loc_key, name_nodes = {}}
         elseif specific_vars and (card_type == 'Default' or card_type == 'Enhanced') then
             if (_c.name == 'Stone Card') then full_UI_table.name = true end
             if (specific_vars.playing_card and (_c.name ~= 'Stone Card')) then
@@ -2695,7 +2697,9 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             end
         end
     elseif hide_desc then
-        localize{type = 'other', key = 'undiscovered_'..(string.lower(_c.set)), set = _c.set, nodes = desc_nodes}
+        local loc_key = 'undiscovered_'..(string.lower(_c.set))
+        if _c.set == 'Zodiac' then loc_key = 'undiscovered_tarot' end
+        localize{type = 'other', key = loc_key, set = _c.set, nodes = desc_nodes}
     elseif specific_vars and specific_vars.debuffed then
         localize{type = 'other', key = 'debuffed_'..(specific_vars.playing_card and 'playing_card' or 'default'), nodes = desc_nodes}
     elseif _c.set == 'Joker' then
@@ -2849,7 +2853,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         }
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Zodiac' then
-        if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or _c.config.extra.x_mult} end
+        if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or number_format(_c.config.extra.x_mult)} end
         if _c.name == 'Sagitarius' then loc_vars = {} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then

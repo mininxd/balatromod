@@ -111,7 +111,7 @@ function Node:draw_boundingrect()
             love.graphics.setColor(1, 0, 0, 0.3) 
         end
         if self.states.focus.can then 
-            love.graphics.setColor(G.C.GOLD) 
+            love.graphics.setColor(to_number(G.C.GOLD)) 
             love.graphics.setLineWidth(1)
         end
         if self.CALCING then 

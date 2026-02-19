@@ -62,7 +62,7 @@ function AnimatedSprite:draw_self()
 
     prep_draw(self, 1)
     love.graphics.scale(1/self.scale_mag)
-    love.graphics.setColor(G.C.WHITE)
+    love.graphics.setColor(to_number(G.C.WHITE))
     love.graphics.draw(
         self.atlas.image, 
         self.sprite,

@@ -139,6 +139,8 @@ function UIBox:calculate_xywh(node, _T, recalculate, _scale)
                 if node.config.func and not recalculate then G.FUNCS[node.config.func](node) end
             end
             if not node.config.text then node.config.text = '[UI ERROR]' end
+            if is_number(node.config.text) then node.config.text = number_format(node.config.text) end
+            node.config.text = tostring(node.config.text)
             node.config.lang = node.config.lang or G.LANG
             local tx = node.config.lang.font.FONT:getWidth(node.config.text)*node.config.lang.font.squish*scale*G.TILESCALE*node.config.lang.font.FONTSCALE
             local ty = node.config.lang.font.FONT:getHeight()*scale*G.TILESCALE*node.config.lang.font.FONTSCALE*node.config.lang.font.TEXT_HEIGHT_SCALE
@@ -689,7 +691,7 @@ function UIElement:draw_self()
 
         if self.config.button_UIE and not self.config.button_UIE.config.button then button_active = false end
     end
-    if self.config.colour[4] > 0.01 then
+    if to_number(self.config.colour[4]) > 0.01 then
         if self.UIT == G.UIT.T and self.config.scale then 
             self.ARGS.text_parallax = self.ARGS.text_parallax or {}
             self.ARGS.text_parallax.sx = -self.shadow_parrallax.x*0.5/(self.config.scale*self.config.lang.font.FONTSCALE)
@@ -700,7 +702,7 @@ function UIElement:draw_self()
                 if Big and G.STATE == G.STATES.MENU then self.config.scale = to_number(self.config.scale) end
                 if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end
                 if (self.config.shadow or (self.config.button_UIE and button_active)) and G.SETTINGS.GRAPHICS.shadows == 'On' then
-                    love.graphics.setColor(0, 0, 0, 0.3*self.config.colour[4])
+                    love.graphics.setColor(0, 0, 0, 0.3*to_number(self.config.colour[4]))
                     love.graphics.draw(
                         self.config.text_drawable,
                         (self.config.lang.font.TEXT_OFFSET.x + (self.config.vert and -self.ARGS.text_parallax.sy or self.ARGS.text_parallax.sx))*(self.config.scale or 1)*self.config.lang.font.FONTSCALE/G.TILESIZE,
@@ -717,9 +719,9 @@ function UIElement:draw_self()
             if Big and G.STATE == G.STATES.MENU then self.config.scale = to_number(self.config.scale) end
             if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end
             if not button_active then
-                love.graphics.setColor(G.C.UI.TEXT_INACTIVE)
+                love.graphics.setColor(to_number(G.C.UI.TEXT_INACTIVE))
             else
-                love.graphics.setColor(self.config.colour)
+                love.graphics.setColor(to_number(self.config.colour))
             end
             love.graphics.draw(
                 self.config.text_drawable,
@@ -738,7 +740,7 @@ function UIElement:draw_self()
                 if self.config.shadow_colour then
                     love.graphics.setColor(self.config.shadow_colour)
                 else 
-                    love.graphics.setColor(0,0,0,0.3*self.config.colour[4])
+                    love.graphics.setColor(0,0,0,0.3*to_number(self.config.colour[4]))
                 end
                 if self.config.r and self.VT.w > 0.01 then 
                     self:draw_pixellated_rect('shadow', parallax_dist)
@@ -758,17 +760,17 @@ function UIElement:draw_self()
             self.ARGS.button_colours[1] = self.config.button_delay and mix_colours(self.config.colour, G.C.L_BLACK, 0.5) or self.config.colour
             self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is and ((not G.CONTROLLER.HID.touch) or G.CONTROLLER.is_cursor_down)) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
             for k, v in ipairs(self.ARGS.button_colours) do
-                love.graphics.setColor(v)
+                love.graphics.setColor(to_number(v))
                 if self.config.r and self.VT.w > 0.01 then 
                     if self.config.button_delay then 
-                        love.graphics.setColor(G.C.GREY)
+                        love.graphics.setColor(to_number(G.C.GREY))
                         self:draw_pixellated_rect('fill', parallax_dist)
-                        love.graphics.setColor(v)
+                        love.graphics.setColor(to_number(v))
                         self:draw_pixellated_rect('fill', parallax_dist, nil, self.config.button_delay_progress)
                     elseif self.config.progress_bar then
-                        love.graphics.setColor(self.config.progress_bar.empty_col or G.C.GREY)
+                        love.graphics.setColor(to_number(self.config.progress_bar.empty_col or G.C.GREY))
                         self:draw_pixellated_rect('fill', parallax_dist)
-                        love.graphics.setColor(self.config.progress_bar.filled_col or G.C.BLUE)
+                        love.graphics.setColor(to_number(self.config.progress_bar.filled_col or G.C.BLUE))
                         self:draw_pixellated_rect('fill', parallax_dist, nil, self.config.progress_bar.ref_table[self.config.progress_bar.ref_value]/self.config.progress_bar.max)
                     else
                         self:draw_pixellated_rect('fill', parallax_dist)
@@ -788,7 +790,7 @@ function UIElement:draw_self()
                 love.graphics.setLineWidth(lw + 1.5)
                 love.graphics.setColor(adjust_alpha(G.C.WHITE, 0.2*lw, true))
                 self:draw_pixellated_rect('fill', parallax_dist)
-                love.graphics.setColor(self.config.colour[4] > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
+                love.graphics.setColor(to_number(self.config.colour[4]) > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
                 self:draw_pixellated_rect('line', parallax_dist)
                 love.graphics.pop()
             else
@@ -799,7 +801,7 @@ function UIElement:draw_self()
     end
     
     --Draw the outline of the object
-    if self.config.outline and self.config.outline_colour[4] > 0.01 then
+    if self.config.outline and to_number(self.config.outline_colour[4]) > 0.01 then
         if self.config.outline then      
             prep_draw(self, 1)
             love.graphics.scale(1/(G.TILESIZE))
@@ -808,7 +810,7 @@ function UIElement:draw_self()
                 love.graphics.setColor(darken(self.config.outline_colour, self.states.hover.is and 0.5 or 0.3, true))
                 self:draw_pixellated_rect('line_emboss', parallax_dist, self.config.line_emboss)
             end
-            love.graphics.setColor(self.config.outline_colour)
+            love.graphics.setColor(to_number(self.config.outline_colour))
             if self.config.r and self.VT.w > 0.01 then 
                 self:draw_pixellated_rect('line', parallax_dist)
             else
@@ -826,7 +828,7 @@ function UIElement:draw_self()
         love.graphics.setLineWidth(lw + 1)
         love.graphics.setColor(adjust_alpha(G.C.BLACK, 0.2*lw, true))
         self:draw_pixellated_rect('fill', parallax_dist)
-        love.graphics.setColor(self.config.colour[4] > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
+        love.graphics.setColor(to_number(self.config.colour[4]) > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
         self:draw_pixellated_rect('line', parallax_dist)
         love.graphics.pop()
     end
@@ -840,7 +842,7 @@ function UIElement:draw_self()
         love.graphics.setLineWidth(lw + 1.5)
         love.graphics.setColor(adjust_alpha(G.C.WHITE, 0.2*lw, true))
         self:draw_pixellated_rect('fill', parallax_dist)
-        love.graphics.setColor(self.config.colour[4] > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
+        love.graphics.setColor(to_number(self.config.colour[4]) > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
         self:draw_pixellated_rect('line', parallax_dist)
         love.graphics.pop()
     else
@@ -852,7 +854,7 @@ function UIElement:draw_self()
         prep_draw(self, 0.98)
         love.graphics.scale(1/(G.TILESIZE))
         if self.config.shadow and G.SETTINGS.GRAPHICS.shadows == 'On' then
-            love.graphics.setColor(0,0,0,0.3*self.config.colour[4])
+            love.graphics.setColor(0,0,0,0.3*to_number(self.config.colour[4]))
             love.graphics.polygon("fill", get_chosen_triangle_from_rect(self.layered_parallax.x - self.shadow_parrallax.x*parallax_dist*0.5, self.layered_parallax.y - self.shadow_parrallax.y*parallax_dist*0.5, self.VT.w*G.TILESIZE, self.VT.h*G.TILESIZE, self.config.chosen == 'vert'))
         end
         love.graphics.pop()

@@ -148,7 +148,7 @@ function Particles:draw(alpha)
         for k, v in pairs(self.particles) do
             if v.draw then 
                 love.graphics.push()
-                love.graphics.setColor(v.colour[1], v.colour[2], v.colour[3], v.colour[4]*alpha*(1-self.fade_alpha))                
+                love.graphics.setColor(to_number(v.colour[1]), to_number(v.colour[2]), to_number(to_big(v.colour[3])), to_number(to_big(v.colour[4])*alpha*(1-self.fade_alpha)))                
                 love.graphics.translate(v.offset.x, v.offset.y)
                 love.graphics.rotate(v.facing)
                 

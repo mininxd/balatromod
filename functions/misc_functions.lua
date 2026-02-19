@@ -677,10 +677,10 @@ end
 
 function mix_colours(C1, C2, proportionC1)
   return {
-    (C1[1] or 0.5)*proportionC1 + (C2[1] or 0.5)*(1-proportionC1),
-    (C1[2] or 0.5)*proportionC1 + (C2[2] or 0.5)*(1-proportionC1),
-    (C1[3] or 0.5)*proportionC1 + (C2[3] or 0.5)*(1-proportionC1),
-    (C1[4] or 1)*proportionC1 + (C2[4] or 1)*(1-proportionC1),
+    to_number((C1[1] or 0.5)*proportionC1 + (C2[1] or 0.5)*(1-proportionC1)),
+    to_number((C1[2] or 0.5)*proportionC1 + (C2[2] or 0.5)*(1-proportionC1)),
+    to_number((C1[3] or 0.5)*proportionC1 + (C2[3] or 0.5)*(1-proportionC1)),
+    to_number((C1[4] or 1)*proportionC1 + (C2[4] or 1)*(1-proportionC1)),
   }
 end
 
@@ -742,7 +742,7 @@ function modulate_sound(dt)
   if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then
     G.ARGS.score_intensity.earned_score = to_big(0)
   else
-    G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
+    G.ARGS.score_intensity.earned_score = to_big(G.GAME.current_round.current_hand.chips)*G.GAME.current_round.current_hand.mult
   end
   G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or to_big(0)
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
@@ -861,33 +861,25 @@ end
 
 function darken(colour, percent, no_tab)
   if no_tab then 
-    return 
-    colour[1]*(1-percent),
-    colour[2]*(1-percent),
-    colour[3]*(1-percent),
-    colour[4]
+    return to_number(colour[1]*(1-percent)), to_number(colour[2]*(1-percent)), to_number(colour[3]*(1-percent)), to_number(colour[4])
   end
   return {
-    colour[1]*(1-percent),
-    colour[2]*(1-percent),
-    colour[3]*(1-percent),
-    colour[4]
+    to_number(colour[1]*(1-percent)),
+    to_number(colour[2]*(1-percent)),
+    to_number(colour[3]*(1-percent)),
+    to_number(colour[4])
   }
 end
 
 function adjust_alpha(colour, new_alpha, no_tab)
   if no_tab then 
-    return 
-    colour[1],
-    colour[2],
-    colour[3],
-    new_alpha
+    return to_number(colour[1]), to_number(colour[2]), to_number(colour[3]), to_number(new_alpha)
   end
   return {
-    colour[1],
-    colour[2],
-    colour[3],
-    new_alpha
+    to_number(colour[1]),
+    to_number(colour[2]),
+    to_number(colour[3]),
+    to_number(new_alpha)
   }
 end
 
@@ -970,7 +962,9 @@ function number_format(num)
     local fac = math.floor(math.log(tonumber(x), 10))
     return string.format("%.3f",x/(10^fac))..'e'..fac
   end
-  return string.format(num ~= math.floor(num) and (num >= 100 and "%.0f" or num >= 10 and "%.1f" or "%.2f") or "%.0f", num):reverse():gsub("(%d%d%d)", "%1,"):gsub(",$", ""):reverse()
+  local res = string.format(num ~= math.floor(num) and (num >= 100 and "%.0f" or num >= 10 and "%.1f" or "%.2f") or "%.0f", num)
+  res = res:gsub("%.([0-9])0$", ".%1"):gsub("%.0+$", "")
+  return res:reverse():gsub("(%d%d%d)", "%1,"):gsub(",$", ""):reverse()
 end
 
 function score_number_scale(scale, amt)

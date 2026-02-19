@@ -23,12 +23,17 @@ function Event:init(config)
     self.timer = config.timer or (self.created_on_pause and 'REAL') or 'TOTAL'
     
     if self.trigger == 'ease' then
+        local start_val = config.ref_table[config.ref_value]
+        local end_val = config.ease_to
+        if type(start_val) == 'table' and start_val.clone then start_val = start_val:clone() end
+        if type(end_val) == 'table' and end_val.clone then end_val = end_val:clone() end
+
         self.ease = {
             type = config.ease or 'lerp',
             ref_table = config.ref_table,
             ref_value = config.ref_value,
-            start_val = config.ref_table[config.ref_value],
-            end_val = config.ease_to,
+            start_val = start_val,
+            end_val = end_val,
             start_time = nil,
             end_time = nil,
         }
@@ -67,15 +72,33 @@ function Event:handle(_results)
                 local percent_done = ((self.ease.end_time - G.TIMERS[self.timer])/(self.ease.end_time - self.ease.start_time))
 
                 if self.ease.type == 'lerp' then
-                    self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    local start_val = to_big(self.ease.start_val)
+                    local end_val = to_big(self.ease.end_val)
+                    if type(start_val) == 'table' or type(end_val) == 'table' then
+                        self.ease.ref_table[self.ease.ref_value] = self.func(to_big(percent_done)*start_val + to_big(1-percent_done)*end_val)
+                    else
+                        self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    end
                 end
                 if self.ease.type == 'elastic' then
                     percent_done = -math.pow(2, 10 * percent_done - 10) * math.sin((percent_done * 10 - 10.75) * 2*math.pi/3);
-                    self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    local start_val = to_big(self.ease.start_val)
+                    local end_val = to_big(self.ease.end_val)
+                    if type(start_val) == 'table' or type(end_val) == 'table' then
+                        self.ease.ref_table[self.ease.ref_value] = self.func(to_big(percent_done)*start_val + to_big(1-percent_done)*end_val)
+                    else
+                        self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    end
                 end
                 if self.ease.type == 'quad' then
                     percent_done = percent_done * percent_done;
-                    self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    local start_val = to_big(self.ease.start_val)
+                    local end_val = to_big(self.ease.end_val)
+                    if type(start_val) == 'table' or type(end_val) == 'table' then
+                        self.ease.ref_table[self.ease.ref_value] = self.func(to_big(percent_done)*start_val + to_big(1-percent_done)*end_val)
+                    else
+                        self.ease.ref_table[self.ease.ref_value] = self.func(percent_done*self.ease.start_val + (1-percent_done)*self.ease.end_val)
+                    end
                 end
             else
                 self.ease.ref_table[self.ease.ref_value] = self.func(self.ease.end_val)

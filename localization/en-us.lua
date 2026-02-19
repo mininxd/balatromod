@@ -1891,7 +1891,8 @@ return {
                 text={
                     "Instead of losing, give {C:blue}+#1#{}",
                     "hand & add {C:money}#2#{} random",
-                    "{C:orange}Cards{} to {C:orange}Hand{}"
+                    "{C:orange}Cards{} to {C:orange}Hand{}",
+                    "{S:1.1,C:red,E:2}self destructs{}",
                 },
             },
             j_lithograph={
@@ -2298,6 +2299,15 @@ return {
                 },
             },
             undiscovered_spectral={
+                name="Not Discovered",
+                text={
+                    "Purchase or use",
+                    "this card in an",
+                    "unseeded run to",
+                    "learn what it does",
+                },
+            },
+            undiscovered_zodiac={
                 name="Not Discovered",
                 text={
                     "Purchase or use",
@@ -3617,7 +3627,7 @@ return {
             b_imagery="Imagery",
             b_jokers="Jokers",
             b_custom_jokers="Custom Jokers",
-            b_zodiac_cards="Zodiac Cards",
+            b_zodiac_cards="Zodiac",
             b_custom_tags="Custom Tags",
             b_load_profile="Load Profile",
             b_main_menu="Main Menu",
@@ -3808,7 +3818,7 @@ return {
             k_trophies_disabled="Trophies Disabled",
             k_trophy="Trophy",
             k_uncommon="Uncommon",
-            k_undisovered="Undiscovered",
+            k_undiscovered="Undiscovered",
             k_unknown="?????",
             k_unlocked_ex="Unlocked!",
             k_upgrade_ex="Upgrade!",

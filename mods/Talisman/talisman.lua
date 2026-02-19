@@ -157,6 +157,7 @@ end
 
 if Talisman.config_file.break_infinity then
   Big = assert(love.filesystem.load(talisman_path.."/big-num/omeganum.lua"))()
+  BigMeta = BigMeta or OmegaMeta
   Notations = assert(love.filesystem.load(talisman_path.."/big-num/notations.lua"))()
   -- We call this after init_game_object to leave room for mods that add more poker hands
   Talisman.igo = function(obj)
@@ -171,6 +172,7 @@ if Talisman.config_file.break_infinity then
       end
       obj.starting_params.dollars = to_big(obj.starting_params.dollars)
       obj.dollars = to_big(obj.dollars)
+      obj.chips = to_big(obj.chips or 0)
       return obj
   end
 
@@ -195,12 +197,24 @@ if Talisman.config_file.break_infinity then
 
   local mf = math.floor
   function math.floor(x)
-      if type(x) == 'table' then return x.floor and x:floor() or x end
+      if type(x) == 'table' then
+        local meta = getmetatable(x)
+        if (BigMeta and meta == BigMeta) or (OmegaMeta and meta == OmegaMeta) then
+            return x.floor and x:floor() or x
+        end
+        return x
+      end
       return mf(x)
   end
   local mc = math.ceil
   function math.ceil(x)
-      if type(x) == 'table' then return x:ceil() end
+      if type(x) == 'table' then
+        local meta = getmetatable(x)
+        if (BigMeta and meta == BigMeta) or (OmegaMeta and meta == OmegaMeta) then
+            return x.ceil and x:ceil() or x
+        end
+        return x
+      end
       return mc(x)
   end
 
@@ -247,16 +261,15 @@ if Talisman.config_file.break_infinity then
     end
   end
 
-  local gftsj = G.FUNCS.text_super_juice
+  local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
-    if type(_amount) == "table" then
-      if _amount > to_big(1e300) then
-        _amount = 1e300
-      else
-        _amount = _amount:to_number()
-      end
+    if type(_amount) == 'table' then
+      if to_big(_amount) > to_big(2) then _amount = 2 
+      else _amount = to_number(_amount) end
+    else
+      if _amount > 2 then _amount = 2 end
     end
-    return gftsj(e, _amount)
+    return tsj(e, _amount)
   end
 
   local l10 = math.log10
@@ -443,10 +456,9 @@ function tal_get_blind_amount(ante)
   local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
     if type(_amount) == 'table' then
-      if _amount > to_big(2) then _amount = 2 end
-    else
-      if _amount > 2 then _amount = 2 end
+      _amount = to_number(_amount)
     end
+    _amount = math.min(_amount or 0, 2)
     return tsj(e, _amount)
   end
 
@@ -457,9 +469,9 @@ function tal_get_blind_amount(ante)
     x = to_big(x)
     y = to_big(y)
     if (x > y) then
-      return x
+      return to_big(x)
     else
-      return y
+      return to_big(y)
     end
     else return max(x,y) end
   end
@@ -470,9 +482,9 @@ function tal_get_blind_amount(ante)
     x = to_big(x)
     y = to_big(y)
     if (x < y) then
-      return x
+      return to_big(x)
     else
-      return y
+      return to_big(y)
     end
     else return min(x,y) end
   end
@@ -480,8 +492,8 @@ function tal_get_blind_amount(ante)
   local sqrt = math.sqrt
   function math.sqrt(x)
     if type(x) == 'table' then
-      if getmetatable(x) == BigMeta then return x:sqrt() end
-      if getmetatable(x) == OmegaMeta then return x:pow(0.5) end
+      if getmetatable(x) == BigMeta then return to_big(x:sqrt()) end
+      if getmetatable(x) == OmegaMeta then return to_big(x:pow(0.5)) end
     end
     return sqrt(x)
   end
@@ -493,9 +505,9 @@ function tal_get_blind_amount(ante)
     if type(x) == 'table' then
     x = to_big(x)
     if (x < to_big(0)) then
-      return -1 * x
+      return to_big(x):neg()
     else
-      return x
+      return to_big(x)
     end
     else return old_abs(x) end
   end
@@ -503,35 +515,54 @@ end
 
 function is_number(x)
   if type(x) == 'number' then return true end
-  if type(x) == 'table' and ((x.e and x.m) or (x.array and x.sign)) then return true end
+  if type(x) == 'table' then
+    local meta = getmetatable(x)
+    if (BigMeta and meta == BigMeta) or (OmegaMeta and meta == OmegaMeta) then return true end
+    if (x.e and x.m) or (x.array and x.sign) then return true end
+  end
   return false
 end
 
 function to_big(x, y)
-  if type(x) == 'string' and x == "0" then --hack for when 0 is asked to be a bignumber need to really figure out the fix
-    return 0
-  elseif Big and Big.m then
-    local x = Big:new(x,y)
-    return x
-  elseif Big and Big.array then
-    local result = Big:create(x)
-    result.sign = y or result.sign or x.sign or 1
-    return result
-  elseif is_number(x) then
-    return x * 10^(y or 0)
-
-  elseif type(x) == "nil" then
-    return 0
-  else
-    if ((#x>=2) and ((x[2]>=2) or (x[2]==1) and (x[1]>308))) then
-      return 1e309
+  if type(x) == 'nil' then return Big and Big:create(0) or 0 end
+  if type(x) == 'string' and x == "0" then return Big and Big:create(0) or 0 end
+  if is_number(x) then
+    local meta = getmetatable(x)
+    if (BigMeta and meta == BigMeta) or (OmegaMeta and meta == OmegaMeta) then
+        return x
     end
-    if (x[2]==1) then
-      return math.pow(10,x[1])
+    -- If it's a table format but no meta, convert it
+    if type(x) == 'table' and Big and Big.create then
+        local result = Big:create(x)
+        if y then result.sign = y end
+        return result
     end
-    return x[1]*(y or 1);
   end
+
+  if Big and Big.create then
+    local result = Big:create(x)
+    if y then result.sign = y end
+    return result
+  elseif Big and Big.new then -- Fallback for old BigNumber
+    local result = Big:new(x, y)
+    return result
+  end
+
+  -- Last resort fallbacks
+  if type(x) == 'number' then
+    local n = x * 10^(y or 0)
+    return Big and Big:create(n) or n
+  elseif type(x) == 'string' then
+    local n = tonumber(x)
+    if n then 
+        local res = n * 10^(y or 0)
+        return Big and Big:create(res) or res
+    end
+  end
+
+  return Big and Big:create(0) or 0
 end
+
 function to_number(x)
   if type(x) == 'table' then
     local meta = getmetatable(x)
@@ -546,8 +577,23 @@ function to_number(x)
         return b
       end
     end
+    
+    -- Recursively convert table elements if it's not a Big object
+    local res = nil
+    for k, v in pairs(x) do
+        local converted = to_number(v)
+        if converted ~= v then 
+            if not res then
+                res = {}
+                for k2, v2 in pairs(x) do res[k2] = v2 end
+            end
+            res[k] = converted
+        end
+    end
+    return res or x
   end
-  return x
+  if type(x) == 'number' then return x end
+  return 0
 end
 
 function uncompress_big(str, sign)
@@ -860,7 +906,19 @@ local su = G.start_up
 function safe_str_unpack(str)
   local chunk, err = loadstring(str)
   if chunk then
-    setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big, inf = 1.79769e308, uncompress_big=uncompress_big})  -- Use an empty environment to prevent access to potentially harmful functions
+    setfenv(chunk, {
+        Big = Big, 
+        BigMeta = BigMeta, 
+        OmegaMeta = OmegaMeta, 
+        to_big = to_big, 
+        is_number = is_number, 
+        math = math, 
+        type = type, 
+        tonumber = tonumber, 
+        getmetatable = getmetatable,
+        inf = 1.79769e308, 
+        uncompress_big=uncompress_big
+    })  -- Use an empty environment to prevent access to potentially harmful functions
     local success, result = pcall(chunk)
     if success then
     return result

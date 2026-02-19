@@ -745,7 +745,7 @@ function Card:generate_UIBox_ability_table()
     local no_badge = nil
     
     if not self.bypass_lock and self.config.center.unlocked ~= false and
-    (self.ability.set == 'Joker' or self.ability.set == 'custom_joker' or self.ability.set == 'custom_tag' or self.ability.set == 'Edition' or self.ability.consumeable or self.ability.set == 'Voucher' or self.ability.set == 'Booster') and
+    (self.ability.set == 'Joker' or self.ability.set == 'custom_joker' or self.ability.set == 'custom_tag' or self.ability.set == 'Edition' or self.ability.consumeable or self.ability.set == 'Voucher' or self.ability.set == 'Booster' or self.ability.set == 'Zodiac') and
     not self.config.center.discovered and 
     ((self.area ~= G.jokers and self.area ~= G.consumeables and self.area) or not self.area) then
         card_type = 'Undiscovered'
@@ -969,7 +969,7 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Lithograph' then loc_vars = {self.ability.mult}
         end
     elseif self.ability.set == 'Zodiac' then
-        if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, self.ability.extra.x_mult} end
+        if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, number_format(self.ability.extra.x_mult)} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -2425,7 +2425,7 @@ function Card:calculate_joker(context)
             end
         end
         if self.ability.name == 'Capricorn' or self.config.center.name == 'Capricorn' then
-            if context.before and (context.scoring_name == "Straight" or (context.poker_hands and next(context.poker_hands['Straight']))) then
+            if context.before and (context.scoring_name == "Straight" or context.scoring_name == "Straight Flush" or (context.poker_hands and (next(context.poker_hands['Straight']) or next(context.poker_hands['Straight Flush'])))) then
                 local aces = 0
                 for k, v in ipairs(context.scoring_hand) do
                     if v:get_id() == 14 then 
@@ -2433,19 +2433,27 @@ function Card:calculate_joker(context)
                     end
                 end
                 if aces > 0 then
-                    self.ability.extra.x_mult = (self.ability.extra.x_mult or 1) + self.ability.extra.gain * aces
+                    local current_x_mult = to_big(self.ability.extra.x_mult or 1)
+                    local gain_val = to_big("0.1")
+                    for i = 1, aces do
+                        current_x_mult = current_x_mult + gain_val
+                    end
+                    self.ability.extra.x_mult = current_x_mult
                     return {
-                        message = localize('k_upgrade_ex'),
-                        colour = G.C.MULT,
-                        card = self
+                            message = localize('k_upgrade_ex'),
+                            colour = G.C.MULT,
+                            card = self
                     }
                 end
             end
-            if context.joker_main and self.ability.extra.x_mult and self.ability.extra.x_mult > 1 then
-                return {
-                    message = localize{type='variable',key='a_xmult',vars={self.ability.extra.x_mult}},
-                    Xmult_mod = self.ability.extra.x_mult
-                }
+            if context.joker_main then
+                local current_x_mult = to_big(self.ability.extra.x_mult or 1)
+                if current_x_mult > to_big(1) then
+                    return {
+                        message = localize{type='variable',key='a_xmult',vars={number_format(current_x_mult)}},
+                        Xmult_mod = current_x_mult
+                    }
+                end
             end
         end
         if self.ability.name == 'Sagitarius' or self.config.center.name == 'Sagitarius' then

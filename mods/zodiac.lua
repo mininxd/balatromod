@@ -24,6 +24,6 @@ return {
    pos = {x=4,y=1}, 
    set = "Zodiac", 
    discovered = false,
-   config = {extra = {gain = 0.1, x_mult = 1}}
+   config = {extra = {gain = "0.1", x_mult = 1}}
    },
 }

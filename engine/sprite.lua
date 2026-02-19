@@ -82,29 +82,34 @@ function Sprite:draw_shader(_shader, _shadow_height, _send, _no_tilt, other_obj,
     if custom_shader then 
         if _send then 
             for k, v in ipairs(_send) do
-                G.SHADERS[_shader]:send(v.name, v.val or (v.func and v.func()) or v.ref_table[v.ref_value])
+                local val = v.val or (v.func and v.func()) or v.ref_table[v.ref_value]
+                val = to_number(val)
+                G.SHADERS[_shader]:send(v.name, val)
             end
         end
     elseif _shader == 'vortex' then 
-        G.SHADERS['vortex']:send('vortex_amt', G.TIMERS.REAL - (G.vortex_time or 0))
-        G.SHADERS['vortex']:send('DPI', love.graphics.getDPIScale() or 1)
+        G.SHADERS['vortex']:send('vortex_amt', to_number(G.TIMERS.REAL - (G.vortex_time or 0)))
+        G.SHADERS['vortex']:send('DPI', to_number(love.graphics.getDPIScale() or 1))
     else
         self.ARGS.prep_shader = self.ARGS.prep_shader or {}
         self.ARGS.prep_shader.cursor_pos = self.ARGS.prep_shader.cursor_pos or {}
         self.ARGS.prep_shader.cursor_pos[1] = _draw_major.tilt_var and _draw_major.tilt_var.mx*G.CANV_SCALE or G.CONTROLLER.cursor_position.x*G.CANV_SCALE
         self.ARGS.prep_shader.cursor_pos[2] = _draw_major.tilt_var and _draw_major.tilt_var.my*G.CANV_SCALE or G.CONTROLLER.cursor_position.y*G.CANV_SCALE
 
-        G.SHADERS[_shader or 'dissolve']:send('mouse_screen_pos', self.ARGS.prep_shader.cursor_pos)
-        G.SHADERS[_shader or 'dissolve']:send('screen_scale', G.TILESCALE*G.TILESIZE*(_draw_major.mouse_damping or 1)*G.CANV_SCALE)
-        G.SHADERS[_shader or 'dissolve']:send('hovering',((_shadow_height  and not tilt_shadow) or _no_tilt) and 0 or (((_draw_major.touch_collide_tilt and _draw_major.states.collide.is) and _draw_major.hover_tilt or 0) or 0)*(tilt_shadow or 1))
-        G.SHADERS[_shader or 'dissolve']:send("dissolve",math.abs(_draw_major.dissolve or 0))
-        G.SHADERS[_shader or 'dissolve']:send("time",123.33412*(_draw_major.ID/1.14212 or 12.5123152)%3000)
-        G.SHADERS[_shader or 'dissolve']:send("texture_details",self:get_pos_pixel())
-        G.SHADERS[_shader or 'dissolve']:send("image_details",self:get_image_dims())
-        G.SHADERS[_shader or 'dissolve']:send("burn_colour_1",_draw_major.dissolve_colours and _draw_major.dissolve_colours[1] or G.C.CLEAR)
-        G.SHADERS[_shader or 'dissolve']:send("burn_colour_2",_draw_major.dissolve_colours and _draw_major.dissolve_colours[2] or G.C.CLEAR)
+        G.SHADERS[_shader or 'dissolve']:send('mouse_screen_pos', to_number(self.ARGS.prep_shader.cursor_pos))
+        G.SHADERS[_shader or 'dissolve']:send('screen_scale', to_number(G.TILESCALE*G.TILESIZE*(_draw_major.mouse_damping or 1)*G.CANV_SCALE))
+        G.SHADERS[_shader or 'dissolve']:send('hovering',to_number(((_shadow_height  and not tilt_shadow) or _no_tilt) and 0 or (((_draw_major.touch_collide_tilt and _draw_major.states.collide.is) and _draw_major.hover_tilt or 0) or 0)*(tilt_shadow or 1)))
+        G.SHADERS[_shader or 'dissolve']:send("dissolve",to_number(math.abs(_draw_major.dissolve or 0)))
+        G.SHADERS[_shader or 'dissolve']:send("time",to_number(123.33412*(_draw_major.ID/1.14212 or 12.5123152)%3000))
+        G.SHADERS[_shader or 'dissolve']:send("texture_details",to_number(self:get_pos_pixel()))
+        G.SHADERS[_shader or 'dissolve']:send("image_details",to_number(self:get_image_dims()))
+        G.SHADERS[_shader or 'dissolve']:send("burn_colour_1",to_number(_draw_major.dissolve_colours and _draw_major.dissolve_colours[1] or G.C.CLEAR))
+        G.SHADERS[_shader or 'dissolve']:send("burn_colour_2",to_number(_draw_major.dissolve_colours and _draw_major.dissolve_colours[2] or G.C.CLEAR))
         G.SHADERS[_shader or 'dissolve']:send("shadow",(not not _shadow_height))
-        if _send then G.SHADERS[_shader or 'dissolve']:send(_shader,_send) end
+        if _send then 
+            local val = to_number(_send)
+            G.SHADERS[_shader or 'dissolve']:send(_shader,val) 
+        end
     end
 
     love.graphics.setShader( G.SHADERS[_shader or 'dissolve'],  G.SHADERS[_shader or 'dissolve'])
@@ -131,7 +136,7 @@ function Sprite:draw_self(overlay)
     end
     prep_draw(self, 1)
     love.graphics.scale(1/(self.scale.x/self.VT.w), 1/(self.scale.y/self.VT.h))
-    love.graphics.setColor(overlay or G.BRUTE_OVERLAY or G.C.WHITE)
+    love.graphics.setColor(to_number(overlay or G.BRUTE_OVERLAY or G.C.WHITE))
     if self.video then 
         self.video_dims = self.video_dims or {
             w = self.video:getWidth(),
@@ -184,7 +189,7 @@ function Sprite:draw_from(other_obj, ms, mr, mx, my)
     self.ARGS.draw_from_offset.y = my or 0
     prep_draw(other_obj, (1 + (ms or 0)), (mr or 0), self.ARGS.draw_from_offset, true)
     love.graphics.scale(1/(other_obj.scale_mag or other_obj.VT.scale))
-    love.graphics.setColor(G.BRUTE_OVERLAY or G.C.WHITE)
+    love.graphics.setColor(to_number(G.BRUTE_OVERLAY or G.C.WHITE))
     love.graphics.draw(
         self.atlas.image,
         self.sprite,

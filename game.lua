@@ -1632,7 +1632,7 @@ function Game:splash_screen()
                     G.E_MANAGER:add_event(Event({
                         blockable = false,
                         func = (function()
-                            if card.T.scale <= 0 then
+                            if to_big(card.T.scale) <= to_big(0) then
                                 if temp_i < 30 then 
                                     play_sound('whoosh1', temp_pitch + math.random()*0.05, 0.25*(1 - temp_i/50))
                                 end
@@ -3433,17 +3433,17 @@ love.graphics.pop()
         G.ARGS.eased_cursor_pos = G.ARGS.eased_cursor_pos or {x=G.CURSOR.T.x,y=G.CURSOR.T.y, sx = G.CONTROLLER.cursor_position.x, sy = G.CONTROLLER.cursor_position.y}
         G.screenwipe_amt = G.screenwipe_amt and (0.95*G.screenwipe_amt + 0.05*((self.screenwipe and 0.4 or self.screenglitch and 0.4) or 0)) or 1
         G.SETTINGS.GRAPHICS.crt = G.SETTINGS.GRAPHICS.crt*0.3
-        G.SHADERS['CRT']:send('distortion_fac', {1.0 + 0.07*G.SETTINGS.GRAPHICS.crt/100, 1.0 + 0.1*G.SETTINGS.GRAPHICS.crt/100})
-        G.SHADERS['CRT']:send('scale_fac', {1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100, 1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100})
+        G.SHADERS['CRT']:send('distortion_fac', to_number({1.0 + 0.07*G.SETTINGS.GRAPHICS.crt/100, 1.0 + 0.1*G.SETTINGS.GRAPHICS.crt/100}))
+        G.SHADERS['CRT']:send('scale_fac', to_number({1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100, 1.0 - 0.008*G.SETTINGS.GRAPHICS.crt/100}))
         G.SHADERS['CRT']:send('feather_fac', 0.01)
         G.SHADERS['CRT']:send('bloom_fac', 0)
-        G.SHADERS['CRT']:send('time',400 + G.TIMERS.REAL)
+        G.SHADERS['CRT']:send('time',to_number(400 + G.TIMERS.REAL))
         --G.SHADERS['CRT']:send('noise_fac',0.001*G.SETTINGS.GRAPHICS.crt/100)
-        G.SHADERS['CRT']:send('crt_intensity', 0.16*G.SETTINGS.GRAPHICS.crt/100)
+        G.SHADERS['CRT']:send('crt_intensity', to_number(0.16*G.SETTINGS.GRAPHICS.crt/100))
         G.SHADERS['CRT']:send('glitch_intensity', 0)--0.1*G.SETTINGS.GRAPHICS.crt/100 + (G.screenwipe_amt) + 1)
-        G.SHADERS['CRT']:send('scanlines', G.CANVAS:getPixelHeight()*0.75/G.CANV_SCALE)
-        G.SHADERS['CRT']:send('mouse_screen_pos', G.video_control and {love.graphics.getWidth( )/2, love.graphics.getHeight( )/2} or {G.ARGS.eased_cursor_pos.sx, G.ARGS.eased_cursor_pos.sy})
-        G.SHADERS['CRT']:send('screen_scale', G.TILESCALE*G.TILESIZE)
+        G.SHADERS['CRT']:send('scanlines', to_number(G.CANVAS:getPixelHeight()*0.75/G.CANV_SCALE))
+        G.SHADERS['CRT']:send('mouse_screen_pos', to_number(G.video_control and {love.graphics.getWidth( )/2, love.graphics.getHeight( )/2} or {G.ARGS.eased_cursor_pos.sx, G.ARGS.eased_cursor_pos.sy}))
+        G.SHADERS['CRT']:send('screen_scale', to_number(G.TILESCALE*G.TILESIZE))
         G.SHADERS['CRT']:send('hovering', 1)
         love.graphics.setShader( G.SHADERS['CRT'])
         G.SETTINGS.GRAPHICS.crt = G.SETTINGS.GRAPHICS.crt/0.3
@@ -3491,7 +3491,7 @@ love.graphics.pop()
                         if a == 2 then 
                             love.graphics.setColor(0.3,0.7,0.7,1)
                         else
-                            love.graphics.setColor(self:state_col(v.states[kk] or 123))
+                            love.graphics.setColor(to_number(self:state_col(v.states[kk] or 123)))
                         end
                         love.graphics.rectangle('fill', 10+poll_w*kk,  20 + v_off, 5*poll_w, -(vv)*resolution)
                     end

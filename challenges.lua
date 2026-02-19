@@ -1,5 +1,5 @@
 G.CHALLENGES = {
-    --[[{
+   --[[ {
         name = 'TEST',
         id = 'c_test_1',
         rules = {
@@ -16,9 +16,9 @@ G.CHALLENGES = {
                 {id = 'discards', value = 1},
                 {id = 'hands', value = 6},
                 {id = 'reroll_cost', value = 10},
-                {id = 'joker_slots', value = 8},
-                {id = 'consumable_slots', value = 3},
-                {id = 'hand_size', value = 5},
+                {id = 'joker_slots', value = 20},
+                {id = 'consumable_slots', value = 5},
+                {id = 'hand_size', value = 10},
             }
         },
         jokers = {
@@ -26,13 +26,24 @@ G.CHALLENGES = {
             {id = 'j_egg'},
             {id = 'j_egg'},
             {id = 'j_egg'},
-            {id = 'j_egg', edition = 'foil', eternal = true}
+            {id = 'j_egg', edition = 'foil', eternal = true},
+            {id = 'j_blueprint', edition = 'polychrome'},
+            {id = 'j_brainstorm', edition = 'polychrome'},
         },
         consumeables = {
-            {id = 'c_sigil'}
+            {id = 'c_sigil'},
+            {id = 'c_cryptid'},
+            {id = 'c_cryptid'},
+        },
+        tags = {
+            {id = 'tag_double'},
+            {id = 'tag_uncommon'},
+            {id = 'tag_rare'},
+            {id = 'tag_negative'},
         },
         vouchers = {
             {id = 'v_hieroglyph'},
+            {id = 'v_observatory'},
         },
         deck = {
             --enhancement = 'm_glass',
@@ -58,7 +69,8 @@ G.CHALLENGES = {
                 {id = 'bl_wall', type = 'blind'}
             }
         }
-    },]]--
+    },
+    ]] --
     {
         name = 'The Omelette',
         id = 'c_omelette_1',
@@ -738,6 +750,7 @@ G.CHALLENGES = {
     {
         name = "Test Challenges",
         id = 'c_test_challenge',
+        red_tag = true,
         rules = {
             custom = {},
             modifiers = {
@@ -746,19 +759,40 @@ G.CHALLENGES = {
         },
         jokers = {
         {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_hanging_chad', edition = "polychrome"},
-        {id = 'j_boilerplate', edition = "polychrome"},
         {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_photograph', edition = "polychrome"},
-        {id = 'j_chicot', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+                {id = 'j_blueprint', edition = "polychrome"},
+                {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
+        {id = 'j_blueprint', edition = "polychrome"},
         {id = 'j_stencil', edition = "polychrome"},
+        {id = 'j_brainstorm', edition = "polychrome"},
+        {id = 'j_chicot', edition = "polychrome"},
         },
         consumeables = {},
         zodiac = "z_capricorn",
         vouchers = {
         },
         deck = {
-            type = 'Anaglyph Deck'
+            type = 'Anaglyph Deck',
+            cards = {
+                {s='S',r='A',e='m_gold', d='polychrome', g='Red'},
+                {s='S',r='K',e='m_gold', d='polychrome', g='Red'},
+                {s='S',r='Q',e='m_gold', d='polychrome', g='Red'},
+                {s='S',r='J',e='m_gold', d='polychrome', g='Red'},
+                {s='S',r='T',e='m_gold', d='polychrome', g='Red'},
+                {s='S',r='T',e='m_gold', d='polychrome', g='Red'},
+            },
         },
         restrictions = {
             banned_cards = {},
