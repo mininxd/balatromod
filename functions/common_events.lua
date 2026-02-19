@@ -2,34 +2,53 @@ local platform = require("engine/platform")
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
-        G.hand.T.x = G.TILE_W - G.hand.T.w - 3.55
-        G.hand.T.y = G.TILE_H - G.hand.T.h
+        if G.hand then
+            G.hand.T.x = G.TILE_W - G.hand.T.w - 3.55
+            G.hand.T.y = G.TILE_H - G.hand.T.h
+        end
 
-        G.play.T.x = G.hand.T.x + (G.hand.T.w - G.play.T.w)/2
-        G.play.T.y = G.hand.T.y - 3.6
+        if G.play then
+            G.play.T.x = (G.hand and G.hand.T.x or 0) + ((G.hand and G.hand.T.w or 0) - G.play.T.w)/2
+            G.play.T.y = (G.hand and G.hand.T.y or 0) - 3.6
+        end
 
-        G.jokers.T.x = G.hand.T.x - 0.1
-        G.jokers.T.y = 0
+        if G.jokers then
+            G.jokers.T.x = (G.hand and G.hand.T.x or 0) - 0.1
+            G.jokers.T.y = 0
+        end
 
-        G.consumeables.T.x = G.jokers.T.x + G.jokers.T.w + 0.5
-        G.consumeables.T.y = 0
+        if G.consumeables then
+            G.consumeables.T.x = (G.jokers and G.jokers.T.x or 0) + (G.jokers and G.jokers.T.w or 0) + 0.5
+            G.consumeables.T.y = 0
+        end
 
-        G.zodiacs.T.x = G.consumeables.T.x + G.consumeables.T.w + 0.5
-        G.zodiacs.T.y = 0
+        if G.deck then
+            G.deck.T.x = G.TILE_W - G.deck.T.w - 0.5
+            G.deck.T.y = G.TILE_H - G.deck.T.h
+        end
 
-        G.deck.T.x = G.TILE_W - G.deck.T.w - 0.5
-        G.deck.T.y = G.TILE_H - G.deck.T.h
+        if G.zodiacs then
+            if G.is_16_9 then
+                G.zodiacs.T.x = (G.deck and G.deck.T.x or 0) + ((G.deck and G.deck.T.w or 0) - G.zodiacs.T.w)/2
+                G.zodiacs.T.y = (G.deck and G.deck.T.y or 0) - G.zodiacs.T.h - 0.2
+            else
+                G.zodiacs.T.x = (G.consumeables and G.consumeables.T.x or 0) + (G.consumeables and G.consumeables.T.w or 0) + 0.5
+                G.zodiacs.T.y = 0
+            end
+        end
 
-        G.discard.T.x = G.jokers.T.x + G.jokers.T.w/2 + 0.3 + 15
-        G.discard.T.y = 4.2
+        if G.discard then
+            G.discard.T.x = (G.jokers and G.jokers.T.x or 0) + (G.jokers and G.jokers.T.w or 0)/2 + 0.3 + 15
+            G.discard.T.y = 4.2
+        end
 
-        G.hand:hard_set_VT()
-        G.play:hard_set_VT()
-        G.jokers:hard_set_VT()
-        G.consumeables:hard_set_VT()
-        G.zodiacs:hard_set_VT()
-        G.deck:hard_set_VT()
-        G.discard:hard_set_VT()
+        if G.hand then G.hand:hard_set_VT() end
+        if G.play then G.play:hard_set_VT() end
+        if G.jokers then G.jokers:hard_set_VT() end
+        if G.consumeables then G.consumeables:hard_set_VT() end
+        if G.zodiacs then G.zodiacs:hard_set_VT() end
+        if G.deck then G.deck:hard_set_VT() end
+        if G.discard then G.discard:hard_set_VT() end
     end
     if G.STAGE == G.STAGES.MAIN_MENU then
         if G.STATE == G.STATES.DEMO_CTA then

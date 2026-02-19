@@ -786,9 +786,9 @@ G.CHALLENGES = {
         deck = {
             type = 'Anaglyph Deck',
             cards = {
-                {s='S',r='A',e='m_gold', d='polychrome', g='Red'},
-                {s='S',r='K',e='m_gold', d='polychrome', g='Red'},
-                {s='S',r='Q',e='m_gold', d='polychrome', g='Red'},
+                {s='D',r='A',e='m_gold', d='polychrome', g='Red'},
+                {s='H',r='K',e='m_gold', d='polychrome', g='Red'},
+                {s='C',r='Q',e='m_gold', d='polychrome', g='Red'},
                 {s='S',r='J',e='m_gold', d='polychrome', g='Red'},
                 {s='S',r='T',e='m_gold', d='polychrome', g='Red'},
                 {s='S',r='T',e='m_gold', d='polychrome', g='Red'},

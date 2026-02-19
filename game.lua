@@ -1170,6 +1170,9 @@ function Game:init_window(reset)
     G.SETTINGS.QUEUED_CHANGE = G.SETTINGS.QUEUED_CHANGE or {}
     G.SETTINGS.QUEUED_CHANGE.screenmode = G.SETTINGS.WINDOW.screenmode
     
+    local w, h = love.graphics.getDimensions()
+    G.is_16_9 = math.abs(w/h - 16/9) < 0.01
+
     G.FUNCS.apply_window_changes(true)
 end
 

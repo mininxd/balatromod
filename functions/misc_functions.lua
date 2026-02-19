@@ -802,15 +802,15 @@ function prep_draw(moveable, scale, rotate, offset)
         moveable.VT.h = to_number(moveable.VT.h)
     end
     love.graphics.push()
-    love.graphics.scale(G.TILESCALE*G.TILESIZE)
+    love.graphics.scale(to_number(to_big(G.TILESCALE*G.TILESIZE)))
     love.graphics.translate(
-      moveable.VT.x+moveable.VT.w/2 + (offset and offset.x or 0) + ((moveable.layered_parallax and moveable.layered_parallax.x) or ((moveable.parent and moveable.parent.layered_parallax and moveable.parent.layered_parallax.x)) or 0),
-      moveable.VT.y+moveable.VT.h/2 + (offset and offset.y or 0) + ((moveable.layered_parallax and moveable.layered_parallax.y) or ((moveable.parent and moveable.parent.layered_parallax and moveable.parent.layered_parallax.y)) or 0))
-    if moveable.VT.r ~= 0 or moveable.juice or rotate then love.graphics.rotate(moveable.VT.r + (rotate or 0)) end
+      to_number(to_big(moveable.VT.x+moveable.VT.w/2 + (offset and offset.x or 0) + ((moveable.layered_parallax and moveable.layered_parallax.x) or ((moveable.parent and moveable.parent.layered_parallax and moveable.parent.layered_parallax.x)) or 0))),
+      to_number(to_big(moveable.VT.y+moveable.VT.h/2 + (offset and offset.y or 0) + ((moveable.layered_parallax and moveable.layered_parallax.y) or ((moveable.parent and moveable.parent.layered_parallax and moveable.parent.layered_parallax.y)) or 0))))
+    if to_big(moveable.VT.r) ~= to_big(0) or moveable.juice or rotate then love.graphics.rotate(to_number(to_big(moveable.VT.r + (rotate or 0)))) end
     love.graphics.translate(
-        -scale*moveable.VT.w*(moveable.VT.scale)/2,
-        -scale*moveable.VT.h*(moveable.VT.scale)/2)
-    love.graphics.scale(moveable.VT.scale*scale)
+        to_number(to_big(-scale*moveable.VT.w*(moveable.VT.scale)/2)),
+        to_number(to_big(-scale*moveable.VT.h*(moveable.VT.scale)/2)))
+    love.graphics.scale(to_number(to_big(moveable.VT.scale*scale)))
 end
 
 function get_chosen_triangle_from_rect(x, y, w, h, vert)

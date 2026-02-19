@@ -63,7 +63,7 @@ end
 function Particles:update(dt)
     if G.SETTINGS.paused and not self.created_on_pause then self.last_real_time = G.TIMERS[self.timer_type] ; return end
     local added_this_frame = 0
-    while G.TIMERS[self.timer_type]  > self.last_real_time + self.timer and (#self.particles < self.max or self.pulsed < self.pulse_max) and added_this_frame < 20 do
+    while G.TIMERS[self.timer_type]  > self.last_real_time + self.timer and (to_big(#self.particles) < to_big(self.max) or to_big(self.pulsed) < to_big(self.pulse_max)) and added_this_frame < 20 do
         self.last_real_time = self.last_real_time + self.timer
         local new_offset = { 
             x=self.fill and (0.5-math.random())*self.T.w or 0,
@@ -117,13 +117,13 @@ function Particles:move(dt)
         self.particles[i].scale = self.particles[i].scale + self.particles[i].e_vel
         self.particles[i].scale = math.min(2*math.min((self.particles[i].age/self.lifespan)*self.scale, self.scale*((self.lifespan - self.particles[i].age)/self.lifespan)), self.scale)
 
-        if self.particles[i].scale < 0 then
+        if to_big(self.particles[i].scale) < to_big(0) then
             table.remove(self.particles, i)
         else
             self.particles[i].offset.x = self.particles[i].offset.x + self.particles[i].velocity*math.sin(self.particles[i].dir)*dt
             self.particles[i].offset.y = self.particles[i].offset.y + self.particles[i].velocity*math.cos(self.particles[i].dir)*dt
             self.particles[i].facing = self.particles[i].facing + self.particles[i].r_vel*dt
-            self.particles[i].velocity = math.max(0, self.particles[i].velocity - self.particles[i].velocity*0.07*dt)
+            self.particles[i].velocity = math.max(to_big(0), self.particles[i].velocity - self.particles[i].velocity*0.07*dt)
         end
     end
 end
@@ -144,15 +144,16 @@ end
 function Particles:draw(alpha)
     alpha = alpha or 1
         prep_draw(self, 1)
-        love.graphics.translate(self.T.w/2, self.T.h/2)
+        love.graphics.translate(to_number(to_big(self.T.w/2)), to_number(to_big(self.T.h/2)))
         for k, v in pairs(self.particles) do
             if v.draw then 
                 love.graphics.push()
-                love.graphics.setColor(to_number(v.colour[1]), to_number(v.colour[2]), to_number(to_big(v.colour[3])), to_number(to_big(v.colour[4])*alpha*(1-self.fade_alpha)))                
-                love.graphics.translate(v.offset.x, v.offset.y)
-                love.graphics.rotate(v.facing)
+                love.graphics.setColor(to_number(to_big(v.colour[1])), to_number(to_big(v.colour[2])), to_number(to_big(v.colour[3])), to_number(to_big(v.colour[4])*to_big(alpha)*(to_number(to_big(1-self.fade_alpha)))))                
+                love.graphics.translate(to_number(to_big(v.offset.x)), to_number(to_big(v.offset.y)))
+                love.graphics.rotate(to_number(to_big(v.facing)))
                 
-                love.graphics.rectangle('fill', -v.scale/2, -v.scale/2, v.scale, v.scale) -- origin in the middle
+                local s = to_number(to_big(v.scale))
+                love.graphics.rectangle('fill', -s/2, -s/2, s, s) -- origin in the middle
                 love.graphics.pop()
             end
         end

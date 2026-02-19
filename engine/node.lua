@@ -319,11 +319,11 @@ end
 --Translation function used before any draw calls, translates this node according to the transform of the container node
 function Node:translate_container()
     if self.container and self.container ~= self then
-        love.graphics.translate(self.container.T.w*G.TILESCALE*G.TILESIZE*0.5, self.container.T.h*G.TILESCALE*G.TILESIZE*0.5)
-        love.graphics.rotate(self.container.T.r)
+        love.graphics.translate(to_number(to_big(self.container.T.w*G.TILESCALE*G.TILESIZE*0.5)), to_number(to_big(self.container.T.h*G.TILESCALE*G.TILESIZE*0.5)))
+        love.graphics.rotate(to_number(to_big(self.container.T.r)))
         love.graphics.translate(
-            -self.container.T.w*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.x*G.TILESCALE*G.TILESIZE,
-            -self.container.T.h*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.y*G.TILESCALE*G.TILESIZE)
+            to_number(to_big(-self.container.T.w*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.x*G.TILESCALE*G.TILESIZE)),
+            to_number(to_big(-self.container.T.h*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.y*G.TILESCALE*G.TILESIZE)))
     end
 end
 

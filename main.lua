@@ -436,6 +436,8 @@ function love.errhand(msg)
 end
 
 function love.resize(w, h)
+	G.is_16_9 = math.abs(w/h - 16/9) < 0.01
+
 	if w/h < 1 then --Dont allow the screen to be too square, since pop in occurs above and below screen
 		h = w/1
 	end
@@ -483,4 +485,8 @@ function love.resize(w, h)
 
 	G.CANVAS = love.graphics.newCanvas(w*G.CANV_SCALE, h*G.CANV_SCALE, {type = '2d', readable = true})
 	G.CANVAS:setFilter('linear', 'linear')
+
+	if G.STAGE == G.STAGES.RUN then
+		set_screen_positions()
+	end
 end 
