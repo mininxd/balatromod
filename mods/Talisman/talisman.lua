@@ -1128,3 +1128,12 @@ function EventManager:add_event(x,y,z)
   printCallerInfo()
   return emae(self,x,y,z)
 end--]]
+
+-- Load optimized overrides for performance
+local overrides_path = talisman_path.."/overrides.lua"
+local overrides_chunk, err = love.filesystem.load(overrides_path)
+if overrides_chunk then
+    overrides_chunk()
+else
+    print("[Talisman] Failed to load overrides.lua: " .. tostring(err))
+end
