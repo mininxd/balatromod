@@ -251,7 +251,7 @@ function Game:init_item_prototypes()
         tag_economy =       {name = 'Economy Tag',      set = 'Tag', discovered = false, min_ante = nil, order = 24, config = {type = 'immediate', max = 40}, pos = {x = 4,y = 3}},
 
         -- Custom Tags
-        tag_hyper_inflation =   {name = 'Hyperinflation Tag',  set = 'Tag', is_custom = true, start_discovered = true, min_ante = nil, order = 1, config = {type = 'immediate', mult_dollars = 1.5, last_effect = 5}, pos = {x = 0,y = 0}},
+        tag_hyper_inflation =   {name = 'Hyperinflation Tag',  set = 'Tag', is_custom = true, start_discovered = false, min_ante = nil, order = 1, config = {type = 'immediate', mult_dollars = 1.5, last_effect = 5}, pos = {x = 0,y = 0}},
     }
     
     
@@ -362,11 +362,13 @@ function Game:init_item_prototypes()
 
     self.j_locked = self.j_locked or {unlocked = false, max = 1, name = "Locked", pos = {x=8,y=9}, set = "Joker", cost_mult = 1.0,config = {}}
     self.v_locked = self.v_locked or {unlocked = false, max = 1, name = "Locked", pos = {x=8,y=3}, set = "Voucher", cost_mult = 1.0,config = {}}
-    self.c_locked = self.c_locked or {unlocked = false, max = 1, name = "Locked", pos = {x=4,y=2}, set = "Tarot", cost_mult = 1.0,config = {}}
+    self.c_locked = self.c_locked or {unlocked = false, max = 1, name = "Locked", pos = {x=2,y=5}, set = "Tarot", cost_mult = 1.0,config = {}}
     self.j_undiscovered = self.j_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=9,y=9}, set = "Joker", cost_mult = 1.0,config = {}}
     self.t_undiscovered = self.t_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=6,y=2}, set = "Tarot", cost_mult = 1.0,config = {}}
     self.p_undiscovered = self.p_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=7,y=2}, set = "Planet", cost_mult = 1.0,config = {}}
     self.s_undiscovered = self.s_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=5,y=2}, set = "Spectral", cost_mult = 1.0,config = {}}
+    self.z_locked = self.z_locked or {unlocked = false, max = 1, name = "Locked", pos = {x=5,y=2}, set = "Tarot", cost_mult = 1.0,config = {}}
+    self.z_undiscovered = self.z_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=5,y=2}, set = "Tarot", cost_mult = 1.0,config = {}}
     self.v_undiscovered = self.v_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=8,y=2}, set = "Voucher", cost_mult = 1.0,config = {}}
     self.booster_undiscovered = self.booster_undiscovered or {unlocked = false, max = 1, name = "Locked", pos = {x=0,y=5}, set = "Booster", cost_mult = 1.0,config = {}}
 
@@ -1846,13 +1848,15 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     
     local SC_scale = 1.1*(G.debug_splash_size_toggle and 0.8 or 1)
     local CAI = {
-        TITLE_TOP_W = G.CARD_W,
+        TITLE_TOP_W = 1.4*G.CARD_W,
         TITLE_TOP_H = G.CARD_H,
     }
     self.title_top = CardArea(
         0, 0,
         CAI.TITLE_TOP_W,CAI.TITLE_TOP_H,
-        {card_limit = 1, type = 'title'})
+        {card_limit = 2, type = 'title'})
+    self.title_top.states.hover.can = true
+    self.title_top.states.click.can = true
 
     
     G.SPLASH_LOGO = Sprite(0, 0, 
@@ -1874,12 +1878,19 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     G.SPLASH_LOGO.dissolve = 1   
 
 
-    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
+    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, pseudorandom_element(G.P_CENTER_POOLS.custom_joker))
     self.title_top:emplace(replace_card)
 
+    local replace_card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
+    self.title_top:emplace(replace_card2)
+
     replace_card.states.visible = false
-    replace_card.no_ui = true
+    replace_card.no_ui = replace_card.config.center.unlocked == false
     replace_card.ambient_tilt = 0.0
+
+    replace_card2.states.visible = false
+    replace_card2.no_ui = true
+    replace_card2.ambient_tilt = 0.0
 
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
@@ -1890,11 +1901,15 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
             if change_context == 'splash' then 
                 replace_card.states.visible = true
                 replace_card:start_materialize({G.C.WHITE,G.C.WHITE}, true, 2.5)
+                replace_card2.states.visible = true
+                replace_card2:start_materialize({G.C.WHITE,G.C.WHITE}, true, 2.5)
                 play_sound('whoosh1', math.random()*0.1 + 0.3,0.3)
                 play_sound('crumple'..math.random(1,5), math.random()*0.2 + 0.6,0.65)
             else
                 replace_card.states.visible = true
                 replace_card:start_materialize({G.C.WHITE,G.C.WHITE}, nil, 1.2)
+                replace_card2.states.visible = true
+                replace_card2:start_materialize({G.C.WHITE,G.C.WHITE}, nil, 1.2)
             end
             G.VIBRATION = G.VIBRATION + 1
             G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 2)
@@ -1917,24 +1932,54 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
 
     delay(0.1 + (change_context == 'splash' and 2 or change_context == 'game' and 1.5 or 0))
 
-    if replace_card and (G.P_CENTERS.j_blueprint.unlocked) then
-        local viable_unlockables = {}
+    if replace_card and replace_card2 and (G.P_CENTERS.j_blueprint.unlocked) then
+        local pool_joker = {}
+        local pool_ace = {}
         for k, v in ipairs(self.P_LOCKED) do
-            if (v.set == 'Voucher' or v.set == 'Joker') and not v.demo then 
-                viable_unlockables[#viable_unlockables+1] = v
+            if (v.set == 'Voucher' or v.set == 'Joker' or v.set == 'custom_joker') and not v.demo then 
+                pool_joker[#pool_joker+1] = v
             end
         end
-        if #viable_unlockables > 0 then 
-            local card
+        if G.PROFILES[G.SETTINGS.profile].all_unlocked then 
+            for k, v in pairs(self.P_CENTER_POOLS.custom_joker) do 
+                pool_joker[#pool_joker+1] = v
+            end
+        end
+        for k, v in pairs(G.P_CARDS) do
+            if v.value == 'Ace' then
+                pool_ace[#pool_ace+1] = {playing_card = k, set = 'PlayingCard'}
+            end
+        end
+
+        if #pool_joker > 0 or #pool_ace > 0 then 
+            local card, card2
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 4.04,
                 func = (function()
-                    card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, pseudorandom_element(viable_unlockables) or self.P_CENTERS.j_joker)
-                    card.no_ui = #viable_unlockables == 0
+                    local chosen_center = pseudorandom_element(pool_joker) or self.P_CENTERS.j_joker
+                    if chosen_center.set == 'PlayingCard' then 
+                        card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS[chosen_center.playing_card], self.P_CENTERS.c_base)
+                        card.no_ui = true
+                    else
+                        card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, chosen_center)
+                        card.no_ui = chosen_center.unlocked == false
+                    end
                     card.states.visible = false
                     replace_card.parent = nil
                     replace_card:start_dissolve({G.C.BLACK, G.C.ORANGE, G.C.RED, G.C.GOLD})
+
+                    local chosen_center2 = pseudorandom_element(pool_ace) or {playing_card = 'S_A', set = 'PlayingCard'}
+                    if chosen_center2.set == 'PlayingCard' then 
+                        card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS[chosen_center2.playing_card], self.P_CENTERS.c_base)
+                        card2.no_ui = true
+                    else
+                        card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, chosen_center2)
+                        card2.no_ui = chosen_center2.unlocked == false
+                    end
+                    card2.states.visible = false
+                    replace_card2.parent = nil
+                    replace_card2:start_dissolve({G.C.BLACK, G.C.ORANGE, G.C.RED, G.C.GOLD})
                     return true
             end)}))
             G.E_MANAGER:add_event(Event({
@@ -1943,6 +1988,8 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
                 func = (function()
                     card:start_materialize()
                     self.title_top:emplace(card)
+                    card2:start_materialize()
+                    self.title_top:emplace(card2)
                     return true
             end)}))
         end
@@ -1951,7 +1998,6 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     G.E_MANAGER:add_event(Event({func = function() G.CONTROLLER.lock_input = false; return true end}))
     set_screen_positions()
 
-    self.title_top:sort('order')
     self.title_top:set_ranks()
     self.title_top:align_cards()
     self.title_top:hard_set_cards()
@@ -2032,13 +2078,15 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
     local SC_scale = 0.9*(G.debug_splash_size_toggle and 0.8 or 1)
 
     local CAI = {
-        TITLE_TOP_W = G.CARD_W,
+        TITLE_TOP_W = 1.4*G.CARD_W,
         TITLE_TOP_H = G.CARD_H,
     }
     self.title_top = CardArea(
         0, 0,
         CAI.TITLE_TOP_W,CAI.TITLE_TOP_H,
-        {card_limit = 1, type = 'title'})
+        {card_limit = 2, type = 'title'})
+    self.title_top.states.hover.can = true
+    self.title_top.states.click.can = true
 
     
     G.SPLASH_LOGO = Sprite(0, 0, 
@@ -2059,12 +2107,19 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
     G.SPLASH_LOGO.dissolve_colours = {G.C.WHITE, G.C.WHITE}
     G.SPLASH_LOGO.dissolve = 1   
 
-    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
+    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, pseudorandom_element(G.P_CENTER_POOLS.custom_joker))
     self.title_top:emplace(replace_card)
 
+    local replace_card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
+    self.title_top:emplace(replace_card2)
+
     replace_card.states.visible = false
-    replace_card.no_ui = true
+    replace_card.no_ui = replace_card.config.center.unlocked == false
     replace_card.ambient_tilt = 0.0
+
+    replace_card2.states.visible = false
+    replace_card2.no_ui = true
+    replace_card2.ambient_tilt = 0.0
 
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
@@ -2074,6 +2129,8 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
         func = (function()
             replace_card.states.visible = true
             replace_card:start_materialize({G.C.WHITE,G.C.WHITE}, true, 2.5)
+            replace_card2.states.visible = true
+            replace_card2:start_materialize({G.C.WHITE,G.C.WHITE}, true, 2.5)
             play_sound('whoosh1', math.random()*0.1 + 0.3,0.3)
             play_sound('crumple'..math.random(1,5), math.random()*0.2 + 0.6,0.65)
             return true
@@ -2093,10 +2150,72 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
 
     delay(0.1 + 2)
 
+    if replace_card and replace_card2 and (G.P_CENTERS.j_blueprint.unlocked) then
+        local pool_joker = {}
+        local pool_ace = {}
+        for k, v in ipairs(self.P_LOCKED) do
+            if (v.set == 'Voucher' or v.set == 'Joker' or v.set == 'custom_joker') and not v.demo then 
+                pool_joker[#pool_joker+1] = v
+            end
+        end
+        if G.PROFILES[G.SETTINGS.profile].all_unlocked then 
+            for k, v in pairs(self.P_CENTER_POOLS.custom_joker) do 
+                pool_joker[#pool_joker+1] = v
+            end
+        end
+        for k, v in pairs(G.P_CARDS) do
+            if v.value == 'Ace' then
+                pool_ace[#pool_ace+1] = {playing_card = k, set = 'PlayingCard'}
+            end
+        end
+
+        if #pool_joker > 0 or #pool_ace > 0 then 
+            local card, card2
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 4.04,
+                func = (function()
+                    local chosen_center = pseudorandom_element(pool_joker) or self.P_CENTERS.j_joker
+                    if chosen_center.set == 'PlayingCard' then 
+                        card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS[chosen_center.playing_card], self.P_CENTERS.c_base)
+                        card.no_ui = true
+                    else
+                        card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, chosen_center)
+                        card.no_ui = chosen_center.unlocked == false
+                    end
+                    card.states.visible = false
+                    replace_card.parent = nil
+                    replace_card:start_dissolve({G.C.BLACK, G.C.ORANGE, G.C.RED, G.C.GOLD})
+
+                    local chosen_center2 = pseudorandom_element(pool_ace) or {playing_card = 'S_A', set = 'PlayingCard'}
+                    if chosen_center2.set == 'PlayingCard' then 
+                        card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS[chosen_center2.playing_card], self.P_CENTERS.c_base)
+                        card2.no_ui = true
+                    else
+                        card2 = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, nil, chosen_center2)
+                        card2.no_ui = chosen_center2.unlocked == false
+                    end
+                    card2.states.visible = false
+                    replace_card2.parent = nil
+                    replace_card2:start_dissolve({G.C.BLACK, G.C.ORANGE, G.C.RED, G.C.GOLD})
+                    return true
+            end)}))
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 1.04,
+                func = (function()
+                    card:start_materialize()
+                    self.title_top:emplace(card)
+                    card2:start_materialize()
+                    self.title_top:emplace(card2)
+                    return true
+            end)}))
+        end
+    end
+
     G.E_MANAGER:add_event(Event({func = function() G.CONTROLLER.lock_input = false; return true end}))
     set_screen_positions()
 
-    self.title_top:sort('order')
     self.title_top:set_ranks()
     self.title_top:align_cards()
     self.title_top:hard_set_cards()

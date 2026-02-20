@@ -600,7 +600,7 @@ function CardArea:sort(method)
     elseif self.config.sort == 'suit asc' then 
         table.sort(self.cards, function (a, b) return a:get_nominal('suit') < b:get_nominal('suit') end )
     elseif self.config.sort == 'order' then 
-        table.sort(self.cards, function (a, b) return (a.config.card.order or a.config.center.order) < (b.config.card.order or b.config.center.order) end )
+        table.sort(self.cards, function (a, b) return (a.config.card.order or a.config.center.order or 0) < (b.config.card.order or b.config.center.order or 0) end )
     end
 end
 

@@ -311,3 +311,59 @@ function update_hand_text(config, vals)
         end}))
     end
 end
+
+-- Optimized Math Functions and Utilities for Talisman
+-- Caching common BigNumbers to reduce object creation overhead
+local BIG_ZERO = to_big(0)
+local BIG_ONE = to_big(1)
+local BIG_TWO = to_big(2)
+
+-- Optimized math.max
+function math.max(x, y)
+    if type(x) == 'number' and type(y) == 'number' then
+        return x > y and x or y
+    end
+    local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
+    local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
+    return (bx > by) and bx or by
+end
+
+-- Optimized math.min
+function math.min(x, y)
+    if type(x) == 'number' and type(y) == 'number' then
+        return x < y and x or y
+    end
+    local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
+    local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
+    return (bx < by) and bx or by
+end
+
+-- Optimized math.abs
+function math.abs(x)
+    if type(x) == 'number' then
+        return x < 0 and -x or x
+    end
+    if type(x) == 'table' then
+        if x < BIG_ZERO then return x:neg() else return x end
+    end
+    return to_big(x)
+end
+
+-- Optimized text_super_juice
+-- Replaces Talisman's wrapper to avoid to_big(2) creation and conversion overhead
+function G.FUNCS.text_super_juice(e, amount)
+    local amt_val = amount
+    
+    if type(amount) == 'table' then
+        if amount > BIG_TWO then amt_val = 2
+        else amt_val = to_number(amount) end
+    elseif type(amount) == 'number' then
+        if amount > 2 then amt_val = 2 end
+    end
+    
+    local amount = amt_val or 1
+    if e.config and e.config.object then
+        e.config.object:juice_up(0.6*amount, 0.1*amount)
+    end
+    G.ROOM.jiggle = G.ROOM.jiggle + 0.7*amount
+end

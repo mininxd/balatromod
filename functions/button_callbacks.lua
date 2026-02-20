@@ -425,8 +425,7 @@ G.FUNCS.unlock_all = function(e)
     G:save_progress()
     G.FILE_HANDLER.force = true
 
-    local tab_but = G.OVERLAY_MENU:get_UIE_by_ID('tab_but_'..G.focused_profile)
-    G.FUNCS.change_tab(tab_but)
+    G.FUNCS.load_profile(true)
   end
 end
 

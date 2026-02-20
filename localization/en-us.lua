@@ -1878,12 +1878,18 @@ return {
                     "and reduces current {C:mult}Mult{} by {C:attention}50%{}",
                     "{C:inactive}(Currently {C:mult}+#3#{C:inactive} and {X:mult,C:white} X#4# {C:inactive})",
                 },
+                unlock={
+                    "Not yet discovered",
+                },
             },
             j_rugpull={
                 name="Rugpull",
                 text={
-                    "+#1# at the end of round,",
+                    "{C:money}+#1#{} at the end of round,",
                     "set money to {C:money}0{} when sold",
+                },
+                unlock={
+                    "Not yet discovered",
                 },
             },
             j_zombie_joker={
@@ -1894,11 +1900,17 @@ return {
                     "{C:orange}Cards{} to {C:orange}Hand{}",
                     "{S:1.1,C:red,E:2}self destructs{}",
                 },
+                unlock={
+                    "Not yet discovered",
+                },
             },
             j_lithograph={
                 name="Lithograph",
                 text={
                     "{C:money}Stone Cards{} give {C:red}+#1#{} Mult",
+                },
+                unlock={
+                    "Not yet discovered",
                 },
             },
             j_boilerplate={
@@ -1908,11 +1920,17 @@ return {
                     "adjacent {C:orange}Jokers{}, but with",
                     "halved effects"
                 },
+                unlock={
+                    "Not yet discovered",
+                },
             },
             j_super_joker={
                 name="Super Joker",
                 text={
                     "{C:red}+#1#{} Mult",
+                },
+                unlock={
+                    "Not yet discovered",
                 },
             },
         },
