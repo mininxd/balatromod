@@ -1313,12 +1313,12 @@ end
 
 G.FUNCS.evaluate_round = function()
     local pitch = 0.95
-    local dollars = 0
+    local dollars = to_big(0)
 
     if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
-        add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
+        add_round_eval_row({dollars = to_number(G.GAME.blind.dollars), name='blind1', pitch = pitch})
         pitch = pitch + 0.06
-        dollars = dollars + G.GAME.blind.dollars
+        dollars = dollars + to_big(G.GAME.blind.dollars)
     else
         add_round_eval_row({dollars = 0, name='blind1', pitch = pitch, saved = true})
         pitch = pitch + 0.06
@@ -1342,34 +1342,34 @@ G.FUNCS.evaluate_round = function()
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
     if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money then
-        add_round_eval_row({dollars = G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
+        add_round_eval_row({dollars = to_number(G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
         pitch = pitch + 0.06
-        dollars = dollars + G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)
+        dollars = dollars + to_big(G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1))
     end
     if G.GAME.current_round.discards_left > 0 and G.GAME.modifiers.money_per_discard then
-        add_round_eval_row({dollars = G.GAME.current_round.discards_left*(G.GAME.modifiers.money_per_discard), disp = G.GAME.current_round.discards_left, bonus = true, name='discards', pitch = pitch})
+        add_round_eval_row({dollars = to_number(G.GAME.current_round.discards_left*(G.GAME.modifiers.money_per_discard)), disp = G.GAME.current_round.discards_left, bonus = true, name='discards', pitch = pitch})
         pitch = pitch + 0.06
-        dollars = dollars +  G.GAME.current_round.discards_left*(G.GAME.modifiers.money_per_discard)
+        dollars = dollars +  to_big(G.GAME.current_round.discards_left*(G.GAME.modifiers.money_per_discard))
     end
     for i = 1, #G.jokers.cards do
         local ret = G.jokers.cards[i]:calculate_dollar_bonus()
         if ret then
-            add_round_eval_row({dollars = ret, bonus = true, name='joker'..i, pitch = pitch, card = G.jokers.cards[i]})
+            add_round_eval_row({dollars = to_number(ret), bonus = true, name='joker'..i, pitch = pitch, card = G.jokers.cards[i]})
             pitch = pitch + 0.06
-            dollars = dollars + ret
+            dollars = dollars + to_big(ret)
         end
     end
     for i = 1, #G.GAME.tags do
         local ret = G.GAME.tags[i]:apply_to_run({type = 'eval'})
         if ret then
-            add_round_eval_row({dollars = ret.dollars, bonus = true, name='tag'..i, pitch = pitch, condition = ret.condition, pos = ret.pos, tag = ret.tag})
+            add_round_eval_row({dollars = to_number(ret.dollars), bonus = true, name='tag'..i, pitch = pitch, condition = ret.condition, pos = ret.pos, tag = ret.tag})
             pitch = pitch + 0.06
-            dollars = dollars + ret.dollars
+            dollars = dollars + to_big(ret.dollars)
         end
     end
     if to_big(G.GAME.dollars) >= to_big(5) and not G.GAME.modifiers.no_interest then
         local interest_earned = to_big(G.GAME.interest_amount)*math.min(math.floor(to_big(G.GAME.dollars)/5), G.GAME.interest_cap/5)
-        add_round_eval_row({bonus = true, name='interest', pitch = pitch, dollars = interest_earned})
+        add_round_eval_row({bonus = true, name='interest', pitch = pitch, dollars = to_number(interest_earned)})
         pitch = pitch + 0.06
         if not G.GAME.seeded and not G.GAME.challenge then
             if to_big(interest_earned) == to_big(G.GAME.interest_amount*G.GAME.interest_cap/5) then 
@@ -1379,12 +1379,12 @@ G.FUNCS.evaluate_round = function()
             end
         end
         check_for_unlock({type = 'interest_streak'})
-        dollars = dollars + interest_earned
+        dollars = dollars + to_big(interest_earned)
     end
 
     pitch = pitch + 0.06
 
-    add_round_eval_row({name = 'bottom', dollars = dollars})
+    add_round_eval_row({name = 'bottom', dollars = to_number(dollars)})
 
     if G.GAME.hyper_inflation and G.GAME.hyper_inflation > 0 then 
         G.GAME.hyper_inflation = G.GAME.hyper_inflation - 1
