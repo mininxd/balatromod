@@ -198,3 +198,116 @@ function Event:handle(_results)
     if _results.completed then self.complete = true end
 end
 end
+
+-- Optimized update_hand_text for Talisman
+-- This avoids to_big overhead when handling simple number updates for UI animations
+local BIG_ZERO = to_big(0)
+
+function update_hand_text(config, vals)
+    if Talisman.config_file.disable_anims then
+        if G.latest_uht then
+          local chips = G.latest_uht.vals.chips
+          local mult = G.latest_uht.vals.mult
+          if not vals.chips then vals.chips = chips end
+          if not vals.mult then vals.mult = mult end
+        end
+        G.latest_uht = {config = config, vals = vals}
+    else 
+        G.E_MANAGER:add_event(Event({--This is the Hand name text for the poker hand
+        trigger = 'before',
+        blockable = not config.immediate,
+        delay = config.delay or 0.8,
+        func = function()
+            local col = G.C.GREEN
+            -- Optimized chips update
+            if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
+                local delta
+                if type(vals.chips) == 'table' or type(G.GAME.current_round.current_hand.chips) == 'table' then
+                    delta = to_big(vals.chips) - to_big(G.GAME.current_round.current_hand.chips)
+                else
+                    delta = vals.chips - G.GAME.current_round.current_hand.chips
+                end
+                
+                if to_big(delta) < BIG_ZERO then delta = number_format(delta); col = G.C.RED
+                elseif to_big(delta) > BIG_ZERO then delta = '+'..number_format(delta)
+                else delta = number_format(delta)
+                end
+                if type(vals.chips) == 'string' then delta = vals.chips end
+                G.GAME.current_round.current_hand.chips = vals.chips
+                if G.hand_text_area.chips.config.object then G.hand_text_area.chips:update(0) end
+                if vals.StatusText then 
+                    attention_text({
+                        text =delta,
+                        scale = 0.8, 
+                        hold = 1,
+                        cover = G.hand_text_area.chips.parent,
+                        cover_colour = mix_colours(G.C.CHIPS, col, 0.1),
+                        emboss = 0.05,
+                        align = 'cm',
+                        cover_align = 'cr'
+                    })
+                end
+            end
+            -- Optimized mult update
+            if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
+                local delta
+                if type(vals.mult) == 'table' or type(G.GAME.current_round.current_hand.mult) == 'table' then
+                    delta = to_big(vals.mult) - to_big(G.GAME.current_round.current_hand.mult)
+                else
+                    delta = vals.mult - G.GAME.current_round.current_hand.mult
+                end
+
+                if to_big(delta) < BIG_ZERO then delta = number_format(delta); col = G.C.RED
+                elseif to_big(delta) > BIG_ZERO then delta = '+'..number_format(delta)
+                else delta = number_format(delta)
+                end
+                if type(vals.mult) == 'string' then delta = vals.mult end
+                G.GAME.current_round.current_hand.mult = vals.mult
+                if G.hand_text_area.mult.config.object then G.hand_text_area.mult:update(0) end
+                if vals.StatusText then 
+                    attention_text({
+                        text =delta,
+                        scale = 0.8, 
+                        hold = 1,
+                        cover = G.hand_text_area.mult.parent,
+                        cover_colour = mix_colours(G.C.MULT, col, 0.1),
+                        emboss = 0.05,
+                        align = 'cm',
+                        cover_align = 'cl'
+                    })
+                end
+                if not G.TAROT_INTERRUPT then G.hand_text_area.mult:juice_up() end
+            end
+            if vals.handname and G.GAME.current_round.current_hand.handname ~= vals.handname then
+                G.GAME.current_round.current_hand.handname = vals.handname
+                if not config.nopulse then 
+                    G.hand_text_area.handname.config.object:pulse(0.2)
+                end
+            end
+            if vals.chip_total then G.GAME.current_round.current_hand.chip_total = vals.chip_total;G.hand_text_area.chip_total.config.object:pulse(0.5) end
+            if vals.level and G.GAME.current_round.current_hand.hand_level ~= ' '..localize('k_lvl')..number_format(vals.level) then
+                if vals.level == '' then
+                    G.GAME.current_round.current_hand.hand_level = vals.level
+                else
+                    G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..number_format(vals.level)
+                    if type(vals.level) == 'number' or is_number(vals.level) then 
+                        G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.floor(to_number(math.min(vals.level, 7)))]
+                    else
+                        G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
+                    end
+                    G.hand_text_area.hand_level:juice_up()
+                end
+            end
+            if config.sound and not config.modded then play_sound(config.sound, config.pitch or 1, config.volume or 1) end
+            if config.modded then 
+                G.HUD_blind:get_UIE_by_ID('HUD_blind_debuff_1'):juice_up(0.3, 0)
+                G.HUD_blind:get_UIE_by_ID('HUD_blind_debuff_2'):juice_up(0.3, 0)
+                G.GAME.blind:juice_up()
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, blockable = false, blocking = false, func = function()
+                    play_sound('tarot2', 0.76, 0.4);return true end}))
+                play_sound('tarot2', 1, 0.4)
+            end
+            return true
+        end}))
+    end
+end

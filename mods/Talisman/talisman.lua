@@ -835,8 +835,14 @@ if not Talisman.F_NO_COROUTINE then
     end
 
 
-    if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
-          coroutine.yield()
+    if G.LAST_SCORING_YIELD then
+        Talisman.yield_counter = (Talisman.yield_counter or 0) + 1
+        if Talisman.yield_counter > 50 then
+            Talisman.yield_counter = 0
+            if ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
+                coroutine.yield()
+            end
+        end
     end
     Talisman.calculating_joker = true
     local ret, trig = ccj(self, context)
