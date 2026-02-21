@@ -385,17 +385,17 @@ function Game:set_globals()
         code = "richie",
         extra = {
              dollar = 9999,
-           -- hand = 5,
-           -- discard = 5,
-           -- consumable_slot = 5,
-           -- joker_slot = 5,
-        }
+            -- hand = 5,
+            -- discard = 5,
+            -- consumable_slot = 5,
+            -- joker_slot = 5,
+        },
       },
             {
-        code = "holes",
-        consumable = {
-        {id = "c_black_hole"}
-        },
+        code = "jokerinf",
+       extra = {
+             joker_slot = 1e308,
+       },
       },
     }
 

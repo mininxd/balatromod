@@ -2614,6 +2614,28 @@ function Game:start_run(args)
                                 if v.extra.dollar then
                                     ease_dollars(v.extra.dollar, true)
                                 end
+                                if v.extra.hand then
+                                    G.GAME.starting_params.hands = G.GAME.starting_params.hands + v.extra.hand
+                                    G.GAME.round_resets.hands = G.GAME.round_resets.hands + v.extra.hand
+                                    ease_hands_played(v.extra.hand, true)
+                                end
+                                if v.extra.discard then
+                                    G.GAME.starting_params.discards = G.GAME.starting_params.discards + v.extra.discard
+                                    G.GAME.round_resets.discards = G.GAME.round_resets.discards + v.extra.discard
+                                    ease_discard(v.extra.discard, true)
+                                end
+                                if v.extra.joker_slot then
+                                    G.GAME.starting_params.joker_slots = G.GAME.starting_params.joker_slots + v.extra.joker_slot
+                                    if G.jokers then 
+                                        G.jokers.config.card_limit = G.jokers.config.card_limit + v.extra.joker_slot
+                                    end
+                                end
+                                if v.extra.consumable_slot then
+                                    G.GAME.starting_params.consumable_slots = G.GAME.starting_params.consumable_slots + v.extra.consumable_slot
+                                    if G.consumeables then 
+                                        G.consumeables.config.card_limit = G.consumeables.config.card_limit + v.extra.consumable_slot
+                                    end
+                                end
                             end
                             attention_text({
                                 text = "Cheat Activated!",
