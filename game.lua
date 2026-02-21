@@ -2905,6 +2905,8 @@ function Game:start_run(args)
     G.hand_text_area = {
         chips = self.HUD:get_UIE_by_ID('hand_chips'),
         mult = self.HUD:get_UIE_by_ID('hand_mult'),
+        chips_area = self.HUD:get_UIE_by_ID('hand_chip_area'),
+        mult_area = self.HUD:get_UIE_by_ID('hand_mult_area'),
         ante = self.HUD:get_UIE_by_ID('ante_UI_count'),
         round = self.HUD:get_UIE_by_ID('round_UI_count'),
         chip_total = self.HUD:get_UIE_by_ID('hand_chip_total'),

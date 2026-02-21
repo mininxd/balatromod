@@ -1924,6 +1924,17 @@ return {
                     "Not yet discovered",
                 },
             },
+            j_crossing_wires={
+              name="Crossing Wires",
+              text= {
+               "Copies the ability of the Joker", 
+               "to the right but swaps {C:money}Chip{}",
+               "and {C:red}Mult{} modifiers."
+            },
+            unlock={
+                    "Not yet discovered",
+                },
+            },
             j_super_joker={
                 name="Super Joker",
                 text={
@@ -4384,6 +4395,7 @@ return {
         v_dictionary={
             a_chips="+#1#",
             a_chips_minus="-#1#",
+            a_xchips="X#1# Chips",
             a_hands="+#1# Hands",
             a_handsize="+#1# Hand Size",
             a_handsize_minus="-#1# Hand Size",

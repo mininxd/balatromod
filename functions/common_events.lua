@@ -567,6 +567,10 @@ function update_hand_text(config, vals)
                     cover_align = 'cr'
                 })
             end
+            if not G.TAROT_INTERRUPT then 
+                G.hand_text_area.chips:juice_up()
+                G.hand_text_area.chips_area:juice_up()
+            end
         end
         if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
             local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (to_big(vals.mult) - G.GAME.current_round.current_hand.mult) or to_big(0)
@@ -589,7 +593,10 @@ function update_hand_text(config, vals)
                     cover_align = 'cl'
                 })
             end
-            if not G.TAROT_INTERRUPT then G.hand_text_area.mult:juice_up() end
+            if not G.TAROT_INTERRUPT then 
+                G.hand_text_area.mult:juice_up()
+                G.hand_text_area.mult_area:juice_up()
+            end
         end
         if vals.handname and G.GAME.current_round.current_hand.handname ~= vals.handname then
             G.GAME.current_round.current_hand.handname = vals.handname
@@ -897,70 +904,70 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
         text = localize('k_swapped_ex')
         colour = G.C.PURPLE
     elseif eval_type == 'x_chips' then 
-        sound = 'talisman_xchip'
+        sound = 'multhit2'
         amt = amt
         text = 'X' .. amt
         colour = G.C.CHIPS
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'e_chips' then 
-        sound = 'talisman_echip'
+        sound = 'chips1'
         amt = amt
         text = '^' .. amt
         colour = G.C.CHIPS
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'ee_chips' then 
-        sound = 'talisman_eechip'
+        sound = 'chips1'
         amt = amt
         text = '^^' .. amt
         colour = G.C.CHIPS
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'eee_chips' then 
-        sound = 'talisman_eeechip'
+        sound = 'chips1'
         amt = amt
         text = '^^^' .. amt
         colour = G.C.CHIPS
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'hyper_chips' then
-        sound = 'talisman_eeechip'
+        sound = 'chips1'
         text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2])
         amt = amt[2]
         colour = G.C.CHIPS
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'e_mult' then 
-        sound = 'talisman_emult'
+        sound = 'multhit2'
         amt = amt
         text = '^' .. amt .. ' ' .. localize('k_mult')
         colour = G.C.MULT
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'ee_mult' then 
-        sound = 'talisman_eemult'
+        sound = 'multhit2'
         amt = amt
         text = '^^' .. amt .. ' ' .. localize('k_mult')
         colour = G.C.MULT
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'eee_mult' then 
-        sound = 'talisman_eeemult'
+        sound = 'multhit2'
         amt = amt
         text = '^^^' .. amt .. ' ' .. localize('k_mult')
         colour = G.C.MULT
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'hyper_mult' then 
-        sound = 'talisman_eeemult'
+        sound = 'multhit2'
         text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2]) .. ' ' .. localize('k_mult')
         amt = amt[2]
         colour = G.C.MULT
         config.type = 'fade'
         config.scale = 0.7
     elseif eval_type == 'extra' or eval_type == 'jokers' then 
-        sound = extra.edition and 'foil2' or extra.mult_mod and 'multhit1' or extra.Xmult_mod and 'multhit2' or extra.Xchip_mod and 'talisman_xchip' or extra.Echip_mod and 'talisman_echip' or extra.Emult_mod and 'talisman_emult' or extra.EEchip_mod and 'talisman_eechip' or extra.EEmult_mod and 'talisman_eemult' or (extra.EEEchip_mod or extra.hyperchip_mod) and 'talisman_eeechip' or (extra.EEEmult_mod or extra.hypermult_mod) and 'talisman_eeemult' or 'generic1'
+        sound = extra.edition and 'foil2' or extra.mult_mod and 'multhit1' or extra.Xmult_mod and 'multhit2' or extra.Xchip_mod and 'multhit2' or extra.Echip_mod and 'chips1' or extra.Emult_mod and 'multhit2' or extra.EEchip_mod and 'chips1' or extra.EEmult_mod and 'multhit2' or (extra.EEEchip_mod or extra.hyperchip_mod) and 'chips1' or (extra.EEEmult_mod or extra.hypermult_mod) and 'multhit2' or 'generic1'
         if extra.edition then 
             colour = G.C.DARK_EDITION
         end
@@ -2749,7 +2756,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         local vars = (specific_vars and (specific_vars[1] or specific_vars.sticker)) and specific_vars or loc_vars
         if not (vars and vars[1]) then
             if _c.name == 'Super Joker' then vars = {_c.config.mult}
-            elseif _c.name == 'Aura Farming' then vars = {_c.config.extra, 0.1, _c.config.mult, _c.config.x_mult}
+            elseif _c.name == 'Aura Farming' then vars = {_c.config.extra, 0.25, _c.config.mult, _c.config.x_mult}
             end
         end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = vars or {}}

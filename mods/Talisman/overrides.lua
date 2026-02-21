@@ -76,23 +76,35 @@ end
 function Particles:draw(alpha)
     alpha = alpha or 1
     prep_draw(self, 1)
-    -- Optimized translate using to_number directly
-    love.graphics.translate(to_number(self.T.w/2), to_number(self.T.h/2))
+    
+    local w = type(self.T.w) == 'table' and to_number(self.T.w) or self.T.w
+    local h = type(self.T.h) == 'table' and to_number(self.T.h) or self.T.h
+    love.graphics.translate(w/2, h/2)
+    
+    local fa = type(self.fade_alpha) == 'table' and to_number(self.fade_alpha) or (self.fade_alpha or 0)
+    local al = type(alpha) == 'table' and to_number(alpha) or alpha
+    
     for k, v in pairs(self.particles) do
         if v.draw then 
             love.graphics.push()
-            -- Optimized color setting
-            love.graphics.setColor(
-                to_number(v.colour[1]), 
-                to_number(v.colour[2]), 
-                to_number(v.colour[3]), 
-                to_number(v.colour[4])*to_number(alpha)*(1-to_number(self.fade_alpha))
-            )                
-            love.graphics.translate(to_number(v.offset.x), to_number(v.offset.y))
-            love.graphics.rotate(to_number(v.facing))
             
-            local s = to_number(v.scale)
-            love.graphics.rectangle('fill', -s/2, -s/2, s, s) -- origin in the middle
+            local c = v.colour
+            local r = type(c[1]) == 'table' and to_number(c[1]) or c[1]
+            local g = type(c[2]) == 'table' and to_number(c[2]) or c[2]
+            local b = type(c[3]) == 'table' and to_number(c[3]) or c[3]
+            local a = type(c[4]) == 'table' and to_number(c[4]) or c[4]
+
+            love.graphics.setColor(r, g, b, a * al * (1 - fa))                
+            
+            local ox = type(v.offset.x) == 'table' and to_number(v.offset.x) or v.offset.x
+            local oy = type(v.offset.y) == 'table' and to_number(v.offset.y) or v.offset.y
+            love.graphics.translate(ox, oy)
+            
+            local f = type(v.facing) == 'table' and to_number(v.facing) or v.facing
+            love.graphics.rotate(f)
+            
+            local s = type(v.scale) == 'table' and to_number(v.scale) or v.scale
+            love.graphics.rectangle('fill', -s/2, -s/2, s, s) 
             love.graphics.pop()
         end
     end
@@ -105,12 +117,16 @@ end
 if Node then
 function Node:translate_container()
     if self.container and self.container ~= self then
-        -- Optimized translate_container
-        love.graphics.translate(to_number(self.container.T.w*G.TILESCALE*G.TILESIZE*0.5), to_number(self.container.T.h*G.TILESCALE*G.TILESIZE*0.5))
-        love.graphics.rotate(to_number(self.container.T.r))
-        love.graphics.translate(
-            to_number(-self.container.T.w*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.x*G.TILESCALE*G.TILESIZE),
-            to_number(-self.container.T.h*G.TILESCALE*G.TILESIZE*0.5 + self.container.T.y*G.TILESCALE*G.TILESIZE))
+        local c = self.container
+        local w = type(c.T.w) == 'table' and to_number(c.T.w) or c.T.w
+        local h = type(c.T.h) == 'table' and to_number(c.T.h) or c.T.h
+        local x = type(c.T.x) == 'table' and to_number(c.T.x) or c.T.x
+        local y = type(c.T.y) == 'table' and to_number(c.T.y) or c.T.y
+        local r = type(c.T.r) == 'table' and to_number(c.T.r) or c.T.r
+
+        love.graphics.translate(w*G.TILESCALE*G.TILESIZE*0.5, h*G.TILESCALE*G.TILESIZE*0.5)
+        love.graphics.rotate(r)
+        love.graphics.translate(-w*G.TILESCALE*G.TILESIZE*0.5 + x*G.TILESCALE*G.TILESIZE, -h*G.TILESCALE*G.TILESIZE*0.5 + y*G.TILESCALE*G.TILESIZE)
     end
 end
 end
@@ -199,9 +215,98 @@ function Event:handle(_results)
 end
 end
 
+-- Optimized Math Functions and Utilities for Talisman
+-- Caching common BigNumbers to reduce object creation overhead
+local BIG_ZERO = to_big(0)
+local BIG_ONE = to_big(1)
+local BIG_TWO = to_big(2)
+
+-- Optimized math.max with varargs support
+function math.max(x, y, ...)
+    if y == nil then return x end
+    if not ... then
+        if type(x) == 'number' and type(y) == 'number' then
+            return x > y and x or y
+        end
+        local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
+        local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
+        return by > bx and by or bx
+    end
+    
+    local max_val = x
+    local n = select('#', y, ...)
+    for i = 1, n do
+        local next_y = select(i, y, ...)
+        if type(max_val) == 'number' and type(next_y) == 'number' then
+            if next_y > max_val then max_val = next_y end
+        else
+            local bx = (type(max_val) == 'table') and max_val or (max_val == 0 and BIG_ZERO or (max_val == 1 and BIG_ONE or to_big(max_val)))
+            local by = (type(next_y) == 'table') and next_y or (next_y == 0 and BIG_ZERO or (next_y == 1 and BIG_ONE or to_big(next_y)))
+            if by > bx then max_val = by else max_val = bx end
+        end
+    end
+    return max_val
+end
+
+-- Optimized math.min with varargs support
+function math.min(x, y, ...)
+    if y == nil then return x end
+    if not ... then
+        if type(x) == 'number' and type(y) == 'number' then
+            return x < y and x or y
+        end
+        local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
+        local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
+        return by < bx and by or bx
+    end
+    
+    local min_val = x
+    local n = select('#', y, ...)
+    for i = 1, n do
+        local next_y = select(i, y, ...)
+        if type(min_val) == 'number' and type(next_y) == 'number' then
+            if next_y < min_val then min_val = next_y end
+        else
+            local bx = (type(min_val) == 'table') and min_val or (min_val == 0 and BIG_ZERO or (min_val == 1 and BIG_ONE or to_big(min_val)))
+            local by = (type(next_y) == 'table') and next_y or (next_y == 0 and BIG_ZERO or (next_y == 1 and BIG_ONE or to_big(next_y)))
+            if by < bx then min_val = by else min_val = bx end
+        end
+    end
+    return min_val
+end
+
+-- Optimized math.abs
+function math.abs(x)
+    if type(x) == 'number' then
+        return x < 0 and -x or x
+    end
+    if type(x) == 'table' then
+        if x < BIG_ZERO then return x:neg() else return x end
+    end
+    return to_big(x)
+end
+
+-- Optimized text_super_juice
+-- Replaces Talisman's wrapper to avoid to_big(2) creation and conversion overhead
+function G.FUNCS.text_super_juice(e, amount)
+    local amt_val = amount
+    
+    if type(amount) == 'table' then
+        if amount > BIG_TWO then amt_val = 2
+        else amt_val = to_number(amount) end
+    elseif type(amount) == 'number' then
+        if amount > 2 then amt_val = 2 end
+    end
+    
+    local amount = amt_val or 1
+    if e.config and e.config.object then
+        e.config.object:juice_up(0.6*amount, 0.1*amount)
+    end
+    G.ROOM.jiggle = G.ROOM.jiggle + 0.7*amount
+end
+
 -- Optimized update_hand_text for Talisman
 -- This avoids to_big overhead when handling simple number updates for UI animations
-local BIG_ZERO = to_big(0)
 
 function update_hand_text(config, vals)
     if Talisman.config_file.disable_anims then
@@ -222,14 +327,30 @@ function update_hand_text(config, vals)
             -- Optimized chips update
             if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
                 local delta
-                if type(vals.chips) == 'table' or type(G.GAME.current_round.current_hand.chips) == 'table' then
-                    delta = to_big(vals.chips) - to_big(G.GAME.current_round.current_hand.chips)
+                local v_chips = vals.chips
+                local g_chips = G.GAME.current_round.current_hand.chips
+                
+                -- Ensure both operands are safe for arithmetic or to_big conversion
+                if type(v_chips) == 'string' then v_chips = to_big(v_chips) end
+                if type(g_chips) == 'string' then g_chips = to_big(g_chips) end
+
+                if type(v_chips) == 'table' or type(g_chips) == 'table' then
+                    delta = to_big(v_chips) - to_big(g_chips)
                 else
-                    delta = vals.chips - G.GAME.current_round.current_hand.chips
+                    delta = v_chips - g_chips
                 end
                 
-                if to_big(delta) < BIG_ZERO then delta = number_format(delta); col = G.C.RED
-                elseif to_big(delta) > BIG_ZERO then delta = '+'..number_format(delta)
+                local is_neg, is_pos = false, false
+                if type(delta) == 'table' then
+                    is_neg = delta < BIG_ZERO
+                    is_pos = delta > BIG_ZERO
+                else
+                    is_neg = delta < 0
+                    is_pos = delta > 0
+                end
+
+                if is_neg then delta = number_format(delta); col = G.C.RED
+                elseif is_pos then delta = '+'..number_format(delta)
                 else delta = number_format(delta)
                 end
                 if type(vals.chips) == 'string' then delta = vals.chips end
@@ -247,18 +368,35 @@ function update_hand_text(config, vals)
                         cover_align = 'cr'
                     })
                 end
+                if not G.TAROT_INTERRUPT then G.hand_text_area.chips:juice_up() end
             end
             -- Optimized mult update
             if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
                 local delta
-                if type(vals.mult) == 'table' or type(G.GAME.current_round.current_hand.mult) == 'table' then
-                    delta = to_big(vals.mult) - to_big(G.GAME.current_round.current_hand.mult)
+                local v_mult = vals.mult
+                local g_mult = G.GAME.current_round.current_hand.mult
+
+                -- Ensure both operands are safe for arithmetic or to_big conversion
+                if type(v_mult) == 'string' then v_mult = to_big(v_mult) end
+                if type(g_mult) == 'string' then g_mult = to_big(g_mult) end
+
+                if type(v_mult) == 'table' or type(g_mult) == 'table' then
+                    delta = to_big(v_mult) - to_big(g_mult)
                 else
-                    delta = vals.mult - G.GAME.current_round.current_hand.mult
+                    delta = v_mult - g_mult
                 end
 
-                if to_big(delta) < BIG_ZERO then delta = number_format(delta); col = G.C.RED
-                elseif to_big(delta) > BIG_ZERO then delta = '+'..number_format(delta)
+                local is_neg, is_pos = false, false
+                if type(delta) == 'table' then
+                    is_neg = delta < BIG_ZERO
+                    is_pos = delta > BIG_ZERO
+                else
+                    is_neg = delta < 0
+                    is_pos = delta > 0
+                end
+
+                if is_neg then delta = number_format(delta); col = G.C.RED
+                elseif is_pos then delta = '+'..number_format(delta)
                 else delta = number_format(delta)
                 end
                 if type(vals.mult) == 'string' then delta = vals.mult end
@@ -290,11 +428,9 @@ function update_hand_text(config, vals)
                     G.GAME.current_round.current_hand.hand_level = vals.level
                 else
                     G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..number_format(vals.level)
-                    if type(vals.level) == 'number' or is_number(vals.level) then 
-                        G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.floor(to_number(math.min(vals.level, 7)))]
-                    else
-                        G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
-                    end
+                    local lvl = vals.level
+                    if type(lvl) == 'table' then lvl = to_number(lvl) end
+                    G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.floor(math.min(lvl or 1, 7))]
                     G.hand_text_area.hand_level:juice_up()
                 end
             end
@@ -310,60 +446,4 @@ function update_hand_text(config, vals)
             return true
         end}))
     end
-end
-
--- Optimized Math Functions and Utilities for Talisman
--- Caching common BigNumbers to reduce object creation overhead
-local BIG_ZERO = to_big(0)
-local BIG_ONE = to_big(1)
-local BIG_TWO = to_big(2)
-
--- Optimized math.max
-function math.max(x, y)
-    if type(x) == 'number' and type(y) == 'number' then
-        return x > y and x or y
-    end
-    local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
-    local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
-    return (bx > by) and bx or by
-end
-
--- Optimized math.min
-function math.min(x, y)
-    if type(x) == 'number' and type(y) == 'number' then
-        return x < y and x or y
-    end
-    local bx = (type(x) == 'table') and x or (x == 0 and BIG_ZERO or (x == 1 and BIG_ONE or to_big(x)))
-    local by = (type(y) == 'table') and y or (y == 0 and BIG_ZERO or (y == 1 and BIG_ONE or to_big(y)))
-    return (bx < by) and bx or by
-end
-
--- Optimized math.abs
-function math.abs(x)
-    if type(x) == 'number' then
-        return x < 0 and -x or x
-    end
-    if type(x) == 'table' then
-        if x < BIG_ZERO then return x:neg() else return x end
-    end
-    return to_big(x)
-end
-
--- Optimized text_super_juice
--- Replaces Talisman's wrapper to avoid to_big(2) creation and conversion overhead
-function G.FUNCS.text_super_juice(e, amount)
-    local amt_val = amount
-    
-    if type(amount) == 'table' then
-        if amount > BIG_TWO then amt_val = 2
-        else amt_val = to_number(amount) end
-    elseif type(amount) == 'number' then
-        if amount > 2 then amt_val = 2 end
-    end
-    
-    local amount = amt_val or 1
-    if e.config and e.config.object then
-        e.config.object:juice_up(0.6*amount, 0.1*amount)
-    end
-    G.ROOM.jiggle = G.ROOM.jiggle + 0.7*amount
 end

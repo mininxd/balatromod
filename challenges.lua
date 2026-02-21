@@ -754,45 +754,22 @@ G.CHALLENGES = {
         rules = {
             custom = {},
             modifiers = {
-                {id = 'joker_slots', value = 1e308},
+                {id = 'joker_slots', value = 5},
             }
         },
         jokers = {
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-                {id = 'j_blueprint', edition = "polychrome"},
-                {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_blueprint', edition = "polychrome"},
-        {id = 'j_stencil', edition = "polychrome"},
-        {id = 'j_brainstorm', edition = "polychrome"},
-        {id = 'j_chicot', edition = "polychrome"},
+        {id = "j_crossing_wires"},
+        {id = "j_joker"},
+        {id = "j_hanging_chad"},
+        {id = "j_photograph"},
+        {id = "j_bull"}
         },
         consumeables = {},
-        zodiac = "z_capricorn",
+        zodiac = "z_pisces",
         vouchers = {
         },
         deck = {
             type = 'Anaglyph Deck',
-            cards = {
-                {s='D',r='A',e='m_gold', d='polychrome', g='Red'},
-                {s='H',r='K',e='m_gold', d='polychrome', g='Red'},
-                {s='C',r='Q',e='m_gold', d='polychrome', g='Red'},
-                {s='S',r='J',e='m_gold', d='polychrome', g='Red'},
-                {s='S',r='T',e='m_gold', d='polychrome', g='Red'},
-                {s='S',r='T',e='m_gold', d='polychrome', g='Red'},
-            },
         },
         restrictions = {
             banned_cards = {},

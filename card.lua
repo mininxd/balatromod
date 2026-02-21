@@ -921,7 +921,9 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Hallucination' then loc_vars = {G.GAME.probabilities.normal, self.ability.extra}
         elseif self.ability.name == 'Lucky Cat' then loc_vars = {self.ability.extra, self.ability.x_mult}
         elseif self.ability.name == 'Baseball Card' then loc_vars = {self.ability.extra}
-        elseif self.ability.name == 'Bull' then loc_vars = {self.ability.extra, self.ability.extra*math.max(0,G.GAME.dollars) or 0}
+        elseif self.ability.name == 'Bull' then 
+            local dollars = to_big(G.GAME.dollars)
+            loc_vars = {self.ability.extra, number_format(to_big(self.ability.extra) * (dollars:gt(to_big(0)) and dollars or to_big(0)))}
         elseif self.ability.name == 'Diet Cola' then loc_vars = {localize{type = 'name_text', set = 'Tag', key = 'tag_double', nodes = {}}}
         elseif self.ability.name == 'Trading Card' then loc_vars = {self.ability.extra}
         elseif self.ability.name == 'Flash Card' then loc_vars = {self.ability.extra, self.ability.mult}
@@ -944,7 +946,7 @@ function Card:generate_UIBox_ability_table()
                     }}
                 }}
             } or nil
-        elseif self.ability.name == 'Boilerplate' then
+        elseif self.ability.name == 'Boilerplate' or self.ability.name == 'Crossing Wires' then
             self.ability.blueprint_compat_ui = self.ability.blueprint_compat_ui or ''; self.ability.blueprint_compat_check = nil
             main_end = (self.area and self.area == G.jokers) and {
                 {n=G.UIT.C, config={align = "bm", minh = 0.4}, nodes={
@@ -2495,7 +2497,7 @@ function Card:calculate_joker(context)
     if (self.ability.set == "Joker" or self.ability.set == "custom_joker") and not self.debuff then
         if self.ability.name == 'Super Joker' and context.joker_main then
             return {
-                message = localize{type='variable',key='a_mult',vars={lenient_bignum(self.ability.mult)}},
+                message = localize{type='variable',key='a_mult',vars={number_format(lenient_bignum(self.ability.mult))}},
                 mult_mod = self.ability.mult
             }
         end
@@ -2503,7 +2505,7 @@ function Card:calculate_joker(context)
             return {
                 mult_mod = self.ability.mult,
                 Xmult_mod = self.ability.x_mult,
-                message = localize{type='variable',key='a_mult',vars={lenient_bignum(self.ability.mult)}}
+                message = localize{type='variable',key='a_mult',vars={number_format(lenient_bignum(self.ability.mult))}}
             }
         end
         if self.ability.name == "Blueprint" then
@@ -2555,7 +2557,7 @@ function Card:calculate_joker(context)
                 if other_joker and other_joker ~= self and other_joker ~= context.blueprint_card then
                     -- Specifically skip copiers that are targeting this Boilerplate to prevent loops and double-halving
                     local target = nil
-                    if other_joker.ability.name == 'Blueprint' then
+                    if other_joker.ability.name == 'Blueprint' or other_joker.ability.name == 'Crossing Wires' then
                         for i = 1, #G.jokers.cards do
                             if G.jokers.cards[i] == other_joker then target = G.jokers.cards[i+1]; break end
                         end
@@ -2642,6 +2644,69 @@ function Card:calculate_joker(context)
                 ret_right.colour = G.C.GREEN
                 if context.blueprint_card then context.blueprint_card:juice_up() else self:juice_up() end
                 return ret_right
+            end
+        end
+        if self.ability.name == "Crossing Wires" then
+            local other_joker = nil
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1]; break end
+            end
+            if other_joker and other_joker ~= self and other_joker ~= context.blueprint_card then
+                local target = nil
+                if other_joker.ability.name == 'Blueprint' or other_joker.ability.name == 'Crossing Wires' then
+                    for i = 1, #G.jokers.cards do
+                        if G.jokers.cards[i] == other_joker then target = G.jokers.cards[i+1]; break end
+                    end
+                elseif other_joker.ability.name == 'Brainstorm' then
+                    target = G.jokers.cards[1]
+                elseif other_joker.ability.name == 'Boilerplate' then
+                    -- Boilerplate copies both left and right. 
+                    -- If Crossing Wires is the left neighbor, Boilerplate will copy it.
+                    -- We check if we are either the left or right neighbor of Boilerplate.
+                    for i = 1, #G.jokers.cards do
+                        if G.jokers.cards[i] == other_joker then
+                            if G.jokers.cards[i-1] == self or G.jokers.cards[i+1] == self then
+                                target = self
+                            end
+                            break
+                        end
+                    end
+                end
+                if target == self then return nil end
+
+                local local_context = {}
+                for k, v in pairs(context) do local_context[k] = v end
+                local_context.blueprint = (local_context.blueprint and (local_context.blueprint + 1)) or 1
+                local_context.blueprint_card = local_context.blueprint_card or self
+                if local_context.blueprint > #G.jokers.cards + 1 then return end
+                local other_joker_ret = other_joker:calculate_joker(local_context)
+                if other_joker_ret then
+                    local swapped_ret = {}
+                    local has_mod = false
+                    if other_joker_ret.mult_mod then swapped_ret.chip_mod = other_joker_ret.mult_mod; has_mod = true end
+                    if other_joker_ret.chip_mod then swapped_ret.mult_mod = other_joker_ret.chip_mod; has_mod = true end
+                    
+                    -- Handle multiplicative modifiers
+                    local x_mult = other_joker_ret.Xmult_mod or other_joker_ret.Xmult or other_joker_ret.xmult or other_joker_ret.x_mult
+                    local x_chip = other_joker_ret.Xchip_mod or other_joker_ret.Xchips_mod or other_joker_ret.Xchip or other_joker_ret.Xchips or other_joker_ret.xchip or other_joker_ret.xchips or other_joker_ret.x_chip or other_joker_ret.x_chips
+
+                    if x_mult then swapped_ret.Xchip_mod = x_mult; swapped_ret.Xchips_mod = x_mult; has_mod = true end
+                    if x_chip then swapped_ret.Xmult_mod = x_chip; has_mod = true end
+                    
+                    if not has_mod then return nil end
+
+                    -- Build message if we have common mods
+                    if swapped_ret.mult_mod then swapped_ret.message = localize{type='variable',key='a_mult',vars={number_format(swapped_ret.mult_mod)}}
+                    elseif swapped_ret.chip_mod then swapped_ret.message = localize{type='variable',key='a_chips',vars={number_format(swapped_ret.chip_mod)}}
+                    elseif swapped_ret.Xmult_mod then swapped_ret.message = localize{type='variable',key='a_xmult',vars={number_format(swapped_ret.Xmult_mod)}}
+                    elseif swapped_ret.Xchip_mod or swapped_ret.Xchips_mod then swapped_ret.message = localize{type='variable',key='a_xchips',vars={number_format(swapped_ret.Xchip_mod or swapped_ret.Xchips_mod)}}
+                    end
+                    
+                    swapped_ret.card = local_context.blueprint_card or self
+                    swapped_ret.colour = G.C.ORANGE
+                    if context.blueprint_card then context.blueprint_card:juice_up() else self:juice_up() end
+                    return swapped_ret
+                end
             end
         end
         if context.open_booster then
@@ -3213,11 +3278,11 @@ function Card:calculate_joker(context)
                 end
                 if self.ability.name == 'Aura Farming' and G.GAME.blind.boss then
                     local lost_mult = self.ability.mult - math.floor(self.ability.mult * 0.5)
-                    self.ability.x_mult = self.ability.x_mult + 0.1
+                    self.ability.x_mult = self.ability.x_mult + 0.25
                     self.ability.mult = math.floor(self.ability.mult * 0.5)
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = "-" .. lost_mult .. " Aura", colour = G.C.RED})
                     return {
-                        message = "X0.1 Mult",
+                        message = "X0.25 Mult",
                         colour = G.C.MULT
                     }
                 end
@@ -3538,7 +3603,7 @@ function Card:calculate_joker(context)
                 if self.ability.name == 'Aura Farming' then
                     self.ability.mult = self.ability.mult + self.ability.extra
                     return {
-                        extra = {focus = self, message = "+1 Aura"},
+                        extra = {focus = self, message = "+" .. number_format(self.ability.extra) .. " Aura"},
                         card = self,
                         colour = G.C.MULT
                     }
@@ -4392,12 +4457,15 @@ function Card:calculate_joker(context)
                                 colour = G.C.MULT
                             }
                         end
-                        if self.ability.name == 'Bull' and to_number(G.GAME.dollars + (G.GAME.dollar_buffer or 0)) > 0 then
-                            return {
-                                message = localize{type='variable',key='a_chips',vars={self.ability.extra*math.max(0,(G.GAME.dollars + (G.GAME.dollar_buffer or 0))) }},
-                                chip_mod = self.ability.extra*math.max(0,(G.GAME.dollars + (G.GAME.dollar_buffer or 0))), 
-                                colour = G.C.CHIPS
-                            }
+                        if self.ability.name == 'Bull' then
+                            local dollars = to_big(G.GAME.dollars) + to_big(G.GAME.dollar_buffer or 0)
+                            if dollars:gt(to_big(0)) then
+                                return {
+                                    message = localize{type='variable',key='a_chips',vars={number_format(to_big(self.ability.extra) * dollars)}},
+                                    chip_mod = to_big(self.ability.extra) * dollars, 
+                                    colour = G.C.CHIPS
+                                }
+                            end
                         end
                         if self.ability.name == "Driver's License" then
                             if (self.ability.driver_tally or 0) >= 16 then 
@@ -4681,20 +4749,21 @@ function Card:update(dt)
                 end
             end
         end
-        if self.ability.name == 'Blueprint' or self.ability.name == 'Brainstorm' or self.ability.name == 'Boilerplate' then
+        if self.ability.name == 'Blueprint' or self.ability.name == 'Brainstorm' or self.ability.name == 'Boilerplate' or self.ability.name == 'Crossing Wires' then
             local other_joker = nil
             local other_joker_2 = nil
             if self.ability.name == 'Brainstorm' then
                 other_joker = G.jokers.cards[1]
-            elseif self.ability.name == 'Blueprint' then
+            elseif self.ability.name == 'Blueprint' or self.ability.name == 'Crossing Wires' then
                 for i = 1, #G.jokers.cards do
-                    if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1] end
+                    if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1]; break end
                 end
             elseif self.ability.name == 'Boilerplate' then
                 for i = 1, #G.jokers.cards do
                     if G.jokers.cards[i] == self then 
                         other_joker = G.jokers.cards[i-1]
                         other_joker_2 = G.jokers.cards[i+1]
+                        break
                     end
                 end
             end
@@ -4715,6 +4784,58 @@ function Card:update(dt)
                 elseif n2 then
                     if c2 then self.ability.blueprint_compat = 'compatible'
                     else self.ability.blueprint_compat = 'incompatible' end
+                else
+                    self.ability.blueprint_compat = 'incompatible'
+                end
+            elseif self.ability.name == 'Crossing Wires' then
+                if other_joker and other_joker ~= self then
+                    local center = other_joker.config.center
+                    local is_compat = false
+                    
+                    -- Check if it's a known copier to prevent simple loops in UI
+                    if center.name == 'Blueprint' or center.name == 'Brainstorm' or center.name == 'Boilerplate' or center.name == 'Crossing Wires' then
+                        is_compat = false
+                    else
+                        -- 1. Check if the Joker is generally compatible with being copied
+                        if center.blueprint_compat then
+                            -- 2. Try to auto-detect "Mult" or "Chips" in the card's definition
+                            local effect = (center.effect or ""):lower()
+                            local config = center.config or {}
+                            
+                            local function check_table(t)
+                                if type(t) ~= 'table' then return false end
+                                for k, v in pairs(t) do
+                                    if type(k) == 'string' then
+                                        local kl = k:lower()
+                                        if kl:find("mult") or kl:find("chip") or kl:find("x_") or kl:find("xmult") or kl:find("xchip") then return true end
+                                    end
+                                    if type(v) == 'table' then
+                                        if check_table(v) then return true end
+                                    end
+                                end
+                                return false
+                            end
+
+                            if effect:find("mult") or effect:find("chip") or effect:find("x") or check_table(config) then
+                                is_compat = true
+                            else
+                                -- 3. Final fallback: Check the localized text for "Mult" or "Chips" keywords/symbols
+                                local loc_key = center.key
+                                local loc_set = center.set
+                                local loc = G.localization.descriptions[loc_set] and G.localization.descriptions[loc_set][loc_key]
+                                if loc and loc.text then
+                                    for _, line in ipairs(loc.text) do
+                                        local l = line:lower()
+                                        if l:find("mult") or l:find("chip") or l:find("{c:mult}") or l:find("{c:chips}") or l:find("{x:mult}") then
+                                            is_compat = true
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    self.ability.blueprint_compat = is_compat and 'compatible' or 'incompatible'
                 else
                     self.ability.blueprint_compat = 'incompatible'
                 end
