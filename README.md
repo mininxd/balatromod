@@ -28,4 +28,5 @@
 Certain seeds entered in **Sandbox Mode** trigger special effects:
 - **GIVESOUL**: Start with 2 "The Soul" spectral cards and a Blueprint joker.
 - **RICHIE**: Start with extra 9999 dollar.
+- **JOKERINF**: Set joker to 1e308
 
