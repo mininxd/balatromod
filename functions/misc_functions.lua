@@ -1786,7 +1786,7 @@ function localize(args, misc_cat)
         if args.type == 'name' then
           final_line[#final_line+1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string},
-              colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or G.C.UI.TEXT_LIGHT},
+              colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
               bump = true,
               silent = true,
               pop_in = 0,
@@ -1826,7 +1826,7 @@ function localize(args, misc_cat)
           detailed_tooltip = part.control.T and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T]) or nil,
           text = assembled_string,
           shadow = args.shadow,
-          colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil, args.default_col),
+          colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
           scale = 0.32*(part.control.s and tonumber(part.control.s) or 1)*desc_scale},}
         end
       end

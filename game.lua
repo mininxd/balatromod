@@ -1382,6 +1382,7 @@ function Game:refresh()
     G:load_profile(G.focused_profile)
     G:init_item_prototypes()
     set_discover_tallies()
+    require "mods/JokerDisplay/joker_display_loader"
     set_profile_progress()
 end
 

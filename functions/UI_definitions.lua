@@ -2305,6 +2305,12 @@ function create_UIBox_settings()
     tab_definition_function = G.UIDEF.settings_tab,
     tab_definition_function_args = 'Audio'
   }
+  if JokerDisplay then
+    tabs[#tabs+1] = {
+      label = "JokerDisplay",
+      tab_definition_function = JokerDisplay.config_tab,
+    }
+  end
   local t = create_UIBox_generic_options({back_func = 'options',contents = {create_tabs(
     {tabs = tabs,
     tab_h = 7.7,
@@ -2323,6 +2329,7 @@ function G.UIDEF.settings_tab(tab)
       create_toggle({label = localize('ph_display_stickers'), ref_table = G.SETTINGS, ref_value = 'run_stake_stickers'}),
       create_toggle({label = localize('b_high_contrast_cards'), ref_table = G.SETTINGS, ref_value = 'colourblind_option', callback = G.FUNCS.refresh_contrast_mode}),
       create_toggle({label = localize('b_reduced_motion'), ref_table = G.SETTINGS, ref_value = 'reduced_motion'}),
+      JokerDisplay and create_toggle({label = "JokerDisplay", ref_table = JokerDisplay.config, ref_value = 'enabled', callback = JokerDisplay.save_config}) or nil,
       G.F_CRASH_REPORTS and create_toggle({label = localize('b_set_crash_reports'), ref_table = G.SETTINGS, ref_value = 'crashreports', info = localize('ml_crash_report_info')}) or nil,
     }}
   elseif tab == 'Video' then

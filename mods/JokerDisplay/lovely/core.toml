@@ -1,0 +1,63 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 50
+
+# Copied from SMODS
+[[patches]]
+[patches.module]
+source = "libs/nativefs/nativefs.lua" #for absolute paths. with SMODS stuff I don't use but I was lazy to copy the OG
+name = "JokerDisplay.nativefs"
+
+[[patches]]
+[patches.module]
+before = "main.lua"
+source = "lovely.lua"
+name = "JokerDisplay.core"
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "set_profile_progress()"
+position = "before"
+payload = 'require "JokerDisplay.core"'
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[lovely JokerDisplay.core "lovely.lua"]'
+pattern = "local mod_path = false -- patched in"
+position = "at"
+payload = """local mod_path = [[{{lovely_hack:patch_dir}}]]"""
+match_indent = true
+
+# Add the config tab to the settings (Copied from DebugPlus)
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = '''local t = create_UIBox_generic_options({back_func = 'options',contents = {create_tabs('''
+position = "before"
+payload = '''
+if not SMODS then
+    tabs[#tabs+1] = {
+        label = "JokerDisplay",
+        tab_definition_function = JokerDisplay.config_tab,
+    }
+end
+'''
+match_indent = true
+
+# localize (Copied from SMODS for the mod description)
+[[patches]]
+[patches.regex]
+target = 'functions/misc_functions.lua'
+position = 'after'
+pattern = '\(part\.control\.C and loc_colour\(part\.control\.C\)\)'
+payload = ' or args.text_colour'
+
+[[patches]]
+[patches.regex]
+target = 'functions/misc_functions.lua'
+position = 'at'
+pattern = 'loc_colour\(part\.control\.C or nil, args\.default_col\)'
+payload = 'not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col)'
