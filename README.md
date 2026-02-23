@@ -4,15 +4,15 @@
 - **Sandbox Mode**: A new game mode accessible from the Play menu. It allows full customization of starting parameters including Dollars, Hands, Discards, Joker Slots, and Consumable Slots. Also includes custom Deck and Stake selection and a built-in Seed configuration.
 
 ## Custom Jokers
-| Name        | Description | Rarity |
-|------------|-------------|--------|
-| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. | rare |
-| Rugpull | **+8** at the end of round, sets money to **$0** when sold. | uncommon |
-| Zombie Joker | Instead of losing, gives **+1 Hand** and adds **5** random cards to hand. Destroyed at end of round if triggered. | uncommon |
-| Lithograph | **Stone Cards** give **+6 Mult**. | common |
-| Boilerplate | Copies the effect of both adjacent **Jokers**, but with halved effects. | rare |
-| Crossing Wires | Copies the ability of the Joker to the right but swaps **Chip** and **Mult** modifiers. | rare |
-| President Joker | **X1 Mult**. When **Boss Blind** is selected, **Duplicate** this Joker. Each **Negative** duplicate adds **X0.5 Mult** to the **Original** President Joker. | rare |
+| Name        | Description | Rarity | Credits |
+|-------------|-------------|--------|---------|
+| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. | rare |  |
+| Rugpull | **+8** at the end of round, sets money to **$0** when sold. | uncommon |https://www.reddit.com/r/balatro/s/pkmotZUy0G|
+| Zombie Joker | Instead of losing, gives **+1 Hand** and adds **5** random cards to hand. Destroyed at end of round if triggered. | uncommon |https://www.reddit.com/r/balatro/s/pkmotZUy0G|
+| Lithograph | **Stone Cards** give **+6 Mult**. | common |https://www.reddit.com/r/balatro/s/pkmotZUy0G|
+| Boilerplate | Copies the effect of both adjacent **Jokers**, but with halved effects. | rare |https://www.reddit.com/r/balatro/s/pkmotZUy0G|
+| Crossing Wires | Copies the ability of the Joker to the right but swaps **Chip** and **Mult** modifiers. | rare |  |
+| President Joker | **X1 Mult**. When **Boss Blind** is selected, **Duplicate** this Joker. Each **Negative** duplicate adds **X0.5 Mult** to the **Original** President Joker. | rare | https://www.reddit.com/r/balatro/s/748qbhdSSK |
 
 ## Custom Tags
 | Name        | Description | Type |
