@@ -24,7 +24,7 @@
 |------|-------------|--------|
 | Talisman | Increases the score cap from **~10^308** to **~10^1000**, allowing endless runs to go past **NaN/Inf** and **Ante 39**, and adds an option to remove long score animations. | https://github.com/SpectralPack/Talisman/releases/tag/v2.7 |
 | Always Show Seed | Shows the seed and allows copying it at all times from the options menu. | https://www.nexusmods.com/balatro/mods/6 |
-| Zodiac Cards | Adds a new set of collectable Zodiac cards (Sagitarius, Pisces, Capricorn) with unique persistent effects that trigger on specific poker hands. | Internal Mod |
+| Zodiac Cards | Adds a new set of collectable Zodiac cards (Sagitarius, Pisces, Aries, Capricorn) with unique persistent effects that trigger on specific poker hands. | Internal Mod |
 
 ## Secrets
 Certain seeds entered in **Sandbox Mode** trigger special effects:
