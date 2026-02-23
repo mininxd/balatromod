@@ -6,7 +6,7 @@
 ## Custom Jokers
 | Name | Description | Rarity |
 |------|-------------|--------|
-| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.1 Mult** and reduces current Mult by **50%**. | rare |
+| Aura Farming | Each scored played card gains **+1 Mult**. Each Boss Blind defeated gains **X0.25 Mult** and reduces current Mult by **50%**. | rare |
 | [Rugpull](https://www.reddit.com/r/balatro/s/pkmotZUy0G) | **+8** at the end of round, sets money to **$0** when sold. | uncommon |
 | [Zombie Joker](https://www.reddit.com/r/balatro/s/pkmotZUy0G) | Instead of losing, gives **+1 Hand** and adds **5** random cards to hand. Destroyed at end of round if triggered. | uncommon |
 | [Lithograph](https://www.reddit.com/r/balatro/s/pkmotZUy0G) | **Stone Cards** give **+6 Mult**. | common |
