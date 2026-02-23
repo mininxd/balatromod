@@ -17,6 +17,15 @@ return {
    discovered = false,
    config = {},
    },
+ z_aries = {
+   order = 3,
+   consumeable = false,
+   name = "Aries", 
+   pos = {x=2,y=0}, 
+   set = "Zodiac",
+   discovered = false,
+   config = {extra = {chips = 15}},
+   },
  z_capricorn = {
    order = 12,
    consumeable = false,

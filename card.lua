@@ -990,6 +990,7 @@ function Card:generate_UIBox_ability_table()
         end
     elseif self.ability.set == 'Zodiac' then
         if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, number_format(self.ability.extra.x_mult)} end
+        if self.ability.name == 'Aries' then loc_vars = {self.ability.extra.chips} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -2525,6 +2526,26 @@ function Card:calculate_joker(context)
                 end
             end
         end
+        if self.ability.name == 'Aries' or self.config.center.name == 'Aries' then
+            if context.before and (context.scoring_name == "Four of a Kind" or (context.poker_hands and next(context.poker_hands['Four of a Kind']))) then
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.CHIPS,
+                    card = self
+                }
+            end
+            if context.individual and context.cardarea == G.play then
+                if context.scoring_name == "Four of a Kind" or (context.poker_hands and next(context.poker_hands['Four of a Kind'])) then
+                    context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
+                    context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + self.ability.extra.chips
+                    return {
+                        extra = {message = "+" .. self.ability.extra.chips, colour = G.C.CHIPS},
+                        colour = G.C.CHIPS,
+                        card = self
+                    }
+                end
+            end
+        end
     end
     if self.ability.set == "Planet" and not self.debuff then
         if context.joker_main then
@@ -2544,10 +2565,14 @@ function Card:calculate_joker(context)
             }
         end
         if self.ability.name == 'Aura Farming' and context.joker_main then
+            if to_big(self.ability.mult) > to_big(0) then
+                card_eval_status_text(self, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult',vars={number_format(lenient_bignum(self.ability.mult))}}, colour = G.C.MULT})
+            end
             return {
                 mult_mod = self.ability.mult,
                 Xmult_mod = self.ability.x_mult,
-                message = localize{type='variable',key='a_mult',vars={number_format(lenient_bignum(self.ability.mult))}}
+                message = localize{type='variable',key='a_xmult',vars={number_format(lenient_bignum(self.ability.x_mult))}},
+                colour = G.C.XMULT
             }
         end
         if self.ability.name == 'President Joker' then
@@ -3361,8 +3386,8 @@ function Card:calculate_joker(context)
                     self.ability.mult = math.floor(self.ability.mult * 0.5)
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = "-" .. lost_mult .. " Aura", colour = G.C.RED})
                     return {
-                        message = "X0.25 Mult",
-                        colour = G.C.MULT
+                        message = "+X0.25",
+                        colour = G.C.XMULT
                     }
                 end
                 if self.ability.name == 'Rocket' and G.GAME.blind.boss then

@@ -2693,6 +2693,14 @@ return {
                 "is {C:orange}Royal Flush{}",
                 }
             },
+            z_aries={
+                name="Aries",
+                text={
+                "Played {C:attention}cards{} permanently",
+                "gain {C:blue}+#1#{} Chips if hand is",
+                "{C:attention}Four of a Kind{}",
+                },
+            },
             z_sagitarius = {
                 name = "Sagitarius",
                 text = {

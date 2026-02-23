@@ -719,6 +719,13 @@ function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_
                             table.insert(effects, eval)
                         end
                     end
+                    for k=1, #G.zodiacs.cards do
+                        --calculate the zodiac individual card effects
+                        local eval = G.zodiacs.cards[k]:calculate_joker({cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, disp_text = non_loc_disp_text, other_card = scoring_hand[i], individual = true})
+                        if eval then 
+                            table.insert(effects, eval)
+                        end
+                    end
                     scoring_hand[i].lucky_trigger = nil
 
                     for ii = 1, #effects do
