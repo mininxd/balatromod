@@ -1018,7 +1018,7 @@ function Controller:key_press_update(key, dt)
                     _card:set_sprites(_card.config.center)
                 end
                 if key == "3" then
-                    if _card.ability.set == 'Joker' and G.jokers and #G.jokers.cards < G.jokers.config.card_limit then
+                    if (_card.ability.set == 'Joker' or _card.ability.set == 'custom_joker') and G.jokers and #G.jokers.cards < G.jokers.config.card_limit then
                         add_joker(_card.config.center.key)
                         _card:set_sprites(_card.config.center)
                     end
@@ -1029,7 +1029,7 @@ function Controller:key_press_update(key, dt)
                 end
             end
             if key == 'q' then
-                if (_card.ability.set == 'Joker' or _card.playing_card or _card.area) then
+                if (_card.ability.set == 'Joker' or _card.ability.set == 'custom_joker' or _card.playing_card or _card.area) then
                     local _edition = {
                         foil = not _card.edition,
                         holo = _card.edition and _card.edition.foil,

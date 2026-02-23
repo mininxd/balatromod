@@ -63,7 +63,7 @@ JokerDisplay.config_tab = function()
     local config = {
         {
             n = G.UIT.R,
-            config = { padding = 0.2 },
+            config = { padding = 0.1 },
             nodes = {
                 {
                     n = G.UIT.C,
@@ -71,7 +71,7 @@ JokerDisplay.config_tab = function()
                     nodes = {
                         {
                             n = G.UIT.R,
-                            config = { padding = 0.01, align = "cr" },
+                            config = { padding = 0.05, align = "cr" },
                             nodes = {
                                 create_toggle({
                                     label = localize('jdis_hide_by_default'),
@@ -84,7 +84,7 @@ JokerDisplay.config_tab = function()
                         },
                         {
                             n = G.UIT.R,
-                            config = { padding = 0.01, align = "cr" },
+                            config = { padding = 0.05, align = "cr" },
                             nodes = {
                                 create_toggle({
                                     label = localize('jdis_hide_empty'),
@@ -103,7 +103,7 @@ JokerDisplay.config_tab = function()
                     nodes = {
                         {
                             n = G.UIT.R,
-                            config = { padding = 0.01, align = "cr" },
+                            config = { padding = 0.05, align = "cr" },
                             nodes = {
                                 create_toggle({
                                     label = localize('jdis_disable_collapse'),
@@ -116,7 +116,7 @@ JokerDisplay.config_tab = function()
                         },
                         {
                             n = G.UIT.R,
-                            config = { padding = 0.01, align = "cr" },
+                            config = { padding = 0.05, align = "cr" },
                             nodes = {
                                 create_toggle({
                                     label = localize('jdis_disable_perishable'),
@@ -129,7 +129,7 @@ JokerDisplay.config_tab = function()
                         },
                         {
                             n = G.UIT.R,
-                            config = { padding = 0.01, align = "cr" },
+                            config = { padding = 0.05, align = "cr" },
                             nodes = {
                                 create_toggle({
                                     label = localize('jdis_disable_rental'),
@@ -146,7 +146,7 @@ JokerDisplay.config_tab = function()
         },
         {
             n = G.UIT.R,
-            config = { padding = 0.2 },
+            config = { padding = 0.1 },
             nodes = {
                 {
                     n = G.UIT.C,
@@ -158,7 +158,7 @@ JokerDisplay.config_tab = function()
                             nodes = {
                                 {
                                     n = G.UIT.C,
-                                    config = { align = "cr", padding = 0.2 },
+                                    config = { align = "cr", padding = 0.1 },
                                     nodes = {
                                         {
                                             n = G.UIT.R,
@@ -213,7 +213,7 @@ JokerDisplay.config_tab = function()
                                 },
                                 {
                                     n = G.UIT.C,
-                                    config = { align = "cr", padding = 0.2 },
+                                    config = { align = "cr", padding = 0.1 },
                                     nodes = {
                                         {
                                             n = G.UIT.R,
@@ -278,20 +278,7 @@ JokerDisplay.config_tab = function()
         },
         {
             n = G.UIT.R,
-            config = { padding = 0.01, align = "cr" },
-            nodes = {
-                create_toggle({
-                    label = localize('jdis_shift_to_hide'),
-                    ref_table = JokerDisplay.config,
-                    ref_value =
-                    'shift_to_hide',
-                    callback = JokerDisplay.save_config
-                })
-            }
-        },
-        {
-            n = G.UIT.R,
-            config = { padding = 0.01, align = "cr" },
+            config = { padding = 0.2, align = "cr" },
             nodes = {
                 create_toggle({
                     label = localize('jdis_joker_count'),
@@ -311,11 +298,11 @@ JokerDisplay.config_tab = function()
         nodes = {
             {
                 n = G.UIT.R,
-                config = { r = 0.1, minw = 8, align = "tm", padding = 0.2, colour = G.C.CLEAR },
+                config = { r = 0.1, minw = 8, align = "tm", padding = 0.1, colour = G.C.CLEAR },
                 nodes = {
                     {
                         n = G.UIT.C,
-                        config = { r = 0.1, minw = 8, align = "tm", padding = 0.2, colour = G.C.BLACK },
+                        config = { r = 0.1, minw = 8, align = "tm", padding = 0.1, colour = G.C.BLACK },
                         nodes = config
                     },
                     {
@@ -325,7 +312,7 @@ JokerDisplay.config_tab = function()
                             r = 0.1,
                             minw = 6,
                             align = "tm",
-                            padding = 0.2,
+                            padding = 0.1,
                             colour = G.C.BLACK
                         },
                         nodes = modNodes

@@ -2408,7 +2408,7 @@ end
       table.insert(G.playing_cards, card)
       dont_dissolve = true
       delay_fac = 0.2
-    elseif card.ability.set == 'Joker' then 
+    elseif card.ability.set == 'Joker' or card.ability.set == 'custom_joker' then 
       card:add_to_deck()
       G.jokers:emplace(card)
       play_sound('card1', 0.8, 0.6)

@@ -2265,8 +2265,8 @@ return {
     },
     j_stuntman = { -- Stuntman
         text = {
-            { text = "+",                       colour = G.C.CHIPS },
-            { ref_table = "card.ability.extra", ref_value = "chip_mod", colour = G.C.CHIPS, retrigger_type = "mult" },
+            { text = "+" },
+            { ref_table = "card.ability.extra", ref_value = "chip_mod", retrigger_type = "mult" },
         },
         text_config = { colour = G.C.CHIPS },
     },
@@ -2496,7 +2496,7 @@ return {
     j_aura_farm = {
         text = {
             { text = "+" },
-            { ref_table = "card.ability", ref_value = "mult", retrigger_type = "add", colour = G.C.MULT },
+            { ref_table = "card.ability", ref_value = "mult", retrigger_type = "add" },
             { spacer = 0.4 },
             {
                 border_nodes = {
@@ -2505,6 +2505,7 @@ return {
                 }
             }
         },
+        text_config = { colour = G.C.MULT }
     },
     j_rugpull = {
         text = {
@@ -2529,16 +2530,115 @@ return {
         text_config = { colour = G.C.MULT }
     },
     j_boilerplate = {
-        text = {
-            {
-                border_nodes = {
-                    { text = "X" },
-                    { ref_table = "card.ability", ref_value = "extra" }
-                }
-            }
+        reminder_text = {
+            { text = "(" },
+            { ref_table = "card.joker_display_values", ref_value = "blueprint_compat", colour = G.C.RED },
+            { text = ")" }
         },
+        calc_function = function(card)
+            local left_joker = nil
+            local right_joker = nil
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    left_joker = G.jokers.cards[i - 1]
+                    right_joker = G.jokers.cards[i + 1]
+                    break
+                end
+            end
+            
+            local function is_compat(other)
+                if not other or other == card then return false end
+                if other.config.center.name == 'Blueprint' or other.config.center.name == 'Brainstorm' or 
+                   other.config.center.name == 'Boilerplate' or other.config.center.name == 'Crossing Wires' then
+                    return false
+                end
+                return other.config.center.blueprint_compat
+            end
+
+            local c1 = is_compat(left_joker)
+            local c2 = is_compat(right_joker)
+            
+            if c1 or c2 then
+                card.joker_display_values.blueprint_compat = ""
+                local target = c1 and left_joker or right_joker
+                JokerDisplay.copy_display(card, target, target and target.debuff)
+            else
+                card.joker_display_values.blueprint_compat = localize('k_incompatible')
+                JokerDisplay.copy_display(card, nil)
+            end
+        end,
+        get_blueprint_joker = function(card)
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    return G.jokers.cards[i - 1] or G.jokers.cards[i + 1]
+                end
+            end
+            return nil
+        end
     },
     j_crossing_wires = {
+        reminder_text = {
+            { text = "(" },
+            { ref_table = "card.joker_display_values", ref_value = "blueprint_compat", colour = G.C.RED },
+            { text = ")" }
+        },
+        calc_function = function(card)
+            local copied_joker, copied_debuff = JokerDisplay.calculate_blueprint_copy(card)
+            if copied_joker then
+                card.joker_display_values.blueprint_compat = ""
+            else
+                card.joker_display_values.blueprint_compat = localize('k_incompatible')
+            end
+            JokerDisplay.copy_display(card, copied_joker, copied_debuff)
+        end,
+        style_function = function(card, text, reminder_text, extra, copier)
+            if card.ability.name == 'Crossing Wires' then
+                local function perform_swap(cfg, field, swapped_field)
+                    local cur = cfg[field]
+                    if not cur then return end
+                    if cfg[swapped_field] and JokerDisplay.colors_equal(cfg[swapped_field], cur) then
+                        return
+                    end
+                    local new_col = nil
+                    if JokerDisplay.colors_equal(cur, G.C.MULT) or
+                        JokerDisplay.colors_equal(cur, G.C.XMULT) or
+                        JokerDisplay.colors_equal(cur, G.C.RED) then
+                        new_col = G.C.CHIPS
+                    elseif JokerDisplay.colors_equal(cur, G.C.CHIPS) or
+                        JokerDisplay.colors_equal(cur, G.C.BLUE) then
+                        new_col = G.C.MULT
+                    end
+                    if new_col then
+                        cfg[field] = new_col
+                        cfg[swapped_field] = new_col
+                    else
+                        cfg[swapped_field] = nil
+                    end
+                end
+                local function swap_node_colours(node)
+                    if not node then return end
+                    if node.config then
+                        perform_swap(node.config, 'colour', 'jdis_swapped_colour')
+                        perform_swap(node.config, 'border_colour', 'jdis_swapped_border')
+                    end
+                    if node.children then
+                        for _, child in ipairs(node.children) do
+                            swap_node_colours(child)
+                        end
+                    end
+                end
+                swap_node_colours(text)
+                swap_node_colours(extra)
+            end
+        end,
+        get_blueprint_joker = function(card)
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    return G.jokers.cards[i + 1]
+                end
+            end
+            return nil
+        end
     },
     j_president_joker = {
         text = {

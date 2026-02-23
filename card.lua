@@ -4306,7 +4306,7 @@ function Card:calculate_joker(context)
                         if self.ability.name == 'Abstract Joker' then
                             local x = 0
                             for i = 1, #G.jokers.cards do
-                                if G.jokers.cards[i].ability.set == 'Joker' then x = x + 1 end
+                                if G.jokers.cards[i].ability.set == 'Joker' or G.jokers.cards[i].ability.set == 'custom_joker' then x = x + 1 end
                             end
                             return {
                                 message = localize{type='variable',key='a_mult',vars={x*self.ability.extra}},
@@ -4798,7 +4798,7 @@ function Card:update(dt)
         if self.ability.name == 'Temperance' then
             self.ability.money = 0
             for i = 1, #G.jokers.cards do
-                if G.jokers.cards[i].ability.set == 'Joker' then
+                if G.jokers.cards[i].ability.set == 'Joker' or G.jokers.cards[i].ability.set == 'custom_joker' then
                     self.ability.money = self.ability.money + G.jokers.cards[i].sell_cost
                 end
             end

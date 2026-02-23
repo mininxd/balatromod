@@ -6,10 +6,6 @@ return {
 				text = {
 					"Displays useful information under Jokers",
 					" ",
-					"{C:attention}Controls:{}",
-					"{C:blue}Right-click or B:{} hide/show",
-					"{C:blue}Left-click or Up:{} collapse/expand",
-					" ",
 					"Special Thanks to {C:green}Eremel{} and {C:green}OppositeWolf770{}",
 					" ",
 					"Russian localization by: {C:green}WholeHorse{}",

@@ -456,26 +456,33 @@ G.FUNCS.joker_display_style_override = function(e)
 
         local is_blueprint_copying = card.joker_display_values and not card.joker_display_values.blueprint_stop_func and
             card.joker_display_values.blueprint_ability_key
-        local joker_display_definition = JokerDisplay.Definitions[is_blueprint_copying or card.config.center.key]
-        local style_function = joker_display_definition and joker_display_definition.style_function
+        
+        local function run_style(def_key, style_card, copier_card)
+            local joker_display_definition = JokerDisplay.Definitions[def_key]
+            local style_function = joker_display_definition and joker_display_definition.style_function
+            if style_function then
+                return style_function(style_card, text, reminder_text, extra, copier_card)
+            end
+        end
 
-        if style_function then
+        local recal1 = false
+        if is_blueprint_copying then
             local style_card = card
-            if is_blueprint_copying then
-                local copied = card.joker_display_values and card.joker_display_values.blueprint_ability_joker
-                if copied and copied.joker_display_values then
-                    style_card = copied
-                else
-                    style_card = nil
-                end
+            local copied = card.joker_display_values and card.joker_display_values.blueprint_ability_joker
+            if copied and copied.joker_display_values then
+                style_card = copied
+            else
+                style_card = nil
             end
-
             if style_card then
-                local recalculate = style_function(style_card, text, reminder_text, extra)
-            if recalculate then
-                JokerDisplayBox.recalculate(e.UIBox, true)
+                recal1 = run_style(is_blueprint_copying, style_card, card)
             end
-            end
+        end
+
+        local recal2 = run_style(card.config.center.key, card, nil)
+
+        if recal1 or recal2 then
+            JokerDisplayBox.recalculate(e.UIBox, true)
         end
     end
 end

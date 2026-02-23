@@ -2735,7 +2735,7 @@ function Game:start_run(args)
     self.zodiacs = CardArea(
         0, 0,
         G.CARD_W,
-        CAI.consumeable_H, 
+        1.1*CAI.consumeable_H, 
         {card_limit = self.GAME.starting_params.zodiac_slots, type = 'zodiac', highlight_limit = 1})
 
     self.jokers = CardArea(

@@ -30,7 +30,7 @@ function set_screen_positions()
         if G.zodiacs then
             if G.is_16_9 then
                 G.zodiacs.T.x = (G.deck and G.deck.T.x or 0) + ((G.deck and G.deck.T.w or 0) - G.zodiacs.T.w)/2
-                G.zodiacs.T.y = (G.deck and G.deck.T.y or 0) - G.zodiacs.T.h - 0.2
+                G.zodiacs.T.y = (G.deck and G.deck.T.y or 0) - G.zodiacs.T.h - 0.8
             else
                 G.zodiacs.T.x = (G.consumeables and G.consumeables.T.x or 0) + (G.consumeables and G.consumeables.T.w or 0) + 0.5
                 G.zodiacs.T.y = 0

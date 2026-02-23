@@ -469,11 +469,14 @@ JokerDisplay.create_display_object = function(card, display_config, defaults_con
     end
     if display_config.border_nodes then
         local inside_nodes = {}
+        local border_defaults = JokerDisplay.deepcopy(defaults_config or {})
+        border_defaults.colour = G.C.UI.TEXT_LIGHT
         for i = 1, #display_config.border_nodes do
             table.insert(inside_nodes,
-                JokerDisplay.create_display_object(card, display_config.border_nodes[i], defaults_config))
+                JokerDisplay.create_display_object(card, display_config.border_nodes[i], border_defaults))
         end
-        return JokerDisplay.create_display_border_text_object(inside_nodes, display_config.border_colour or G.C.XMULT)
+        local border_col = display_config.border_colour or G.C.XMULT
+        return JokerDisplay.create_display_border_text_object(inside_nodes, border_col)
     end
     if display_config.ref_value and display_config.ref_table then
         local table_path = JokerDisplay.strsplit(display_config.ref_table, ".")
@@ -517,10 +520,11 @@ end
 ---@return table
 JokerDisplay.create_display_text_object = function(config)
     local text_node = {}
+    local default_col = G.C.UI.TEXT_LIGHT
     if config.ref_table then
-        text_node = { n = G.UIT.T, config = { ref_table = config.ref_table, ref_value = config.ref_value, scale = config.scale or 0.4, colour = config.colour or G.C.UI.TEXT_LIGHT, font = G.FONTS[tonumber(config.font)], retrigger_type = config.retrigger_type } }
+        text_node = { n = G.UIT.T, config = { ref_table = config.ref_table, ref_value = config.ref_value, scale = config.scale or 0.4, colour = config.colour or default_col, font = G.FONTS[tonumber(config.font)], retrigger_type = config.retrigger_type } }
     else
-        text_node = { n = G.UIT.T, config = { text = config.text or "ERROR", scale = config.scale or 0.4, colour = config.colour or G.C.UI.TEXT_LIGHT, font = G.FONTS[tonumber(config.font)], retrigger_type = config.retrigger_type } }
+        text_node = { n = G.UIT.T, config = { text = config.text or "ERROR", scale = config.scale or 0.4, colour = config.colour or default_col, font = G.FONTS[tonumber(config.font)], retrigger_type = config.retrigger_type } }
     end
     return text_node
 end

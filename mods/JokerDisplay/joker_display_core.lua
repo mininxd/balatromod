@@ -182,3 +182,11 @@ function JokerDisplay.in_scoring(card, scoring_hand)
         if card == _card then return true end
     end
 end
+
+function JokerDisplay.colors_equal(c1, c2)
+    if type(c1) ~= 'table' or type(c2) ~= 'table' then return c1 == c2 end
+    local function close_enough(v1, v2)
+        return math.abs((v1 or 0) - (v2 or 0)) < 0.01
+    end
+    return close_enough(c1[1], c2[1]) and close_enough(c1[2], c2[2]) and close_enough(c1[3], c2[3])
+end
