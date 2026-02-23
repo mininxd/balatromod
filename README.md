@@ -11,6 +11,8 @@
 | Zombie Joker | Instead of losing, gives **+1 Hand** and adds **5** random cards to hand. Destroyed at end of round if triggered. | uncommon |
 | Lithograph | **Stone Cards** give **+6 Mult**. | common |
 | Boilerplate | Copies the effect of both adjacent **Jokers**, but with halved effects. | rare |
+| Crossing Wires | Copies the ability of the Joker to the right but swaps **Chip** and **Mult** modifiers. | rare |
+| President Joker | **X1 Mult**. When **Boss Blind** is selected, **Duplicate** this Joker. Each **Negative** duplicate adds **X0.5 Mult** to the **Original** President Joker. | rare |
 
 ## Custom Tags
 | Name        | Description | Type |
