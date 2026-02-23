@@ -759,10 +759,8 @@ G.CHALLENGES = {
         },
         jokers = {
         {id = "j_crossing_wires"},
-        {id = "j_joker"},
-        {id = "j_hanging_chad"},
-        {id = "j_photograph"},
-        {id = "j_bull"}
+        {id = "j_president_joker"},
+        {id = "j_stuntman"},
         },
         consumeables = {},
         zodiac = "z_pisces",

@@ -1935,6 +1935,26 @@ return {
                     "Not yet discovered",
                 },
             },
+            j_president_joker={
+              name="President Joker",
+              text= {
+               "{X:mult,C:white}X1{} Mult", 
+               "When {C:orange}Boss Blind{} is",
+               "selected, {C:orange}Duplicate{} this",
+               "Joker & that {C:orange}Duplicate{}",
+               "Joker gains {X:mult,C:white}X#1#{} Mult","{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
+            },
+            duplicate_text={
+                    "Adds {X:mult,C:white}X#1#{} Mult",
+                    "to {C:orange}President Joker"
+                    },
+            not_effective_text={
+                    "{C:red}Not effective"
+                    },
+            unlock={
+                    "Not yet discovered",
+                },
+            },
             j_super_joker={
                 name="Super Joker",
                 text={

@@ -971,6 +971,22 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Rugpull' then loc_vars = {self.ability.dollars}
         elseif self.ability.name == 'Zombie Joker' then loc_vars = {self.ability.hand, self.ability.card}
         elseif self.ability.name == 'Lithograph' then loc_vars = {self.ability.mult}
+        elseif self.ability.name == 'President Joker' then 
+            local count = 0
+            local has_original = false
+            if G.jokers and G.jokers.cards then
+                for k, v in ipairs(G.jokers.cards) do
+                    if v.ability.name == 'President Joker' then
+                        if v.edition and v.edition.negative then 
+                            count = count + 1
+                        else
+                            has_original = true
+                        end
+                    end
+                end
+            end
+            local current_xmult = 1 + count * (self.ability.extra.mult_gain or 0.5)
+            loc_vars = {self.ability.extra.mult_gain, current_xmult, has_original}
         end
     elseif self.ability.set == 'Zodiac' then
         if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, number_format(self.ability.extra.x_mult)} end
@@ -998,6 +1014,32 @@ function Card:generate_UIBox_ability_table()
     if self.ability.rental then badges[#badges + 1] = 'rental' end
     if self.pinned then badges[#badges + 1] = 'pinned_left' end
     if self.sticker or ((self.sticker_run and self.sticker_run~='NONE') and G.SETTINGS.run_stake_stickers)  then loc_vars = loc_vars or {}; loc_vars.sticker=(self.sticker or self.sticker_run) end
+
+    if self.ability.name == 'President Joker' and self.edition and self.edition.negative then
+        local loc = G.localization.descriptions.custom_joker and G.localization.descriptions.custom_joker.j_president_joker
+        if loc then
+            local has_original = loc_vars and loc_vars[3]
+            local target_text = has_original and loc.duplicate_text or loc.not_effective_text
+            local target_parsed_key = has_original and 'duplicate_text_parsed' or 'not_effective_text_parsed'
+
+            if target_text then
+                local old_text = loc.text
+                local old_parsed = loc.text_parsed
+                loc.text = target_text
+                if not loc[target_parsed_key] then
+                    loc[target_parsed_key] = {}
+                    for _, line in ipairs(target_text) do
+                        loc[target_parsed_key][#loc[target_parsed_key]+1] = loc_parse_string(line)
+                    end
+                end
+                loc.text_parsed = loc[target_parsed_key]
+                local ret = generate_card_ui(self.config.center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end)
+                loc.text = old_text
+                loc.text_parsed = old_parsed
+                return ret
+            end
+        end
+    end
 
     return generate_card_ui(self.config.center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end)
 end
@@ -2507,6 +2549,43 @@ function Card:calculate_joker(context)
                 Xmult_mod = self.ability.x_mult,
                 message = localize{type='variable',key='a_mult',vars={number_format(lenient_bignum(self.ability.mult))}}
             }
+        end
+        if self.ability.name == 'President Joker' then
+            if context.joker_main then
+                if not (self.edition and self.edition.negative) then
+                    local count = 0
+                    for k, v in ipairs(G.jokers.cards) do
+                        if v.ability.name == 'President Joker' and v.edition and v.edition.negative then 
+                            count = count + 1
+                        end
+                    end
+                    local total_xmult = 1 + count * (self.ability.extra.mult_gain or 0.5)
+                    return {
+                        message = localize{type='variable',key='a_xmult',vars={number_format(total_xmult)}},
+                        Xmult_mod = total_xmult
+                    }
+                else
+                    return nil
+                end
+            end
+            if context.setting_blind and context.blind.boss and not self.getting_sliced and not context.blueprint then
+                if not (self.edition and self.edition.negative) then
+                    G.GAME.joker_buffer = G.GAME.joker_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                                                    local card = copy_card(self, nil, nil, nil, true)
+                                                    card:set_edition({negative = true}, true)
+                                                    card:set_cost()
+                                                    card.sell_cost = 0
+                                                    card.ability.x_mult = (card.ability.x_mult or 1) + self.ability.extra.mult_gain
+                                                    card:add_to_deck()                            G.jokers:emplace(card)
+                            G.GAME.joker_buffer = 0
+                            return true
+                        end
+                    }))
+                    card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
+                end
+            end
         end
         if self.ability.name == "Blueprint" then
             local other_joker = nil

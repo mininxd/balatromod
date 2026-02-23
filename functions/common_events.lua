@@ -2299,7 +2299,13 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         local _pool, _pool_key = get_current_pool(_type, _rarity, legendary, key_append)
         center = pseudorandom_element(_pool, pseudoseed(_pool_key))
         local it = 1
-        while center == 'UNAVAILABLE' do
+        local has_negative_tag = false
+        if G.GAME and G.GAME.tags then
+            for _, v in ipairs(G.GAME.tags) do
+                if v.key == 'tag_negative' then has_negative_tag = true; break end
+            end
+        end
+        while center == 'UNAVAILABLE' or (has_negative_tag and center == 'j_president_joker') do
             it = it + 1
             center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
         end
@@ -2333,6 +2339,9 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         end
 
         local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)
+        if center.name == 'President Joker' and edition and edition.negative then
+            edition = nil
+        end
         card:set_edition(edition)
         check_for_unlock({type = 'have_edition'})
     end
