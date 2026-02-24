@@ -45,16 +45,16 @@ function Card:initialize_joker_display(custom_parent, stop_calc)
     end
 
     if not custom_parent then
-        self.children.joker_display:remove_text()
-        self.children.joker_display_small:remove_text()
-        self.children.joker_display:remove_reminder_text()
-        self.children.joker_display_small:remove_reminder_text()
-        self.children.joker_display:remove_extra()
-        self.children.joker_display_small:remove_extra()
-        self.children.joker_display:remove_modifiers()
-        self.children.joker_display_small:remove_modifiers()
-        self.children.joker_display_debuff:remove_modifiers()
-        self.children.joker_display_debuff:remove_text()
+        self.children.joker_display:remove_text(true)
+        self.children.joker_display_small:remove_text(true)
+        self.children.joker_display:remove_reminder_text(true)
+        self.children.joker_display_small:remove_reminder_text(true)
+        self.children.joker_display:remove_extra(true)
+        self.children.joker_display_small:remove_extra(true)
+        self.children.joker_display:remove_modifiers(true)
+        self.children.joker_display_small:remove_modifiers(true)
+        self.children.joker_display_debuff:remove_modifiers(true)
+        self.children.joker_display_debuff:remove_text(true)
 
         self.children.joker_display_debuff:add_text(
             replace_debuff_text or { { text = "" .. localize("k_debuffed"), colour = G.C.UI.TEXT_INACTIVE } },
@@ -69,11 +69,11 @@ function Card:initialize_joker_display(custom_parent, stop_calc)
         self.children.joker_display_small.stop_modifiers = false
         self.children.joker_display_debuff.stop_modifiers = false
     end
-    self.children.joker_display_debuff:remove_reminder_text()
+    self.children.joker_display_debuff:remove_reminder_text(true)
     if replace_debuff_reminder then
         self.children.joker_display_debuff:add_reminder_text(replace_debuff_reminder, replace_debuff_reminder_config)
     end
-    self.children.joker_display_debuff:remove_extra()
+    self.children.joker_display_debuff:remove_extra(true)
     if replace_debuff_extra then
         self.children.joker_display_debuff:add_extra(replace_debuff_extra, replace_debuff_extra_config)
     end
@@ -230,8 +230,8 @@ end
 ---@param _from string? Debug string
 function Card:update_joker_display(force_update, force_reload, _from)
     if self.ability then
-        --print(tostring(self.ability.name) .. " : " .. tostring(_from))
         if not self.children.joker_display then
+            if not JokerDisplay.config.enabled and not force_update then return end
             self.joker_display_values = {}
             self.joker_display_values.disabled = JokerDisplay.config.hide_by_default or false
             self.joker_display_values.small = false
@@ -324,7 +324,11 @@ function Card:update_joker_display(force_update, force_reload, _from)
                 self.children.joker_display_rental.name = "JokerDisplay"
             end
         else
-            if force_update or (JokerDisplay.config.enabled and (not self.joker_display_values.disabled or self.joker_display_values.blueprint_force_update)) then
+            if not JokerDisplay.config.enabled and not force_update then
+                self:joker_display_remove()
+                return
+            end
+            if force_update or (not self.joker_display_values.disabled or self.joker_display_values.blueprint_force_update) then
                 if force_reload then
                     self:initialize_joker_display()
                 else
@@ -390,8 +394,9 @@ G.FUNCS.joker_display_disable = function(e)
         e.states.visible = false
         e.parent.states.collide.can = false
     else
-        e.states.visible = JokerDisplay.config.enabled and not card.joker_display_values.disabled
-        e.parent.states.collide.can = JokerDisplay.config.enabled and not card.joker_display_values.disabled
+        local is_visible = (JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)) and not card.joker_display_values.disabled
+        e.states.visible = is_visible
+        e.parent.states.collide.can = is_visible
     end
 end
 
@@ -402,8 +407,9 @@ G.FUNCS.joker_display_small_enable = function(e)
         e.states.visible = false
         e.parent.states.collide.can = false
     else
-        e.states.visible = JokerDisplay.config.enabled and not card.joker_display_values.disabled
-        e.parent.states.collide.can = JokerDisplay.config.enabled and not card.joker_display_values.disabled
+        local is_visible = (JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)) and not card.joker_display_values.disabled
+        e.states.visible = is_visible
+        e.parent.states.collide.can = is_visible
     end
 end
 
@@ -411,8 +417,9 @@ end
 G.FUNCS.joker_display_debuff = function(e)
     local card = e.config.ref_table
     if not (card.facing == 'back') and card.debuff then
-        e.states.visible = JokerDisplay.config.enabled and not card.joker_display_values.disabled
-        e.parent.states.collide.can = JokerDisplay.config.enabled and not card.joker_display_values.disabled
+        local is_visible = (JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)) and not card.joker_display_values.disabled
+        e.states.visible = is_visible
+        e.parent.states.collide.can = is_visible
     else
         e.states.visible = false
         e.parent.states.collide.can = false
@@ -422,10 +429,10 @@ end
 G.FUNCS.joker_display_perishable = function(e)
     local card = e.config.ref_table
     if not (card.facing == 'back') and card.ability.perishable then
-        e.states.visible = JokerDisplay.config.enabled and not card.joker_display_values.disabled and
+        local is_visible = (JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)) and not card.joker_display_values.disabled and
             not JokerDisplay.config.disable_perishable
-        e.parent.states.collide.can = JokerDisplay.config.enabled and not card.joker_display_values.disabled and
-            not JokerDisplay.config.disable_perishable
+        e.states.visible = is_visible
+        e.parent.states.collide.can = is_visible
     else
         e.states.visible = false
         e.parent.states.collide.can = false
@@ -435,10 +442,10 @@ end
 G.FUNCS.joker_display_rental = function(e)
     local card = e.config.ref_table
     if not (card.facing == 'back') and card.ability.rental then
-        e.states.visible = JokerDisplay.config.enabled and not card.joker_display_values.disabled and
+        local is_visible = (JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)) and not card.joker_display_values.disabled and
             not JokerDisplay.config.disable_rental
-        e.parent.states.collide.can = JokerDisplay.config.enabled and not card.joker_display_values.disabled and
-            not JokerDisplay.config.disable_rental
+        e.states.visible = is_visible
+        e.parent.states.collide.can = is_visible
     else
         e.states.visible = false
         e.parent.states.collide.can = false
@@ -449,7 +456,8 @@ end
 ---@param e table
 G.FUNCS.joker_display_style_override = function(e)
     local card = e.config.ref_table
-    if JokerDisplay.config.enabled and (card.joker_display_values and not card.joker_display_values.disabled) then
+    local is_enabled = JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)
+    if is_enabled and (card.joker_display_values and not card.joker_display_values.disabled) then
         local text = e.children and e.children[3] or nil
         local reminder_text = e.children and e.children[4] or nil
         local extra = e.children and e.children[2] or nil
@@ -492,13 +500,25 @@ end
 local card_update_ref = Card.update
 function Card:update(dt)
     card_update_ref(self, dt)
-    if JokerDisplay.config.enabled and G.jokers then
+    if G.jokers then
+        if not JokerDisplay.config.enabled then
+            if self.children.joker_display then
+                self:update_joker_display()
+            end
+            return
+        end
+        if self.joker_display_values and self.joker_display_values.disabled then return end
+
         local is_display_area = false
         if self.area then
-            for _, area in ipairs(JokerDisplay.get_display_areas()) do
-                if self.area == area then
-                    is_display_area = true
-                    break
+            if self.area == G.jokers then
+                is_display_area = true
+            else
+                for _, area in ipairs(JokerDisplay.get_display_areas()) do
+                    if self.area == area then
+                        is_display_area = true
+                        break
+                    end
                 end
             end
         end
@@ -560,6 +580,18 @@ end
 ---@see JokerDisplay.evaluate_hand
 JokerDisplay.get_scoring_hand = function()
     if G.in_delete_run then return end
+    if not JokerDisplay.config.enabled then return end
+
+    local any_active = false
+    if G.jokers and G.jokers.cards then
+        for _, card in ipairs(G.jokers.cards) do
+             if card.joker_display_values and not card.joker_display_values.disabled then
+                 any_active = true
+                 break
+             end
+        end
+    end
+    if not any_active then return end
 
     local count_facedowns = false
     if G.STATE ~= G.STATES.HAND_PLAYED then
@@ -582,7 +614,7 @@ end
 local cardarea_parse_highlighted_ref = CardArea.parse_highlighted
 function CardArea:parse_highlighted()
     cardarea_parse_highlighted_ref(self)
-    if G.hand then
+    if G.hand and JokerDisplay.config.enabled then
         JokerDisplay.get_scoring_hand()
     end
 end
@@ -590,7 +622,7 @@ end
 local draw_card_ref = draw_card
 function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
     draw_card_ref(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
-    if from and (from == G.play or from == G.discard or from == G.deck or (from == G.hand and to ~= G.play)) then
+    if from and (from == G.play or from == G.discard or from == G.deck or (from == G.hand and to ~= G.play)) and JokerDisplay.config.enabled then
         JokerDisplay.get_scoring_hand()
     end
 end
@@ -598,7 +630,7 @@ end
 local card_remove_ref = Card.remove
 function Card:remove()
     card_remove_ref(self)
-    if G.hand then
+    if G.hand and JokerDisplay.config.enabled then
         JokerDisplay.get_scoring_hand()
     end
 end
@@ -606,7 +638,7 @@ end
 local card_release_ref = Node.stop_drag
 function Node:stop_drag()
     card_release_ref(self)
-    if self.area and self.area == G.hand then
+    if self.area and self.area == G.hand and JokerDisplay.config.enabled then
         JokerDisplay.get_scoring_hand()
     end
 end

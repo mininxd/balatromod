@@ -98,11 +98,15 @@ function JokerDisplay.number_format(num, e_switch_point, places)
     return sign .. (formatted:reverse():gsub("(%d%d%d)", "%1,"):gsub(",$", ""):reverse())
 end
 
+local display_areas = {}
 ---Get all areas available for JokerDisplay \
 ---Hook to add more areas
 ---@return table
 function JokerDisplay.get_display_areas()
-    return { G.jokers }
+    if display_areas[1] ~= G.jokers then
+        display_areas[1] = G.jokers
+    end
+    return display_areas
 end
 
 ---Checks if a value is in a table.

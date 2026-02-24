@@ -1109,10 +1109,10 @@ function add_round_eval_row(config)
                     table.insert(left_text, {n=G.UIT.O, config={w=0.7,h=0.7 , object = blind_sprite, hover = true, can_collide = false}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {config.condition}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})                   
                 elseif config.name == 'hands' then
-                    table.insert(left_text, {n=G.UIT.T, config={text = config.disp or config.dollars, scale = 0.8*scale, colour = G.C.BLUE, shadow = true, juice = true}})
+                    table.insert(left_text, {n=G.UIT.T, config={text = config.disp or number_format(config.dollars or 0), scale = 0.8*scale, colour = G.C.BLUE, shadow = true, juice = true}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'remaining_hand_money', vars = {G.GAME.modifiers.money_per_hand or 1}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
                 elseif config.name == 'discards' then
-                    table.insert(left_text, {n=G.UIT.T, config={text = config.disp or config.dollars, scale = 0.8*scale, colour = G.C.RED, shadow = true, juice = true}})
+                    table.insert(left_text, {n=G.UIT.T, config={text = config.disp or number_format(config.dollars or 0), scale = 0.8*scale, colour = G.C.RED, shadow = true, juice = true}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'remaining_discard_money', vars = {G.GAME.modifiers.money_per_discard or 0}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
                 elseif string.find(config.name, 'joker') then
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = localize{type = 'name_text', set = config.card.config.center.set, key = config.card.config.center.key}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.6*scale, silent = true})}})
@@ -1188,7 +1188,7 @@ function add_round_eval_row(config)
                     definition = {n=G.UIT.ROOT, config={align = 'cm', colour = G.C.CLEAR}, nodes={
                         {n=G.UIT.R, config={id = 'cash_out_button', align = "cm", padding = 0.1, minw = 7, r = 0.15, colour = G.C.ORANGE, shadow = true, hover = true, one_press = true, button = 'cash_out', focus_args = {snap_to = true}}, nodes={
                             {n=G.UIT.T, config={text = localize('b_cash_out')..": ", scale = 1, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
-                            {n=G.UIT.T, config={text = localize('$')..config.dollars, scale = 1.2*scale, colour = G.C.WHITE, shadow = true, juice = true}}
+                            {n=G.UIT.T, config={text = localize('$')..number_format(config.dollars or 0), scale = 1.2*scale, colour = G.C.WHITE, shadow = true, juice = true}}
                     }},}},
                     config = {
                       align = 'tmi',
@@ -1202,7 +1202,7 @@ function add_round_eval_row(config)
                 --}}
                 --G.round_eval:add_child(left_text,G.round_eval:get_UIE_by_ID('eval_bottom'))
 
-                G.GAME.current_round.dollars = config.dollars
+                G.GAME.current_round.dollars = config.dollars or 0
                 
                 play_sound('coin6', config.pitch or 1)
                 G.VIBRATION = G.VIBRATION + 1

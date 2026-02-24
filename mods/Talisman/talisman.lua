@@ -93,7 +93,7 @@ Talisman.config_tab = function()
                 callback = function(_set_toggle)
 	                love.filesystem.write(talisman_path .. "/config.lua", STR_PACK(Talisman.config_file))
                 end}),
-                create_option_cycle({
+             --[[   create_option_cycle({
                   label = localize("talisman_string_C"),
                   scale = 0.8,
                   w = 6,
@@ -101,6 +101,7 @@ Talisman.config_tab = function()
                   opt_callback = 'talisman_upd_score_opt',
                   current_option = Talisman.config_file.score_opt_id,
                 }),
+                ]]--
                 create_option_cycle({
                   label = localize("talisman_notation"),
                   scale = 0.8,
@@ -958,7 +959,7 @@ function G.FUNCS.evaluate_round()
       add_round_eval_row = function() return end
       local dollars = gfer()
       add_round_eval_row = arer
-      add_round_eval_row({name = 'bottom', dollars = Talisman.dollars})
+      add_round_eval_row({name = 'bottom', dollars = Talisman.dollars or 0})
     else
         return gfer()
     end

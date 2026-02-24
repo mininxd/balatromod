@@ -22,8 +22,10 @@ JokerDisplay.config_tab = function()
     card:set_perishable(true)
     card:set_rental(true)
     G.config_card_area:emplace(card)
-    G.config_card_area.cards[1]:update_joker_display()
-    G.config_card_area.cards[1].joker_display_values.disabled = false
+    G.config_card_area.cards[1]:update_joker_display(true)
+    if G.config_card_area.cards[1].joker_display_values then
+        G.config_card_area.cards[1].joker_display_values.disabled = false
+    end
 
     local modNodes = {}
 
@@ -63,25 +65,13 @@ JokerDisplay.config_tab = function()
     local config = {
         {
             n = G.UIT.R,
-            config = { padding = 0.1 },
+            config = { padding = 0.1, align = "cr" },
             nodes = {
+                { n = G.UIT.C, config = { minw = 1.5 } },
                 {
                     n = G.UIT.C,
-                    config = { align = "cm" },
+                    config = { align = "cr" },
                     nodes = {
-                        {
-                            n = G.UIT.R,
-                            config = { padding = 0.05, align = "cr" },
-                            nodes = {
-                                create_toggle({
-                                    label = localize('jdis_hide_by_default'),
-                                    ref_table = JokerDisplay.config,
-                                    ref_value =
-                                    'hide_by_default',
-                                    callback = JokerDisplay.save_config
-                                })
-                            }
-                        },
                         {
                             n = G.UIT.R,
                             config = { padding = 0.05, align = "cr" },
@@ -99,7 +89,7 @@ JokerDisplay.config_tab = function()
                 },
                 {
                     n = G.UIT.C,
-                    config = { align = "cm" },
+                    config = { align = "cr" },
                     nodes = {
                         {
                             n = G.UIT.R,
@@ -146,30 +136,21 @@ JokerDisplay.config_tab = function()
         },
         {
             n = G.UIT.R,
-            config = { padding = 0.1 },
+            config = { padding = 0.1, align = "cr" },
             nodes = {
+                { n = G.UIT.C, config = { minw = 3 } }, -- Spacer to push to the right
                 {
                     n = G.UIT.C,
-                    config = { align = "cm" },
+                    config = { align = "cr" },
                     nodes = {
                         {
                             n = G.UIT.R,
-                            config = { align = "cm" },
+                            config = { align = "cr" },
                             nodes = {
                                 {
                                     n = G.UIT.C,
                                     config = { align = "cr", padding = 0.1 },
                                     nodes = {
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "cm" },
-                                            nodes = {
-                                                {
-                                                    n = G.UIT.T,
-                                                    config = { text = localize('jdis_default_display'), colour = G.C.UI.TEXT_LIGHT, scale = 0.5, align = "cr" }
-                                                },
-                                            }
-                                        },
                                         {
                                             n = G.UIT.R,
                                             config = { align = "cr" },
@@ -211,58 +192,6 @@ JokerDisplay.config_tab = function()
                                         },
                                     }
                                 },
-                                {
-                                    n = G.UIT.C,
-                                    config = { align = "cr", padding = 0.1 },
-                                    nodes = {
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "cm" },
-                                            nodes = {
-                                                { n = G.UIT.T, config = { text = localize('jdis_small_display'), colour = G.C.UI.TEXT_LIGHT, scale = 0.5, align = "cr" } },
-                                            }
-                                        },
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "cr" },
-                                            nodes = {
-                                                create_toggle({
-                                                    label = localize('jdis_modifiers'),
-                                                    ref_table = JokerDisplay.config.small_rows,
-                                                    callback = update_display,
-                                                    ref_value = 'modifiers',
-                                                    w = 2
-                                                }),
-                                            }
-                                        },
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "cr" },
-                                            nodes = {
-                                                create_toggle({
-                                                    label = localize('jdis_reminders'),
-                                                    ref_table = JokerDisplay.config.small_rows,
-                                                    callback = update_display,
-                                                    ref_value = 'reminder',
-                                                    w = 2
-                                                }),
-                                            }
-                                        },
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "cr" },
-                                            nodes = {
-                                                create_toggle({
-                                                    label = localize('jdis_extras'),
-                                                    ref_table = JokerDisplay.config.small_rows,
-                                                    callback = update_display,
-                                                    ref_value = 'extra',
-                                                    w = 2
-                                                })
-                                            }
-                                        },
-                                    }
-                                }
                             }
                         }
                     }
@@ -278,7 +207,7 @@ JokerDisplay.config_tab = function()
         },
         {
             n = G.UIT.R,
-            config = { padding = 0.2, align = "cr" },
+            config = { padding = 0.35, align = "cr" },
             nodes = {
                 create_toggle({
                     label = localize('jdis_joker_count'),
@@ -302,7 +231,7 @@ JokerDisplay.config_tab = function()
                 nodes = {
                     {
                         n = G.UIT.C,
-                        config = { r = 0.1, minw = 8, align = "tm", padding = 0.1, colour = G.C.BLACK },
+                        config = { r = 0.1, minw = 8, align = "tr", padding = 0.1, colour = G.C.BLACK },
                         nodes = config
                     },
                     {
@@ -311,7 +240,7 @@ JokerDisplay.config_tab = function()
                             minh = 6,
                             r = 0.1,
                             minw = 6,
-                            align = "tm",
+                            align = "tl",
                             padding = 0.1,
                             colour = G.C.BLACK
                         },
@@ -327,7 +256,7 @@ end
 function update_display()
     JokerDisplay.save_config()
 
-    G.config_card_area.cards[1]:update_joker_display(false, true, "config_update")
+    G.config_card_area.cards[1]:update_joker_display(true, true, "config_update")
     if G.jokers then
         for _, area in ipairs(JokerDisplay.get_display_areas()) do
             for _, joker in pairs(area.cards) do

@@ -4,6 +4,7 @@
 local controller_queue_L_cursor_press_ref = Controller.queue_L_cursor_press
 function Controller:queue_L_cursor_press(x, y)
     controller_queue_L_cursor_press_ref(self, x, y)
+    if not JokerDisplay.config.enabled then return end
     local press_node = self.hovering.target or self.focused.target
     if press_node and press_node.name and press_node.name == "JokerDisplay" and press_node.can_collapse and press_node.parent then
         if not JokerDisplay.config.disable_collapse and not press_node.parent.joker_display_values.disabled then
@@ -16,6 +17,7 @@ end
 local controller_queue_R_cursor_press_ref = Controller.queue_R_cursor_press
 function Controller:queue_R_cursor_press(x, y)
     controller_queue_R_cursor_press_ref(self, x, y)
+    if not JokerDisplay.config.enabled then return end
     local press_node = self.hovering.target or self.focused.target
     if not JokerDisplay.config.shift_to_hide or love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
         if not G.SETTINGS.paused then
@@ -51,7 +53,7 @@ local controller_button_press_update_ref = Controller.button_press_update
 function Controller:button_press_update(button, dt)
     controller_button_press_update_ref(self, button, dt)
 
-    if G.jokers then
+    if JokerDisplay.config.enabled and G.jokers then
         local press_node = self.hovering.target or self.focused.target
         local is_display_area = false
         if press_node and press_node.area then

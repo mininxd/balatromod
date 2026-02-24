@@ -79,13 +79,13 @@ end
 function JokerDisplayBox:recalculate(from_update)
     if not from_update then return end
     if not (self.has_text or self.has_extra or self.has_modifiers) and self.has_reminder_text then
-        self.text.config.minh = 0.4
+        self.text.config.minh = 0.3
     else
         self.text.config.minh = nil
     end
 
     if self.has_text then
-        self.text.config.padding = 0.03
+        self.text.config.padding = 0.025
     else
         self.text.config.padding = nil
     end
@@ -106,15 +106,15 @@ function JokerDisplayBox:add_text(nodes, config, custom_parent)
     for i = 1, #nodes do
         local display_object = JokerDisplay.create_display_object(custom_parent or self.parent, nodes[i], config)
         if display_object then
-            self:add_child(display_object, self.text)
+            self:add_child(display_object, self.text, i < #nodes)
         end
     end
     self.has_text = #self.text.children > 0
 end
 
-function JokerDisplayBox:remove_text()
+function JokerDisplayBox:remove_text(skip_recalculate)
     self.has_text = false
-    self:remove_children(self.text)
+    self:remove_children(self.text, skip_recalculate)
 end
 
 function JokerDisplayBox:add_reminder_text(nodes, config, custom_parent)
@@ -122,15 +122,15 @@ function JokerDisplayBox:add_reminder_text(nodes, config, custom_parent)
         local display_object = JokerDisplay.create_display_object(custom_parent or self.parent, nodes[i], config)
 
         if display_object then
-            self:add_child(display_object, self.reminder_text)
+            self:add_child(display_object, self.reminder_text, i < #nodes)
         end
     end
     self.has_reminder_text = #self.reminder_text.children > 0
 end
 
-function JokerDisplayBox:remove_reminder_text()
+function JokerDisplayBox:remove_reminder_text(skip_recalculate)
     self.has_reminder_text = false
-    self:remove_children(self.reminder_text)
+    self:remove_children(self.reminder_text, skip_recalculate)
 end
 
 function JokerDisplayBox:add_extra(node_rows, config, custom_parent)
@@ -150,15 +150,15 @@ function JokerDisplayBox:add_extra(node_rows, config, custom_parent)
                 config = { ref_table = custom_parent or self.parent, align = "cm", padding = 0.03 },
                 nodes = row_nodes
             }
-            self:add_child(extra_row, self.extra)
+            self:add_child(extra_row, self.extra, i > 1)
         end
     end
     self.has_extra = #self.extra.children > 0
 end
 
-function JokerDisplayBox:remove_extra()
+function JokerDisplayBox:remove_extra(skip_recalculate)
     self.has_extra = false
-    self:remove_children(self.extra)
+    self:remove_children(self.extra, skip_recalculate)
 end
 
 function JokerDisplayBox:change_modifiers(modifiers, reset)
@@ -186,9 +186,11 @@ function JokerDisplayBox:change_modifiers(modifiers, reset)
     end
 
     if modifiers_changed then
-        self:remove_modifiers()
+        self:remove_modifiers(true) -- Skip recalculate
         if has_modifiers then
             self:add_modifiers()
+        else
+            self:recalculate(true) -- Recalculate now since add_modifiers won't be called
         end
     end
 end
@@ -287,27 +289,27 @@ function JokerDisplayBox:add_modifiers()
             config = { ref_table = self.parent, align = "cm", padding = 0.03 },
             nodes = mod_rows[i]
         }
-        self:add_child(extra_row, self.modifier_row)
+        self:add_child(extra_row, self.modifier_row, i < #mod_rows)
     end
 end
 
-function JokerDisplayBox:remove_modifiers()
+function JokerDisplayBox:remove_modifiers(skip_recalculate)
     self.has_modifiers = false
-    self:remove_children(self.modifier_row)
+    self:remove_children(self.modifier_row, skip_recalculate)
 end
 
-function JokerDisplayBox:remove_children(node)
+function JokerDisplayBox:remove_children(node, skip_recalculate)
     if not node.children then
         return
     end
     remove_all(node.children)
     node.children = {}
-    self:recalculate(true)
+    if not skip_recalculate then self:recalculate(true) end
 end
 
-function JokerDisplayBox:add_child(node, parent)
+function JokerDisplayBox:add_child(node, parent, skip_recalculate)
     UIBox.add_child(self, node, parent)
-    self:recalculate(true)
+    if not skip_recalculate then self:recalculate(true) end
 end
 
 function JokerDisplayBox:has_info()
@@ -331,7 +333,8 @@ function UIElement:update_text()
             self.config.text_drawable = love.graphics.newText(self.config.lang.font.FONT, { G.C.WHITE, self.config.text })
         end
         local card = self.UIBox.parent
-        if JokerDisplay.config.enabled and (card.joker_display_values and not card.joker_display_values.disabled) and self.config.ref_table then
+        local is_enabled = JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)
+        if is_enabled and (card.joker_display_values and not card.joker_display_values.disabled) and self.config.ref_table then
             local formatted_text = JokerDisplay.text_format(self.config.ref_table[self.config.ref_value], self)
             local prev_value = self.config.prev_value_joker_display or
                 JokerDisplay.text_format(self.config.prev_value, self)
@@ -365,7 +368,8 @@ function JokerDisplayBox:calculate_xywh(node, _T, recalculate, _scale)
         node.config.text_drawable = nil
         local scale = node.config.scale or 1
         local card = self.parent
-        if ((JokerDisplay.config.enabled and card.joker_display_values and not card.joker_display_values.disabled) or not node.config.text) and node.config.ref_table and node.config.ref_value then
+        local is_enabled = JokerDisplay.config.enabled or (G.config_card_area and card.area == G.config_card_area)
+        if ((is_enabled and card.joker_display_values and not card.joker_display_values.disabled) or not node.config.text) and node.config.ref_table and node.config.ref_value then
             node.config.text = JokerDisplay.text_format(node.config.ref_table[node.config.ref_value], node)
             if node.config.func and not recalculate then G.FUNCS[node.config.func](node) end
         end
@@ -544,7 +548,7 @@ end
 -- Joker slot count over display
 local cardarea_draw_ref = CardArea.draw
 function CardArea:draw(...)
-    if self == G.jokers and JokerDisplay and JokerDisplay.config and JokerDisplay.config.joker_count and not G.OVERLAY_MENU then
+    if self == G.jokers and JokerDisplay and JokerDisplay.config and JokerDisplay.config.enabled and JokerDisplay.config.joker_count and not G.OVERLAY_MENU then
         -- Skip vanilla label draw
         if self.children and self.children.area_uibox then
             self.children.area_uibox.FRAME.DRAW = G.FRAMES.DRAW
