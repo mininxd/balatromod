@@ -87,13 +87,15 @@ local function getlocs(key_array)
 end
 
 Talisman.config_tab = function()
-                tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
-                  {n=G.UIT.O, config={object = DynaText({string = localize("talisman_string_A"), colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-                }},create_toggle({label = localize("talisman_string_B"), ref_table = Talisman.config_file, ref_value = "disable_anims",
+                tal_nodes = {{n=G.UIT.R, config={align = "cr"}, nodes={
+                  {n=G.UIT.O, config={object = DynaText({string = localize("talisman_string_A"), colours = {G.C.WHITE}, shadow = true, scale = 0.5})}},
+                }},
+                --[[
+                create_toggle({label = localize("talisman_string_B"), ref_table = Talisman.config_file, ref_value = "disable_anims",
                 callback = function(_set_toggle)
 	                love.filesystem.write(talisman_path .. "/config.lua", STR_PACK(Talisman.config_file))
                 end}),
-             --[[   create_option_cycle({
+               create_option_cycle({
                   label = localize("talisman_string_C"),
                   scale = 0.8,
                   w = 6,
@@ -101,7 +103,6 @@ Talisman.config_tab = function()
                   opt_callback = 'talisman_upd_score_opt',
                   current_option = Talisman.config_file.score_opt_id,
                 }),
-                ]]--
                 create_option_cycle({
                   label = localize("talisman_notation"),
                   scale = 0.8,
@@ -109,7 +110,9 @@ Talisman.config_tab = function()
                   options = getlocs(Talisman.notations.loc_keys),
                   opt_callback = 'talisman_upd_notation_opt',
                   current_option = Talisman.config_file.notation_id,
-                })}
+                })
+                ]]-- 
+                }
                 return {
                 n = G.UIT.ROOT,
                 config = {

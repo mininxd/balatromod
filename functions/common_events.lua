@@ -2888,9 +2888,13 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         }
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Zodiac' then
-        if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or number_format(_c.config.extra.x_mult)} end
+        if _c.name == 'Capricorn' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.gain, specific_vars and specific_vars[2] or _c.config.extra.x_mult} end
         if _c.name == 'Sagitarius' then loc_vars = {} end
         if _c.name == 'Aries' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.chips} end
+        if _c.name == 'Taurus' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.x_mult} end
+        if _c.name == 'Gemini' then loc_vars = {} end
+        if _c.name == 'Cancer' then loc_vars = {} end
+        if _c.name == 'Leo' then loc_vars = {G.GAME.probabilities.normal or 1, _c.config.extra.prob_max} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then
        if _c.name == "The Fool" then

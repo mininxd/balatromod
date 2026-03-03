@@ -2701,6 +2701,38 @@ return {
                 "{C:attention}Four of a Kind{}",
                 },
             },
+            z_taurus={
+                name="Taurus",
+                text={
+                "{X:mult,C:white}X#1#{} Mult if played hand",
+                "contains {C:orange}Three of a Kind{} &",
+                "three unique {C:orange}suits{}",
+                },
+            },
+            z_gemini={
+                name="Gemini",
+                text={
+                "Destroy played {C:orange}cards{}",
+                "if hand is {C:orange}Pair{} &",
+                "same {C:orange}suits{}",
+                },
+            },
+            z_cancer={
+                name="Cancer",
+                text={
+                "Double Base Chips and",
+                "Mult if hand is",
+                "{C:orange}Flush House{}",
+                },
+            },
+            z_leo={
+                name="Leo",
+                text={
+                "{C:green}#1# in #2#{} for played {C:orange}cards{}",
+                "Becomes {C:dark_edition}Foil{} or","{C:dark_edition}Holographic{} if hand is",
+                "{C:orange}Five of a Kind{}",
+                },
+            },
             z_sagitarius = {
                 name = "Sagitarius",
                 text = {
@@ -3797,7 +3829,9 @@ return {
             k_deck_stake_wins="Deck Stake Wins",
             k_defeated_by="Defeated By",
             k_demo_version_ex="Demo Version!",
+            k_destroyed_ex="Destroyed!",
             k_disabled_ex="Disabled!",
+            k_doubled_ex="Doubled!",
             k_drank_ex="Drank!",
             k_duplicated_ex="Duplicated!",
             k_dwarf_planet="Dwarf Planet",
@@ -4433,6 +4467,8 @@ return {
             a_sold_tally="#1#/#2# Sold",
             a_xmult="X#1# Mult",
             a_xmult_minus="-X#1# Mult",
+            a_doubled_ex="Doubled!",
+            a_destroyed_ex="Destroyed!",
             ante_x_voucher="ANTE #1# VOUCHER",
             challenges_completed="Completed #1#/#2# Challenges",
             completed="#1#/#2# Completed",

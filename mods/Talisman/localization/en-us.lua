@@ -18,7 +18,7 @@ return {
         talisman_notations_letter = 'Letter',
         talisman_notations_array = 'Array',
         
-        talisman_string_A = 'Select features to enable:',
+        talisman_string_A = "A mod that increases Balatro's score limit",
         talisman_string_B = 'Disable Scoring Animations',
         talisman_string_C = 'Score Limit (requires game restart)',
         talisman_string_D = 'Calculating...',

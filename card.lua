@@ -989,8 +989,12 @@ function Card:generate_UIBox_ability_table()
             loc_vars = {self.ability.extra.mult_gain, current_xmult, has_original}
         end
     elseif self.ability.set == 'Zodiac' then
-        if self.ability.name == 'Capricorn' then loc_vars = {self.ability.extra.gain, number_format(self.ability.extra.x_mult)} end
-        if self.ability.name == 'Aries' then loc_vars = {self.ability.extra.chips} end
+        if self.ability.name == 'Capricorn' or self.config.center_key == 'z_capricorn' then loc_vars = {self.ability.extra.gain, self.ability.extra.x_mult}
+        elseif self.ability.name == 'Aries' or self.config.center_key == 'z_aries' then loc_vars = {self.ability.extra.chips}
+        elseif self.ability.name == 'Taurus' or self.config.center_key == 'z_taurus' then loc_vars = {self.ability.extra.x_mult or 2}
+        elseif self.ability.name == 'Gemini' or self.config.center_key == 'z_gemini' then loc_vars = {}
+        elseif self.ability.name == 'Cancer' or self.config.center_key == 'z_cancer' then loc_vars = {}
+        elseif self.ability.name == 'Leo' or self.config.center_key == 'z_leo' then loc_vars = {G.GAME.probabilities.normal or 1, self.ability.extra.prob_max} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -2497,7 +2501,7 @@ function Card:calculate_joker(context)
                 local current_x_mult = to_big(self.ability.extra.x_mult or 1)
                 if current_x_mult > to_big(1) then
                     return {
-                        message = localize{type='variable',key='a_xmult',vars={number_format(current_x_mult)}},
+                        message = localize{type='variable',key='a_xmult',vars={current_x_mult}},
                         Xmult_mod = current_x_mult
                     }
                 end
@@ -2543,6 +2547,72 @@ function Card:calculate_joker(context)
                         colour = G.C.CHIPS,
                         card = self
                     }
+                end
+            end
+        end
+        if self.ability.name == 'Taurus' or self.config.center.name == 'Taurus' then
+            if context.joker_main then
+                if context.scoring_name == "Three of a Kind" or (context.poker_hands and next(context.poker_hands['Three of a Kind'])) then
+                    local suits = {}
+                    local suit_count = 0
+                    for k, v in ipairs(context.scoring_hand) do
+                        if not suits[v.base.suit] then
+                            suits[v.base.suit] = true
+                            suit_count = suit_count + 1
+                        end
+                    end
+                    if suit_count >= 3 then
+                        return {
+                            message = localize{type='variable',key='a_xmult',vars={self.ability.extra.x_mult}},
+                            Xmult_mod = self.ability.extra.x_mult
+                        }
+                    end
+                end
+            end
+        end
+        if self.ability.name == 'Gemini' or self.config.center.name == 'Gemini' then
+            if context.after and context.scoring_name == "Pair" then
+                if context.scoring_hand[1].base.suit == context.scoring_hand[2].base.suit then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.4,
+                        func = function()
+                            for k, v in ipairs(context.scoring_hand) do
+                                v:shatter()
+                            end
+                            return true
+                        end
+                    }))
+                    return {
+                        message = 'Destroyed!',
+                        colour = G.C.RED,
+                        card = self
+                    }
+                end
+            end
+        end
+        if self.ability.name == 'Cancer' or self.config.center.name == 'Cancer' then
+            if context.joker_main then
+                if context.scoring_name == "Flush House" or (context.poker_hands and next(context.poker_hands['Flush House'])) then
+                    return {
+                        message = 'Doubled!',
+                        colour = G.C.MULT,
+                        Xmult_mod = 2,
+                        Xchip_mod = 2,
+                        card = self
+                    }
+                end
+            end
+        end
+        if self.ability.name == 'Leo' or self.config.center.name == 'Leo' then
+            if context.before and (context.scoring_name == "Five of a Kind" or (context.poker_hands and next(context.poker_hands['Five of a Kind']))) then
+                for k, v in ipairs(context.scoring_hand) do
+                    if not v.edition and pseudorandom('leo'..v.playing_card) < G.GAME.probabilities.normal/self.ability.extra.prob_max then
+                        local edition = pseudorandom('leo_edition'..v.playing_card) < 0.5 and {foil = true} or {holo = true}
+                        v:set_edition(edition, true, true)
+                        v:juice_up(0.6, 0.1)
+                        card_eval_status_text(v, 'extra', nil, nil, nil, {message = edition.foil and 'Foil' or 'Holographic', colour = G.C.DARK_EDITION})
+                    end
                 end
             end
         end
