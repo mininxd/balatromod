@@ -1875,7 +1875,7 @@ return {
                 text={
                     "Each scored played card gains {C:mult}+#1#{} Mult",
                     "Each {C:attention}Boss Blind{} defeated gains {X:mult,C:white} X#2# {} Mult",
-                    "and reduces current {C:mult}Mult{} by {C:attention}50%{}",
+                    "and reduces current {C:mult}+Mult{} by {C:attention}50%{}",
                     "{C:inactive}(Currently {C:mult}+#3#{C:inactive} and {X:mult,C:white} X#4# {C:inactive})",
                 },
                 unlock={

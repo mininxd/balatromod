@@ -2606,12 +2606,21 @@ function Card:calculate_joker(context)
         end
         if self.ability.name == 'Leo' or self.config.center.name == 'Leo' then
             if context.before and (context.scoring_name == "Five of a Kind" or (context.poker_hands and next(context.poker_hands['Five of a Kind']))) then
+                local upgrades = {}
+                local any_upgrade = false
                 for k, v in ipairs(context.scoring_hand) do
-                    if not v.edition and pseudorandom('leo'..v.playing_card) < G.GAME.probabilities.normal/self.ability.extra.prob_max then
+                    if not v.debuff and not v.edition and pseudorandom('leo'..v.playing_card) < G.GAME.probabilities.normal/self.ability.extra.prob_max then
                         local edition = pseudorandom('leo_edition'..v.playing_card) < 0.5 and {foil = true} or {holo = true}
-                        v:set_edition(edition, true, true)
-                        v:juice_up(0.6, 0.1)
-                        card_eval_status_text(v, 'extra', nil, nil, nil, {message = edition.foil and 'Foil' or 'Holographic', colour = G.C.DARK_EDITION})
+                        table.insert(upgrades, {v = v, edition = edition})
+                        any_upgrade = true
+                    end
+                end
+                if any_upgrade then
+                    card_eval_status_text(self, 'extra', nil, nil, nil, {message = 'Leo!', colour = G.C.SECONDARY_SET.Zodiac})
+                    for _, upgrade in ipairs(upgrades) do
+                        upgrade.v:set_edition(upgrade.edition, true, true)
+                        upgrade.v:juice_up(0.6, 0.1)
+                        card_eval_status_text(upgrade.v, 'extra', nil, nil, nil, {message = upgrade.edition.foil and 'Foil' or 'Holographic', colour = G.C.DARK_EDITION})
                     end
                 end
             end
