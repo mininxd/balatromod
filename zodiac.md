@@ -1,5 +1,5 @@
 # Zodiac Cards Collection
-**Credits:** Original concept by [u/G2NwhYZrnh on Reddit](https://www.reddit.com/r/balatro/s/G2NwhYZrnh)
+**Credits:** Original concept by [u/Euuphorix on Reddit](https://www.reddit.com/r/balatro/s/G2NwhYZrnh)
 
 Zodiac cards are a new set of collectable items that provide unique persistent effects triggered by specific poker hands.
 
