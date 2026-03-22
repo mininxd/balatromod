@@ -2706,4 +2706,45 @@ return {
         },
         text_config = { colour = G.C.MONEY }
     },
+    z_leo = {
+        text = {
+            { ref_table = "G.GAME.probabilities", ref_value = "normal" },
+            { text = "/" },
+            { ref_table = "card.ability.extra", ref_value = "prob_max" }
+        },
+        text_config = { colour = G.C.GREEN }
+    },
+    z_taurus = {
+        text = {
+            {
+                border_nodes = {
+                    { text = "X" },
+                    { ref_table = "card.ability.extra", ref_value = "x_mult", retrigger_type = "exp" }
+                }
+            }
+        },
+    },
+    z_libra = {
+        text = {
+            { ref_table = "G.GAME.probabilities", ref_value = "normal" },
+            { text = "/" },
+            { ref_table = "card.ability.extra", ref_value = "prob_max" }
+        },
+        text_config = { colour = G.C.GREEN }
+    },
+    z_scorpio = {
+        text = {
+            { text = "+" },
+            { ref_table = "card.ability.extra", ref_value = "mult" }
+        },
+        text_config = { colour = G.C.MULT },
+        calc_function = function(card, display_res, is_eval)
+            if G.hand and G.hand.highlighted and #G.hand.highlighted > 0 then
+                local _, _, poker_hands = evaluate_poker_hand(G.hand.highlighted)
+                if poker_hands['High Card'] and next(poker_hands['High Card']) then
+                    display_res.mult = #G.hand.highlighted * card.ability.extra.mult
+                end
+            end
+        end
+    },
 }

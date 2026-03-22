@@ -80,6 +80,15 @@ return {
    discovered = false,
    config = {extra = {prob_min = 1,prob_max = 30}},
  },
+ z_scorpio = {
+   order = 10,
+   consumeable = false,
+   name = "Scorpio", 
+   pos = {x=2,y=1}, 
+   set = "Zodiac", 
+   discovered = false,
+   config = {extra = {mult = 2}}
+ },
  z_sagitarius = {
    order = 11,
    consumeable = false,

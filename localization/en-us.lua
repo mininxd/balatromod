@@ -2002,6 +2002,11 @@ return {
                     "{C:chips}+#1#{} extra chips",
                 },
             },
+            card_extra_mult={
+                text={
+                    "{C:mult}+#1#{} extra mult",
+                },
+            },
             challenge_locked={
                 name="Locked",
                 text={
@@ -2747,6 +2752,22 @@ return {
                 "Earn {C:money}$#1#{} if hand",
                 "is {C:orange}Full House{}"
                 }
+            },
+            z_libra={
+                name="Libra",
+                text={
+                "{C:green}#1# in #2#{} chance for played",
+                "{C:orange}cards{} become {C:dark_edition}Polychrome{}",
+                "if hand is {C:orange}Flush Five{}",
+                },
+            },
+            z_scorpio={
+                name="Scorpio",
+                text={
+                "Played {C:orange}cards{} permanently",
+                "gain {C:red}+#1#{} mult if",
+                "hand is {C:orange}High Card{}"
+                },
             },
             z_sagitarius = {
                 name = "Sagitarius",

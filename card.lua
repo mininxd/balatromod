@@ -321,6 +321,7 @@ function Card:set_ability(center, initial, delay_sprites)
         order = center.order or nil,
         forced_selection = self.ability and self.ability.forced_selection or nil,
         perma_bonus = self.ability and self.ability.perma_bonus or 0,
+        perma_mult = self.ability and self.ability.perma_mult or 0,
     }
 
     if self.ability.set == 'Zodiac' then self.ability.rarity = nil end
@@ -763,6 +764,7 @@ function Card:generate_UIBox_ability_table()
         loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,
                     nominal_chips = self.base.nominal > 0 and self.base.nominal or nil,
                     bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,
+                    bonus_mult = (self.ability.perma_mult or 0) > 0 and (self.ability.perma_mult or 0) or nil,
                 }
     elseif self.ability.set == 'Joker' or self.ability.set == 'custom_joker' or self.ability.set == 'custom_tag' or self.ability.is_custom then -- all remaining jokers
         if self.ability.name == 'Hyperinflation Tag' then loc_vars = {self.ability.mult_dollars, self.ability.last_effect}
@@ -996,7 +998,9 @@ function Card:generate_UIBox_ability_table()
         elseif self.ability.name == 'Gemini' or self.config.center_key == 'z_gemini' then loc_vars = {}
         elseif self.ability.name == 'Cancer' or self.config.center_key == 'z_cancer' then loc_vars = {}
         elseif self.ability.name == 'Leo' or self.config.center_key == 'z_leo' then loc_vars = {G.GAME.probabilities.normal or 1, self.ability.extra.prob_max}
-        elseif self.ability.name == 'Virgo' or self.config.center_key == 'z_virgo' then loc_vars = {self.ability.extra.dollar} end
+        elseif self.ability.name == 'Virgo' or self.config.center_key == 'z_virgo' then loc_vars = {self.ability.extra.dollar}
+        elseif self.ability.name == 'Libra' or self.config.center_key == 'z_libra' then loc_vars = {G.GAME.probabilities.normal or 1, self.ability.extra.prob_max}
+        elseif self.ability.name == 'Scorpio' or self.config.center_key == 'z_scorpio' then loc_vars = {self.ability.extra.mult} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -1154,7 +1158,7 @@ function Card:get_chip_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' or self.ability.set == 'custom_joker' then return 0 end
     if self.ability.consumeable then return 0 end
-    return self.ability.mult
+    return self.ability.mult + (self.ability.perma_mult or 0)
 end
 
 function Card:get_chip_h_mult()
@@ -2688,6 +2692,46 @@ function Card:calculate_joker(context)
                 return {
                     message = localize('$')..self.ability.extra.dollar,
                     colour = G.C.MONEY,
+                    card = self
+                }
+            end
+        end
+        if self.ability.name == 'Libra' or self.config.center.name == 'Libra' then
+            if context.before and (context.scoring_name == "Flush Five" or (context.poker_hands and next(context.poker_hands['Flush Five']))) then
+                local any_polychrome = false
+                for k, v in ipairs(context.scoring_hand) do
+                    if pseudorandom('libra') < G.GAME.probabilities.normal/self.ability.extra.prob_max then
+                        v:set_edition({polychrome = true}, true)
+                        v:juice_up()
+                        any_polychrome = true
+                    end
+                end
+                if any_polychrome then
+                    return {
+                        message = "Polychrome!",
+                        colour = G.C.DARK_EDITION,
+                        card = self
+                    }
+                end
+            end
+        end
+        if self.ability.name == 'Scorpio' or self.config.center.name == 'Scorpio' then
+            if context.before and context.scoring_name == "High Card" then
+                for k, v in ipairs(context.scoring_hand) do
+                    v.ability.perma_mult = v.ability.perma_mult or 0
+                    v.ability.perma_mult = v.ability.perma_mult + self.ability.extra.mult
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.1,
+                        func = function()
+                            v:juice_up()
+                            return true
+                        end
+                    }))
+                end
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.MULT,
                     card = self
                 }
             end

@@ -2814,6 +2814,9 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if specific_vars.bonus_chips then
             localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {specific_vars.bonus_chips}}
         end
+        if specific_vars.bonus_mult then
+            localize{type = 'other', key = 'card_extra_mult', nodes = desc_nodes, vars = {specific_vars.bonus_mult}}
+        end
     elseif _c.set == 'Enhanced' then 
         if specific_vars and _c.name ~= 'Stone Card' and specific_vars.nominal_chips then
             localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
@@ -2829,6 +2832,9 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
         if _c.name ~= 'Stone Card' and ((specific_vars and specific_vars.bonus_chips) or _c.config.bonus) then
             localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {((specific_vars and specific_vars.bonus_chips) or _c.config.bonus)}}
+        end
+        if (specific_vars and specific_vars.bonus_mult) then
+            localize{type = 'other', key = 'card_extra_mult', nodes = desc_nodes, vars = {specific_vars.bonus_mult}}
         end
     elseif _c.set == 'Booster' then 
         local desc_override = 'p_arcana_normal'
@@ -2896,6 +2902,8 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if _c.name == 'Cancer' then loc_vars = {} end
         if _c.name == 'Leo' then loc_vars = {G.GAME.probabilities.normal or 1, _c.config.extra.prob_max} end
         if _c.name == 'Virgo' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.dollar} end
+        if _c.name == 'Libra' then loc_vars = {G.GAME.probabilities.normal or 1, _c.config.extra.prob_max} end
+        if _c.name == 'Scorpio' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.mult} end
         if _c.name == 'Aquarius' then loc_vars = {} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then
