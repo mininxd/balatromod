@@ -922,6 +922,7 @@ function Game:init_item_prototypes()
     table.sort(self.P_CENTER_POOLS["Tag"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["custom_tag"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Seal"], function (a, b) return a.order < b.order end)
+    table.sort(self.P_CENTER_POOLS["Zodiac"], function (a, b) return a.order < b.order end)
     table.sort(self.P_CENTER_POOLS["Demo"], function (a, b) return a.order + (a.set == 'Joker' and 1000 or 0) < b.order + (b.set == 'Joker' and 1000 or 0) end)
     for i = 1, 4 do 
         table.sort(self.P_JOKER_RARITY_POOLS[i], function (a, b) return a.order < b.order end)

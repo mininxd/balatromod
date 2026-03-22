@@ -25,7 +25,7 @@
 | [Talisman](https://github.com/SpectralPack/Talisman/releases/tag/v2.7) | Increases the score cap from **~10^308** to **~10^1000**, allowing endless runs to go past **NaN/Inf** and **Ante 39**, and adds an option to remove long score animations. |
 | [JokerDisplay](https://github.com/nh6574/JokerDisplay) | Displays useful information under Jokers, such as current Mult, XMult, and other dynamic stats. Supports custom jokers and has a dedicated configuration tab in settings. |
 | [Always Show Seed](https://www.nexusmods.com/balatro/mods/6) | Shows the seed and allows copying it at all times from the options menu. |
-| [Zodiac Cards](https://www.reddit.com/r/balatro/s/G2NwhYZrnh) | Adds a new set of collectable Zodiac cards (Sagitarius, Pisces, Aries, Capricorn) with unique persistent effects that trigger on specific poker hands. |
+| [Zodiac Cards](zodiac.md) | Adds a new set of collectable Zodiac cards with unique persistent effects that trigger on specific poker hands. |
 
 ## Secrets
 Certain seeds entered in **Sandbox Mode** trigger special effects:

@@ -3535,9 +3535,18 @@ function create_UIBox_your_collection_zodiacs()
   end
   for i = 1, 6 do
     for j = 1, #G.your_collection do
-      local center = G.P_CENTER_POOLS["Zodiac"][i+(j-1)*6]
+      local center = nil
+      for _, v in ipairs(G.P_CENTER_POOLS["Zodiac"]) do
+        if v.order == i+(j-1)*6 then
+          center = v
+          break
+        end
+      end
       if center then 
         local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w/2, G.your_collection[j].T.y, G.CARD_W, G.CARD_H, nil, center)
+        G.your_collection[j]:emplace(card)
+      else
+        local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w/2, G.your_collection[j].T.y, G.CARD_W, G.CARD_H, nil, G.P_CENTERS.z_undiscovered)
         G.your_collection[j]:emplace(card)
       end
     end
