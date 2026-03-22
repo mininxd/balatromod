@@ -2676,6 +2676,14 @@ return {
             },
         },
         Zodiac={
+        z_aquarius={
+                name="Aquarius",
+                text={
+                    "convert right {C:orange}pair{} into",
+                    "left {C:orange}Pair{} if hand", 
+                    "is {C:orange}Two Pair{}"
+                },
+            },
             z_capricorn={
                 name="Capricorn",
                 text={
@@ -2732,6 +2740,13 @@ return {
                 "Becomes {C:dark_edition}Foil{} or","{C:dark_edition}Holographic{} if hand is",
                 "{C:orange}Five of a Kind{}",
                 },
+            },
+            z_virgo={
+                name="Virgo",
+                text={
+                "Earn {C:money}$#1#{} if hand",
+                "is {C:orange}Full House{}"
+                }
             },
             z_sagitarius = {
                 name = "Sagitarius",

@@ -2699,4 +2699,11 @@ return {
             }
         },
     },
+    z_virgo = {
+        text = {
+            { text = "$" },
+            { ref_table = "card.ability.extra", ref_value = "dollar" }
+        },
+        text_config = { colour = G.C.MONEY }
+    },
 }

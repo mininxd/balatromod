@@ -1,13 +1,13 @@
 return {
- z_sagitarius = {
+ z_aquarius = {
    order = 1,
    consumeable = false,
-   name = "Sagitarius", 
+   name = "Aquarius", 
    pos = {x=0,y=0}, 
-   set = "Zodiac",
+   set = "Zodiac", 
    discovered = false,
    config = {},
-   },
+ },
  z_pisces = {
    order = 2,
    consumeable = false,
@@ -62,6 +62,33 @@ return {
    discovered = false,
    config = {extra = {prob_min = 1,prob_max = 20}},
  },
+ z_virgo = {
+   order = 8,
+   consumeable = false,
+   name = "Virgo", 
+   pos = {x=0,y=1}, 
+   set = "Zodiac", 
+   discovered = false,
+   config = {extra = {dollar = 5}},
+ },
+ z_libra = {
+   order = 9,
+   consumeable = false,
+   name = "Libra", 
+   pos = {x=1,y=1}, 
+   set = "Zodiac", 
+   discovered = false,
+   config = {extra = {prob_min = 1,prob_max = 30}},
+ },
+ z_sagitarius = {
+   order = 11,
+   consumeable = false,
+   name = "Sagitarius", 
+   pos = {x=3,y=1}, 
+   set = "Zodiac",
+   discovered = false,
+   config = {},
+   },
  z_capricorn = {
    order = 12,
    consumeable = false,

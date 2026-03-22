@@ -2895,6 +2895,8 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if _c.name == 'Gemini' then loc_vars = {} end
         if _c.name == 'Cancer' then loc_vars = {} end
         if _c.name == 'Leo' then loc_vars = {G.GAME.probabilities.normal or 1, _c.config.extra.prob_max} end
+        if _c.name == 'Virgo' then loc_vars = {specific_vars and specific_vars[1] or _c.config.extra.dollar} end
+        if _c.name == 'Aquarius' then loc_vars = {} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
     elseif _c.set == 'Tarot' then
        if _c.name == "The Fool" then

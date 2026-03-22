@@ -989,12 +989,14 @@ function Card:generate_UIBox_ability_table()
             loc_vars = {self.ability.extra.mult_gain, current_xmult, has_original}
         end
     elseif self.ability.set == 'Zodiac' then
-        if self.ability.name == 'Capricorn' or self.config.center_key == 'z_capricorn' then loc_vars = {self.ability.extra.gain, self.ability.extra.x_mult}
+        if self.ability.name == 'Aquarius' or self.config.center_key == 'z_aquarius' then loc_vars = {}
+        elseif self.ability.name == 'Capricorn' or self.config.center_key == 'z_capricorn' then loc_vars = {self.ability.extra.gain, self.ability.extra.x_mult}
         elseif self.ability.name == 'Aries' or self.config.center_key == 'z_aries' then loc_vars = {self.ability.extra.chips}
         elseif self.ability.name == 'Taurus' or self.config.center_key == 'z_taurus' then loc_vars = {self.ability.extra.x_mult or 2}
         elseif self.ability.name == 'Gemini' or self.config.center_key == 'z_gemini' then loc_vars = {}
         elseif self.ability.name == 'Cancer' or self.config.center_key == 'z_cancer' then loc_vars = {}
-        elseif self.ability.name == 'Leo' or self.config.center_key == 'z_leo' then loc_vars = {G.GAME.probabilities.normal or 1, self.ability.extra.prob_max} end
+        elseif self.ability.name == 'Leo' or self.config.center_key == 'z_leo' then loc_vars = {G.GAME.probabilities.normal or 1, self.ability.extra.prob_max}
+        elseif self.ability.name == 'Virgo' or self.config.center_key == 'z_virgo' then loc_vars = {self.ability.extra.dollar} end
     end
     local badges = {}
     if (card_type ~= 'Locked' and card_type ~= 'Undiscovered' and card_type ~= 'Default') or self.debuff then
@@ -2464,6 +2466,61 @@ end
 function Card:calculate_joker(context)
     if self.debuff then return nil end
     if self.ability.set == "Zodiac" and not self.debuff then
+        if self.ability.name == 'Aquarius' or self.config.center.name == 'Aquarius' then
+            if context.before and (context.scoring_name == "Two Pair" or (context.poker_hands and next(context.poker_hands['Two Pair']))) then
+                local left_card = context.scoring_hand[1]
+                local right_pair = {context.scoring_hand[3], context.scoring_hand[4]}
+                
+                local new_val = (left_card.base.value == 'Ace' and 'A') or
+                (left_card.base.value == 'King' and 'K') or
+                (left_card.base.value == 'Queen' and 'Q') or
+                (left_card.base.value == 'Jack' and 'J') or
+                (left_card.base.value == '10' and 'T') or
+                (left_card.base.value)
+                
+                for _, card in ipairs(right_pair) do
+                    local suit_code = (card.base.suit == 'Diamonds' and 'D_') or
+                    (card.base.suit == 'Spades' and 'S_') or
+                    (card.base.suit == 'Clubs' and 'C_') or
+                    (card.base.suit == 'Hearts' and 'H_')
+                    
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.15,
+                        func = function()
+                            local new_card = G.P_CARDS[suit_code..new_val]
+                            card:juice_up(0.7, 0.7)
+                            card:set_base(new_card)
+                            attention_text({
+                                text = "Convert!",
+                                scale = 0.45, 
+                                hold = 0.6,
+                                backdrop_colour = G.C.ORANGE,
+                                align = 'cm',
+                                major = card,
+                            })
+                            play_sound('tarot2', 1.1, 0.6)
+                            return true
+                        end
+                    }))
+                end
+
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.2,
+                    func = function()
+                        update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize('Four of a Kind', 'poker_hands'),chips = G.GAME.hands['Four of a Kind'].chips, mult = G.GAME.hands['Four of a Kind'].mult, level = G.GAME.hands['Four of a Kind'].level})
+                        return true
+                    end
+                }))
+                
+                return {
+                    message = "Convert!",
+                    colour = G.C.ORANGE,
+                    card = self
+                }
+            end
+        end
         if self.ability.name == 'Pisces' or self.config.center.name == 'Pisces' then
             if context.before and (context.disp_text == "Royal Flush") then
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize('Straight Flush', 'poker_hands'),chips = G.GAME.hands['Straight Flush'].chips, mult = G.GAME.hands['Straight Flush'].mult, level = G.GAME.hands['Straight Flush'].level})
@@ -2623,6 +2680,16 @@ function Card:calculate_joker(context)
                         card_eval_status_text(upgrade.v, 'extra', nil, nil, nil, {message = upgrade.edition.foil and 'Foil' or 'Holographic', colour = G.C.DARK_EDITION})
                     end
                 end
+            end
+        end
+        if self.ability.name == 'Virgo' or self.config.center.name == 'Virgo' then
+            if context.before and (context.scoring_name == "Full House" or (context.poker_hands and next(context.poker_hands['Full House']))) then
+                ease_dollars(self.ability.extra.dollar)
+                return {
+                    message = localize('$')..self.ability.extra.dollar,
+                    colour = G.C.MONEY,
+                    card = self
+                }
             end
         end
     end
